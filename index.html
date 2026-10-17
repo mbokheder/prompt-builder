@@ -1,0 +1,726 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>مولّد البرومتات</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#1d2a6e; --orange:#ff7a1a; --blue:#2f6fe0; --yellow:#ffd21f; --red:#e53935; --green:#20a35a;
+    --bg:#eef6ff; --card:#ffffff; --text:#1d2a6e; --muted:#5b6690; --line:#d5e2f5; --field:#f7faff; --code:#0f1736; --codeText:#e9eeff;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#0d1430; --card:#162048; --text:#eef2ff; --muted:#a9b4df; --line:#2a376e; --field:#101a3d; --code:#080e24; --codeText:#e9eeff;
+    }
+  }
+  :root[data-theme="dark"]{ --bg:#0d1430; --card:#162048; --text:#eef2ff; --muted:#a9b4df; --line:#2a376e; --field:#101a3d; --code:#080e24; --codeText:#e9eeff; }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:'Cairo',Tahoma,sans-serif;line-height:1.7}
+  .wrap{max-width:1180px;margin:0 auto;padding:24px 16px 60px}
+  header{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:22px}
+  .logo{width:58px;height:58px;border-radius:18px;background:var(--orange);display:flex;align-items:flex-end;justify-content:center;gap:5px;padding:12px;box-shadow:0 6px 0 rgba(0,0,0,.12)}
+  .logo i{display:block;width:9px;background:#fff;border-radius:3px}
+  h1{margin:0;font-size:30px;font-weight:900}
+  header p{margin:0;color:var(--muted);font-size:15px}
+  .grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:20px;align-items:start}
+  @media (max-width:900px){.grid{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:20px;box-shadow:0 6px 0 rgba(29,42,110,.06)}
+  .card h2{margin:0 0 14px;font-size:20px;font-weight:900;display:flex;align-items:center;gap:10px}
+  .dot{width:14px;height:14px;border-radius:50%;display:inline-block}
+  label{display:block;font-weight:700;font-size:15px;margin:14px 0 6px}
+  label small{font-weight:400;color:var(--muted)}
+  input[type=text],textarea,select{width:100%;font:inherit;color:var(--text);background:var(--field);border:2px solid var(--line);border-radius:14px;padding:10px 14px;outline:none;transition:border-color .15s}
+  input[type=text]:focus,textarea:focus,select:focus{border-color:var(--blue)}
+  textarea{min-height:92px;resize:vertical}
+  .seg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .seg3{grid-template-columns:1fr 1fr 1fr}
+  .seg input{position:absolute;opacity:0;pointer-events:none}
+  .seg label{margin:0;border:2px solid var(--line);background:var(--field);border-radius:16px;padding:12px;cursor:pointer;text-align:center;font-weight:700;transition:all .15s}
+  .seg label span{display:block;font-size:13px;font-weight:400;color:var(--muted)}
+  .seg input:checked+label{border-color:var(--orange);background:rgba(255,122,26,.12)}
+  .seg input:focus-visible+label{outline:3px solid var(--blue)}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media (max-width:520px){.row{grid-template-columns:1fr}}
+  details{margin-top:18px;border:2px dashed var(--line);border-radius:16px;padding:6px 14px 14px}
+  summary{cursor:pointer;font-weight:900;padding:6px 0}
+  summary small{font-weight:400;color:var(--muted)}
+  .btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+  button{font:inherit;font-weight:700;border:0;border-radius:14px;padding:10px 18px;cursor:pointer;transition:transform .1s}
+  button:active{transform:scale(.97)}
+  .primary{background:var(--orange);color:#fff;box-shadow:0 4px 0 #c95a0c}
+  .ghost{background:transparent;color:var(--text);border:2px solid var(--line)}
+  .note{border-radius:14px;padding:10px 14px;font-size:14px;margin-top:12px}
+  .note.warn{background:rgba(255,210,31,.18);border:1px solid rgba(232,164,0,.5)}
+  .note.info{background:rgba(47,111,224,.10);border:1px solid rgba(47,111,224,.35)}
+  .out{margin-bottom:18px}
+  .outHead{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+  .outHead h3{margin:0;font-size:17px;font-weight:900;display:flex;align-items:center;gap:10px}
+  .badge{background:var(--navy);color:#fff;border-radius:50%;width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;font-weight:900}
+  .where{font-size:13px;color:var(--muted);margin:0 0 8px}
+  pre{direction:ltr;text-align:left;background:var(--code);color:var(--codeText);border-radius:16px;padding:16px;margin:0;white-space:pre-wrap;word-break:break-word;font-family:Consolas,'Courier New',monospace;font-size:13.5px;line-height:1.6;max-height:460px;overflow:auto}
+  .copy{background:var(--blue);color:#fff;padding:8px 16px;font-size:14px}
+  .copy.done{background:var(--green)}
+  .tips{margin:0;padding-inline-start:20px;font-size:14px}
+  .empty{color:var(--muted);text-align:center;padding:40px 10px}
+  .hidden{display:none !important}
+  .keyBox{margin-top:16px}
+  .kbadge{font-size:12px;border-radius:10px;padding:2px 10px;margin-inline-start:6px;background:var(--green);color:#fff}
+  .kbadge:empty{display:none}
+  button:disabled{opacity:.55;cursor:wait}
+  .spin{display:inline-block;animation:sp 1s linear infinite}@keyframes sp{to{transform:rotate(360deg)}}
+  .ana{margin-top:14px;border-style:solid;border-color:rgba(47,111,224,.35);background:rgba(47,111,224,.06)}
+  .gem{background:linear-gradient(90deg,#4f7cff,#9b5cff);color:#fff;text-decoration:none;font-weight:700;border-radius:12px;padding:6px 14px;white-space:nowrap}
+  .drop{border:2px dashed var(--line);background:var(--field);border-radius:16px;padding:16px;text-align:center;cursor:pointer;color:var(--muted);transition:border-color .15s,background .15s}
+  .drop:hover,.drop.over,.drop:focus-visible{border-color:var(--blue);outline:none}
+  .drop.over{background:rgba(47,111,224,.10)}
+  #imgPrev{max-width:100%;max-height:220px;border-radius:12px;display:block;margin:0 auto 10px}
+  .imgMeta{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:13px;color:var(--text);word-break:break-all}
+  button.small{padding:4px 12px;font-size:13px}
+  .themeBtn{margin-inline-start:auto}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo"><i style="height:14px"></i><i style="height:22px"></i><i style="height:32px"></i></div>
+    <div>
+      <h1>مولّد البرومتات</h1>
+      <p>أدخل بيانات النشاط، واحصل على برومتات موشن جرافيك جاهزة لـ Claude أو Gemini أو أي أداة.</p>
+    </div>
+    <button class="ghost themeBtn" id="themeBtn" type="button" aria-label="تبديل الوضع">🌓</button>
+  </header>
+
+  <div class="grid">
+    <!-- INPUTS -->
+    <section class="card" aria-labelledby="inTitle">
+      <h2 id="inTitle"><span class="dot" style="background:var(--orange)"></span>بيانات النشاط</h2>
+
+      <label>نوع الفيديو</label>
+      <div class="seg" role="radiogroup">
+        <input type="radio" name="mode" id="mVoice" value="voice" checked><label for="mVoice">🎙️ بصوت<span>وصف بالكلام — برومتان</span></label>
+        <input type="radio" name="mode" id="mSilent" value="silent"><label for="mSilent">🎵 بدون كلام<span>موسيقى فقط — برومت واحد</span></label>
+      </div>
+
+      <label>الأسلوب</label>
+      <div class="seg" role="radiogroup">
+        <input type="radio" name="vstyle" id="sMg" value="mg" checked><label for="sMg">🎨 موشن جرافيك<span>رسوم مسطحة وأيقونات وحركة مرحة</span></label>
+        <input type="radio" name="vstyle" id="sCine" value="cine"><label for="sCine">🎬 سينمائي كرتوني<span>لقطات وكاميرا وإضاءة مثل أفلام الكرتون</span></label>
+      </div>
+
+      <label>الجهاز</label>
+      <div class="seg seg3" role="radiogroup">
+        <input type="radio" name="dev" id="dMob" value="mobile" checked><label for="dMob">📱 جوال<span>تطبيق أو متصفح</span></label>
+        <input type="radio" name="dev" id="dPc" value="pc"><label for="dPc">💻 كمبيوتر<span>متصفح</span></label>
+        <input type="radio" name="dev" id="dCode" value="code"><label for="dCode">🖥️ Claude Code<span>MP4 جاهز</span></label>
+      </div>
+
+      <div id="platBox">
+      <label>المنصة</label>
+      <div class="seg" role="radiogroup">
+        <input type="radio" name="plat" id="pClaude" value="claude" checked><label for="pClaude">Claude<span>جوال أو موقع</span></label>
+        <input type="radio" name="plat" id="pGemini" value="gemini"><label for="pGemini">Gemini<span>Canvas</span></label>
+        <input type="radio" name="plat" id="pAny" value="any"><label for="pAny">أي أداة<span>ChatGPT وغيره</span></label>
+        <input type="radio" name="plat" id="pVid" value="video"><label for="pVid">🎥 مولّد فيديو<span>Veo · Kling · Sora — لقطات</span></label>
+      </div>
+      </div>
+      <div id="codeNote" class="note info hidden">🖥️ Claude Code يحلل الصوت بدقة ويسلّمك ملف MP4 جاهز. يحتاج تطبيق Claude على الكمبيوتر (تبويب Code)، وتقدر تتابعه من الجوال.</div>
+
+      <div id="langBox">
+        <label for="lang">لهجة الصوت</label>
+        <select id="lang">
+          <option value="Saudi white dialect (السعودية البيضاء)">السعودية البيضاء</option>
+          <option value="Gulf Arabic dialect (اللهجة الخليجية)">الخليجية</option>
+          <option value="Modern Standard Arabic (الفصحى)">الفصحى</option>
+          <option value="Egyptian Arabic dialect (اللهجة المصرية)">المصرية</option>
+          <option value="English">الإنجليزية</option>
+          <option value="other">أخرى…</option>
+        </select>
+        <input type="text" id="langOther" class="hidden" placeholder="اكتب اللغة أو اللهجة" style="margin-top:8px">
+      </div>
+
+      <label for="title">العنوان</label>
+      <input type="text" id="title" placeholder="مثال: توازن وارمِ">
+
+      <label for="desc">الوصف</label>
+      <input type="text" id="desc" placeholder="مثال: تدريب على التوازن أثناء الوقوف والتحكم بالرمي">
+
+      <label for="osl">لغة النصوص على الشاشة <small>(العناوين وأسماء الخطوات)</small></label>
+      <select id="osl">
+        <option value="ar">العربية</option>
+        <option value="en">English</option>
+        <option value="both">عربي + سطر إنجليزي صغير</option>
+        <option value="none">بدون نصوص (صور فقط)</option>
+      </select>
+
+      <label>صورة مرجعية <small>(اختياري — بطاقة النشاط أو أي صورة توضيحية)</small></label>
+      <div id="drop" class="drop" tabindex="0" role="button" aria-label="اختر صورة مرجعية">
+        <input type="file" id="img" accept="image/*" hidden>
+        <div id="dropEmpty">🖼️ اسحب الصورة هنا أو <u>اضغط للاختيار</u></div>
+        <div id="dropFull" class="hidden">
+          <img id="imgPrev" alt="معاينة الصورة المرجعية">
+          <div class="imgMeta"><span id="imgName"></span><span style="display:flex;gap:6px"><button type="button" class="ghost small" id="imgCopy">📋 نسخ الصورة</button><button type="button" class="ghost small" id="imgDel">إزالة</button></span></div>
+        </div>
+      </div>
+
+      <details id="ana" class="ana">
+        <summary>🔍 عبّئ الحقول من الصورة بالذكاء الاصطناعي</summary>
+        <div id="autoBox" class="hidden" style="margin:6px 0 12px">
+          <button type="button" class="primary" id="anaAuto">⚡ حلّل الصورة تلقائيًا</button>
+          <span class="where" id="autoHint" style="margin-inline-start:8px"></span>
+        </div>
+        <p class="where" id="manualHint" style="margin:6px 0 0">بدون مفتاح API: اتبع الخطوتين (يكفي حسابك العادي). مع مفتاح: يظهر زر التحليل التلقائي.</p>
+        <ol class="tips">
+          <li>انسخ برومت التحليل، وأرسله مع صورة البطاقة في Claude أو Gemini أو ChatGPT.</li>
+          <li>انسخ الرد كاملًا والصقه في المربع تحت، ثم اضغط «عبّئ الحقول».</li>
+        </ol>
+        <div class="btns" style="margin-top:8px"><button type="button" class="copy" id="anaCopy">📋 نسخ برومت التحليل</button></div>
+        <textarea id="anaIn" placeholder='الصق رد الذكاء الاصطناعي هنا… {"title": "...", "steps": [...]}' style="margin-top:10px;direction:ltr;text-align:left"></textarea>
+        <div class="btns" style="margin-top:8px"><button type="button" class="primary" id="anaFill">✨ عبّئ الحقول</button></div>
+        <div id="anaMsg"></div>
+      </details>
+
+      <label>الموسيقى الخلفية</label>
+      <div class="seg" role="radiogroup">
+        <input type="radio" name="music" id="muOn" value="on" checked><label for="muOn">🎶 مع موسيقى</label>
+        <input type="radio" name="music" id="muOff" value="off"><label for="muOff">🔇 بدون موسيقى</label>
+      </div>
+
+      <details id="opt">
+        <summary>حقول اختيارية <small>— تجعل البرومت أدق</small></summary>
+        <label for="steps">الخطوات <small>(خطوة في كل سطر)</small></label>
+        <textarea id="steps" placeholder="جهّز الأدوات: ضع أكياس الحبوب على الطاولة…&#10;قف بثبات: …"></textarea>
+        <label for="tools">الأدوات <small>(أداة في كل سطر)</small></label>
+        <textarea id="tools" placeholder="طاولة وبساط&#10;حلقات أرضية"></textarea>
+        <label for="benefits">الفوائد <small>(فائدة في كل سطر)</small></label>
+        <textarea id="benefits" placeholder="تنمية التوازن أثناء الوقوف"></textarea>
+        <div class="row">
+          <div>
+            <label for="audience">الجمهور</label>
+            <select id="audience">
+              <option value="young children (with teachers/parents watching)">أطفال</option>
+              <option value="teachers and therapists">معلمات وأخصائيات</option>
+              <option value="parents">أولياء أمور</option>
+            </select>
+          </div>
+          <div>
+            <label for="duration">المدة</label>
+            <select id="duration">
+              <option value="45–60">٤٥–٦٠ ثانية</option>
+              <option value="60–90" selected>٦٠–٩٠ ثانية</option>
+              <option value="90–120">٩٠–١٢٠ ثانية</option>
+            </select>
+          </div>
+        </div>
+        <div class="row">
+          <div>
+            <label for="level">المستوى</label>
+            <input type="text" id="level" placeholder="مثال: المستوى العالي">
+          </div>
+          <div>
+            <label for="ratio">مقاس الفيديو</label>
+            <select id="ratio">
+              <option value="auto">تلقائي حسب الجهاز</option>
+              <option value="16:9, 1920×1080">أفقي 16:9</option>
+              <option value="9:16, 1080×1920">عمودي 9:16</option>
+              <option value="1:1, 1080×1080">مربع 1:1</option>
+            </select>
+          </div>
+        </div>
+        <label for="chars">وصف الشخصيات <small>(اختياري)</small></label>
+        <textarea id="chars" placeholder="Boy: 5 years old, maroon polo shirt…&#10;Teacher: young woman, black outfit…"></textarea>
+      </details>
+
+      <div class="btns">
+        <button class="primary" id="genBtn" type="button">✨ أنشئ البرومت</button>
+        <button class="ghost" id="exBtn" type="button">مثال: توازن وارمِ</button>
+        <button class="ghost" id="clrBtn" type="button">مسح</button>
+      </div>
+      <div id="formNote"></div>
+
+      <details id="keyBox" class="keyBox">
+        <summary>🔑 مفتاح API <small>(اختياري — للتحليل وكتابة النص تلقائيًا)</small> <span id="keyBadge" class="kbadge"></span></summary>
+        <label for="apiKey">المفتاح <small>(Gemini يبدأ بـ AIza، Claude يبدأ بـ sk-ant-)</small></label>
+        <div style="display:flex;gap:8px">
+          <input type="password" id="apiKey" autocomplete="off" spellcheck="false" style="direction:ltr" placeholder="AIza… أو sk-ant-…">
+          <button type="button" class="ghost small" id="keyShow">👁️</button>
+        </div>
+        <label for="apiModel">الموديل <small>(اتركه فاضيًا للافتراضي)</small></label>
+        <input type="text" id="apiModel" style="direction:ltr" placeholder="">
+        <label style="display:flex;align-items:center;gap:8px;font-weight:400"><input type="checkbox" id="keyRemember" checked> احفظ المفتاح في هذا المتصفح</label>
+        <div class="btns" style="margin-top:8px"><button type="button" class="ghost small" id="keyDel">🗑️ احذف المفتاح</button></div>
+        <div class="note info" style="font-size:13px">🔒 المفتاح يبقى في متصفحك فقط، ويُرسل مباشرة إلى Google أو Anthropic عند الطلب. لا تستخدم الصفحة على جهاز مشترك وأنت حافظ المفتاح.</div>
+      </details>
+    </section>
+
+    <!-- OUTPUTS -->
+    <section class="card" aria-labelledby="outTitle" aria-live="polite">
+      <h2 id="outTitle"><span class="dot" style="background:var(--blue)"></span>البرومتات الجاهزة</h2>
+      <div id="outputs"><div class="empty">املأ البيانات ثم اضغط «أنشئ البرومت».</div></div>
+    </section>
+  </div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const FIELDS = ['lang','langOther','osl','title','desc','steps','tools','benefits','audience','duration','level','ratio','chars'];
+const store = {
+  get(k){ try { return localStorage.getItem(k); } catch(e){ return null; } },
+  set(k,v){ try { localStorage.setItem(k,v); } catch(e){} }
+};
+let IMG = null; // {name, url}
+const lines = v => v.split('\n').map(s => s.trim()).filter(Boolean);
+const val = id => $(id).value.trim();
+const radio = n => document.querySelector(`input[name=${n}]:checked`).value;
+
+// theme toggle
+(function(){
+  const saved = store.get('pb-theme'); if (saved) document.documentElement.dataset.theme = saved;
+  $('themeBtn').onclick = () => {
+    const dark = document.documentElement.dataset.theme ? document.documentElement.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+    const next = dark ? 'light' : 'dark';
+    document.documentElement.dataset.theme = next; store.set('pb-theme', next);
+  };
+})();
+
+function syncUI(){
+  const voice = radio('mode') === 'voice';
+  $('langBox').classList.toggle('hidden', !voice);
+  $('langOther').classList.toggle('hidden', $('lang').value !== 'other');
+  const code = radio('dev') === 'code';
+  $('platBox').classList.toggle('hidden', code); $('codeNote').classList.toggle('hidden', !code);
+}
+
+function save(){
+  const d = {}; FIELDS.forEach(f => d[f] = $(f).value);
+  d.mode = radio('mode'); d.music = radio('music'); d.plat = radio('plat'); d.dev = radio('dev'); d.vstyle = radio('vstyle');
+  store.set('pb-data', JSON.stringify(d));
+}
+function load(d){
+  FIELDS.forEach(f => { if (d[f] != null) $(f).value = d[f]; });
+  if (d.mode) document.querySelector(`input[name=mode][value=${d.mode}]`).checked = true;
+  if (d.music) document.querySelector(`input[name=music][value=${d.music}]`).checked = true;
+  if (d.plat) document.querySelector(`input[name=plat][value=${d.plat}]`).checked = true;
+  if (d.dev) document.querySelector(`input[name=dev][value=${d.dev}]`).checked = true;
+  if (d.vstyle) document.querySelector(`input[name=vstyle][value=${d.vstyle}]`).checked = true;
+  if (d.steps || d.tools || d.benefits || d.level || d.chars) $('opt').open = true;
+  syncUI();
+}
+
+function bullets(arr){ return arr.map(s => '- ' + s).join('\n'); }
+function numbered(arr){ return arr.map((s,i) => `${i+1}. ${s}`).join('\n'); }
+
+function buildVoiceScriptPrompt(d){
+  const lvl = d.level ? ` – Level: ${d.level}` : '';
+  const src = d.img ? 'take them from the attached image' : null;
+  let content;
+  if (d.steps.length || d.tools.length || d.benefits.length) {
+    content = 'Content must follow the activity card exactly:';
+    if (d.tools.length) content += `\n- Tools:\n${bullets(d.tools).replace(/^/gm,'  ')}`;
+    else content += src ? `\n- Tools: ${src}.` : '\n- Tools: suggest the simple tools needed, based on the title and description.';
+    if (d.steps.length) content += `\n- Steps (in this order):\n${numbered(d.steps).replace(/^/gm,'  ')}`;
+    else content += src ? `\n- Steps: ${src}, in the same order.` : '\n- Steps: propose 4–5 clear, safe steps based on the title and description.';
+    if (d.benefits.length) content += `\n- Benefits:\n${bullets(d.benefits).replace(/^/gm,'  ')}`;
+    else content += src ? `\n- Benefits: ${src}.` : '\n- Benefits: suggest 3–4 benefits that fit the activity.';
+  } else {
+    content = d.img ? 'Content must follow the attached image exactly: extract the tools, the steps (in the same order) and the benefits from it. Do not invent new steps.' : 'Based on the title and description, propose:\n- The simple tools needed.\n- 4–5 clear, safe steps in order.\n- 3–4 benefits of the activity.';
+  }
+  const imgLine = d.img ? 'I attached an image of the activity (card/reference). Read it carefully and use it as the main reference for the content.\n\n' : '';
+  return `${imgLine}Write a voiceover script in ${d.lang} for a ${d.duration} second ${KIND(d)} about the activity "${d.title}" (${d.desc})${lvl}.
+
+Audience: ${d.audience}. Tone: warm, playful, encouraging, clear.
+
+${content}
+- Include a short safety line (e.g. the teacher is always close by).
+
+I will paste the script into Google AI Studio (Gemini TTS). It has a "Style" box for describing the voice, and supports inline expression tags in angle brackets, like <excited>. So output:
+1. A "Style" description in English (gender, age, energy, pace, accent: ${d.lang}).
+2. The script as ONE copy-ready block:
+   - One short sentence per line, each starting with an English expression tag in angle brackets, e.g. <excited>, <cheerful>, <warm>, <calm>, <encouraging>, <friendly>.
+   - Do NOT put scene titles or headings inside this block (they would be read aloud).
+   - Use "..." for short pauses and a blank line between sections (intro, tools, each step, benefits, outro) for clear pauses.
+3. Write numbers as words, and add tashkeel (diacritics) to words that might be mispronounced.
+4. Keep sentences short for easy sync with animation.
+
+After the script, add a short scene list (scene → key visual) to help build the video later.`;
+}
+
+const PLAT = {
+  claude: { name: 'Claude', open: 'Create an artifact:', link: 'https://claude.ai/new', where: 'في تطبيق Claude أو claude.ai' },
+  gemini: { name: 'Gemini', open: 'Use Canvas.', link: 'https://gemini.google.com/app', where: 'في Gemini: اختر <strong>Canvas</strong> و' },
+  video:  { name: 'مولّد الفيديو', open: '', link: '', where: '' },
+  code:   { name: 'Claude Code', open: '', link: '', where: 'في Claude Code (تطبيق Claude على الكمبيوتر، تبويب Code):' },
+  any:    { name: 'الأداة', open: 'Create ONE self-contained HTML file and show it as a live preview if you can (otherwise give me the full code so I can save it as .html and open it in a browser).', link: '', where: 'في أداة الذكاء الاصطناعي (ChatGPT: فعّل Canvas واضغط Preview)' },
+};
+const OSL = {
+  ar: 'On-screen text in Arabic, RTL layout. Load the Cairo Google Font so Arabic renders correctly.',
+  en: 'On-screen text in English, LTR layout.',
+  both: 'On-screen titles in Arabic (RTL, Cairo Google Font), each with a small English line under it.',
+  none: 'NO on-screen text at all — tell the story with visuals, icons and numbers only.',
+};
+function sceneListCine(d){
+  const src = d.img ? 'from the attached image' : 'based on the title and description';
+  const out = ['Opening shot: wide establishing shot of a bright, warm school gym; the camera slowly dollies in as the child runs in, smiling, and waves.' + (d.osl === 'none' ? '' : ' The activity title fades in elegantly, then fades out.')];
+  out.push(d.tools.length ? `Tools: a slow tracking close-up glides over the tools — ${d.tools.join('، ')}; the child looks at them with curiosity.` : `Tools: a slow tracking close-up over the tools needed (take them ${src}); the child looks at them with curiosity.`);
+  if (d.steps.length) d.steps.forEach((st, i) => out.push(`Shot ${i + 3}: ${st} — film the child doing it clearly and safely, the teacher close by; mix a wide shot with a close-up on the hands or feet.`));
+  else out.push(d.img ? 'Action shots: one shot per step, exactly as shown in the attached image, in the same order — mix wide shots and close-ups. Do not invent new steps.' : 'Action shots: 4–5 clear, safe steps based on the title and description, one shot per step, mixing wide shots and close-ups.');
+  out.push('Key moment: the most important action in slow motion, then the child succeeds — a close-up of a proud smile while the teacher claps.');
+  out.push(d.benefits.length ? `Montage: three or four short shots of the child, each subtly showing a benefit — ${d.benefits.join('، ')}.` : `Montage: three or four short shots showing the benefits (take them ${src}).`);
+  out.push('Final shot: the teacher and the child high-five in warm golden light; the camera slowly pulls back to a wide shot' + (d.osl === 'none' ? ', fade to black.' : ', the title fades in, fade to black.'));
+  return out.map((x, i) => `${i + 1}. ${x}`).join('\n');
+}
+
+function isArabic(d){ return /Arabic|السعودية|الخليجية|الفصحى|المصرية/.test(d.lang) || /[؀-ۿ]/.test(d.title); }
+
+const KIND = d => d.vstyle === 'cine' ? 'cinematic cartoon short film (animated-movie look — NOT motion graphics, NOT an infographic)' : 'motion graphics explainer';
+
+// what the video must show, scene by scene
+function sceneList(d){
+  if (d.vstyle === 'cine') return sceneListCine(d);
+  const src = d.img ? 'from the attached image' : 'based on the title and description';
+  const out = [d.osl === 'none' ? 'Intro: a happy child character jumps in, waves and cheers.' : 'Intro: the activity title appears with a playful animation; a happy child character waves and cheers.'];
+  out.push(d.tools.length ? `Tools: the tools pop in one by one — ${d.tools.join('، ')}.` : `Tools: show the tools needed (take them ${src}), popping in one by one.`);
+  if (d.steps.length) d.steps.forEach((s, i) => out.push(`Step ${i + 1}: ${s} — show the child doing it clearly and safely, with the teacher close by.`));
+  else out.push(d.img ? 'Steps: one scene per step, exactly as shown in the attached image, in the same order. Do not invent new steps.' : 'Steps: 4–5 clear, safe steps based on the title and description, one scene per step.');
+  out.push('Success moment: the child succeeds; stars and confetti burst while the teacher cheers.');
+  out.push(d.benefits.length ? `Benefits: animated icon cards appear one by one — ${d.benefits.join('، ')}.` : `Benefits: 3–4 animated icon cards (take them ${src}).`);
+  out.push('Outro: the teacher and the child together, a big heart pops between them' + (d.osl === 'none' ? ', confetti rains down.' : ', the title returns with confetti.'));
+  return out.map((s, i) => `${i + 1}. ${s}`).join('\n');
+}
+
+function designSpec(d){
+  const lines = [
+    `- ${OSL[d.osl]}`,
+    d.vstyle === 'cine'
+      ? '- Style: CINEMATIC CARTOON — like a scene from an animated film, not an infographic. Layered backgrounds with parallax depth, soft warm lighting and shadows, gentle depth-of-field blur on far layers, expressive characters with smooth body animation. Draw everything yourself with SVG/CSS (no external images).'
+      : `- Style: ${d.audience.startsWith('young') ? 'bright, playful, kid-friendly' : 'clean, friendly'} flat 2D motion graphics; colors: blue, orange, yellow, red, green, navy. Draw characters, tools and icons yourself with SVG/CSS (no external images).`,
+    `- Canvas size: ${d.ratio}, scaled to fit the screen.`,
+    d.vstyle === 'cine'
+      ? '- Camera language: wide establishing shots, close-ups on hands and faces, slow dolly-in and pan moves, a slow-motion moment at the key action. Film-like transitions (fade to black, match cuts), a subtle letterbox and film vignette. Keep icons and infographic elements to a minimum.'
+      : '- Lively, bouncy motion: pop-ins, wipes between scenes, a big animated step number at the start of each step, confetti on success.',
+    d.osl === 'none' ? '- No titles, labels or captions anywhere.' : '- Short on-screen titles are allowed (activity title, step names), but NO captions or subtitles.',
+  ];
+  if (d.chars) lines.push(`- Characters (keep identical in every scene):\n${d.chars.split('\n').map(s => '  ' + s.trim()).join('\n')}`);
+  if (d.level && d.osl !== 'none') lines.push(`- Show a small badge with the level: ${d.level}.`);
+  if (d.img) lines.push('- Use the attached image as the main visual reference for characters, tools, colors and layout.');
+  return lines.join('\n');
+}
+
+function buildVideoPrompt(d){
+  const music = d.music === 'on'
+    ? '- Background music: generate a soft, cheerful looping tune with the Web Audio API (no external files), at low volume under the voice, with a mute button. Add subtle sound effects (pop, whoosh, cheer).'
+    : '- No background music: voiceover only, with subtle Web Audio sound effects (pop, whoosh, cheer).';
+  return `${PLAT[d.plat].open} Build a ${KIND(d)} as ONE self-contained HTML file for the activity "${d.title}" — ${d.desc}.
+
+I attached: ${d.plat === 'gemini' ? 'the voiceover audio file + ' : ''}the exact script I used${d.img ? ' + an image of the activity' : ''}.
+
+TIMING (most important):
+${d.plat === 'gemini' ? '- Listen to the attached voiceover and write down the start time of every line (in seconds).' : '- Estimate the start time of every line from the script (natural speaking pace, with the pauses marked by "..." and blank lines).'} Put these timestamps at the top of the code as an editable TIMELINE array, so I can fine-tune them.
+- Add a "Load voiceover" button so I can load the same audio file. Drive every animation from audio.currentTime, so each scene and line appears exactly when it is spoken.
+- Add Play / Pause and Replay buttons, and a fullscreen button.
+
+SCENES:
+${sceneList(d)}
+
+DESIGN:
+${designSpec(d)}
+${music}
+
+Go all out and impress me.`;
+}
+
+function buildCodePrompt(d, voice){
+  const music = voice
+    ? (d.music === 'on' ? '- Add soft, cheerful background music under the voice (generate it by code, royalty-free, low volume — the voice must stay clear).' : '- No background music: voiceover only, plus subtle sound effects.')
+    : (d.music === 'on' ? '- Music only (no voice): compose a cheerful, upbeat kids\' background track by code (royalty-free) and merge it, plus subtle sound effects synced to the animation.' : '- Completely silent video: no voice and no music.');
+  const att = voice ? `I attached the voiceover audio file + the exact script I used${d.img ? ' + an image of the activity card' : ''}.` : (d.img ? 'I attached an image of the activity card. Read it carefully and follow it exactly. Do not invent new steps.' : '');
+  return `${att}
+Generate a ${voice ? '' : 'wordless '}${KIND(d)} video for "${d.title}" — ${d.desc}.
+${voice ? '- Analyze the audio, find the exact start time of every line, and match each scene and line to the voiceover timing perfectly.' : '- NO narration, NO voice. Total length about ' + d.duration + ' seconds.'}
+- Review sample frames and fix any visual problems before the final render.
+- Final output: MP4 (${d.ratio}, 30fps)${voice || d.music === 'on' ? ' with the audio merged' : ''}.
+
+SCENES:
+${sceneList(d)}
+
+DESIGN:
+${designSpec(d).replace(/Draw characters, tools and icons yourself with SVG\/CSS \(no external images\)\./, 'Draw characters, tools and icons yourself.').replace(/, scaled to fit the screen/, '')}
+${music}
+
+Go all out and impress me.`.trim();
+}
+
+const CAMS = ['slow dolly-in', 'smooth tracking shot', 'gentle low-angle push-in', 'over-the-shoulder shot', 'slow orbit around the child', 'close-up, then slowly pull back'];
+function buildShots(d){
+  const style = d.vstyle === 'cine'
+    ? 'Cinematic 3D animated cartoon (Pixar-like), soft warm lighting, shallow depth of field, rich colors, smooth camera movement'
+    : 'Bright 2D flat cartoon animation, clean shapes, playful bouncy motion, colors: blue, orange, yellow, red, green, navy';
+  const chars = d.chars ? d.chars.replace(/\n+/g, ' ').replace(/[.\s]+$/, '') : 'A cheerful child about 6 years old in a maroon polo shirt, blue jeans and white sneakers; a kind young female teacher with a dark ponytail in a black long-sleeve outfit';
+  const setting = 'A bright, cheerful school gym with a wooden floor and a large blue mat' + (d.tools.length ? `; the tools are there: ${d.tools.join('، ')}` : '');
+  const audio = d.mode === 'voice' ? 'Audio: no speech, no music (a voiceover will be added later)'
+    : d.music === 'on' ? 'Audio: light, cheerful background music only — no speech, no dialogue' : 'Audio: soft ambient sound only — no speech, no music';
+  const tail = `${audio}. No on-screen text, no subtitles. About 8 seconds, aspect ratio ${d.ratio.split(',')[0]}.`;
+  const head = `${style}. Characters (keep identical in every shot): ${chars}. Setting: ${setting}.`;
+  const shots = [['المقدمة', 'The child runs in happily, waves at the camera and smiles while the teacher watches warmly.', 'wide shot, slow dolly-in']];
+  if (d.tools.length) shots.push(['الأدوات', `The camera glides over the tools laid out on the mat: ${d.tools.join('، ')}. The child looks at them with curiosity.`, 'smooth tracking close-up']);
+  if (d.steps.length) d.steps.forEach((st, i) => shots.push([`الخطوة ${i + 1}`, `The child performs this step clearly and safely, with the teacher close by to help: ${st}`, CAMS[i % CAMS.length]]));
+  else shots.push(['النشاط', `The child, guided by the teacher, performs the activity "${d.title}" (${d.desc}) clearly and safely.`, 'smooth tracking shot']);
+  shots.push(['لحظة النجاح', 'The child succeeds and celebrates with arms up; colorful confetti falls in slow motion while the teacher claps.', 'low-angle shot, slow motion, camera cranes up']);
+  shots.push(['الخاتمة', 'The teacher and the child give each other a high five and smile at the camera in warm golden light.', 'medium shot, slowly pulling back to a wide shot']);
+  return shots.map(([t, action, cam]) => ({ t, text: `${head}\nShot: ${action}\nCamera: ${cam}.\n${tail}` }));
+}
+
+function buildSilentPrompt(d){
+  const dur = d.duration.split('–')[0];
+  const music = d.music === 'on'
+    ? '- Music only (no voice): generate a cheerful, upbeat looping kids\' tune with the Web Audio API (no external files), with a mute button. Add subtle sound effects (pop, whoosh, cheer) synced to the animation.'
+    : '- Completely silent: no voice and no music.';
+  return `${PLAT[d.plat].open} Build a wordless ${KIND(d)} as ONE self-contained HTML file for the activity "${d.title}" — ${d.desc}.
+${d.img ? '\nI attached an image of the activity. Read it carefully and follow it exactly (steps, tools, benefits and look).\n' : ''}
+- NO narration, NO voice. The story must be clear from the visuals alone.
+- Total length about ${dur}–${d.duration.split('–')[1]} seconds. Put the scene timings at the top of the code as an editable TIMELINE array.
+- Start with a big "▶ تشغيل" button (needed so music can play on phones), then play automatically to the end, with a small Replay button at the end. Hide all controls during playback so I can screen-record cleanly.
+
+SCENES:
+${sceneList(d)}
+
+DESIGN:
+${designSpec(d)}
+${music}
+
+Go all out and impress me.`;
+}
+
+function outBlock(n, title, where, text, color){
+  const id = 'o' + n + Math.random().toString(36).slice(2,6);
+  return `<div class="out">
+    <div class="outHead"><h3><span class="badge" style="background:${color}">${n}</span>${title}</h3>
+    <button class="copy" type="button" data-target="${id}">📋 نسخ</button></div>
+    <p class="where">${where}</p>
+    <pre id="${id}"></pre></div>`;
+}
+
+function generate(){
+  const d = {
+    mode: radio('mode'), music: radio('music'), dev: radio('dev'), vstyle: radio('vstyle'), plat: radio('dev') === 'code' ? 'code' : radio('plat'), osl: $('osl').value,
+    lang: $('lang').value === 'other' ? (val('langOther') || 'Arabic') : $('lang').value,
+    title: val('title'), desc: val('desc'),
+    steps: lines($('steps').value), tools: lines($('tools').value), benefits: lines($('benefits').value),
+    img: !!IMG, audience: $('audience').value, duration: $('duration').value, level: val('level'), ratio: $('ratio').value === 'auto' ? (radio('dev') === 'mobile' ? '9:16, 1080×1920' : '16:9, 1920×1080') : $('ratio').value, chars: val('chars')
+  };
+  const note = $('formNote');
+  if (!d.title || !d.desc) {
+    note.innerHTML = '<div class="note warn">⚠️ اكتب العنوان والوصف على الأقل.</div>';
+    (!d.title ? $('title') : $('desc')).focus();
+    return;
+  }
+  note.innerHTML = '';
+  save();
+  const out = $('outputs');
+  const texts = [];
+  const imgStep = !d.img ? '' : d.dev === 'mobile' ? ' ارفق الصورة من زر الإرفاق 📎 في التطبيق.' : d.dev === 'code' ? ' اسحب الصورة إلى المحادثة.' : ' اضغط «📋 نسخ الصورة» ثم الصقها بـ Ctrl+V.';
+  const P = PLAT[d.plat];
+  const gem = P.link ? `<a class="gem" href="${P.link}" target="_blank" rel="noopener">✦ افتح ${P.name}</a>` : '';
+  if (d.plat === 'video') {
+    const shots = buildShots(d);
+    let html = d.mode === 'voice' ? outBlock(1, 'برومت كتابة نص الصوت', 'في أي ذكاء اصطناعي: الصق البرومت' + (d.img ? ' وارفق الصورة' : '') + '، فيكتب لك وصف Style والنص. انسخهما إلى AI Studio وولّد الصوت.' + imgStep, '', 'var(--orange)') : '';
+    if (d.mode === 'voice') texts.push(buildVoiceScriptPrompt(d));
+    html += '<div class="note info">🎥 مولّدات الفيديو تصنع لقطة قصيرة في كل مرة (حوالي ٨ ثوانٍ). انسخ كل لقطة لوحدها وولّدها' + (d.img ? '، وارفق الصورة كمرجع إذا كانت الأداة تسمح' : '') + '. ثم اجمع اللقطات بالترتيب في CapCut' + (d.mode === 'voice' ? ' وضع الصوت فوقها.' : '.') + '</div>';
+    if (/[\u0600-\u06FF]/.test(shots.map(x => x.text).join(''))) html += '<div class="note warn">⚠️ بعض اللقطات فيها نص عربي. مولّدات الفيديو تفهم الإنجليزية أفضل' + (provider(apiKey()) ? ': اضغط «⚡ ترجم اللقطات للإنجليزية».' : '، فاكتب الخطوات والأدوات بالإنجليزية أو أضف مفتاح API للترجمة التلقائية.') + '</div>';
+    if (provider(apiKey())) html += '<div class="btns" style="margin:0 0 14px"><button type="button" class="primary" id="trShots">⚡ ترجم اللقطات للإنجليزية</button></div>';
+    shots.forEach((sh, i) => { html += outBlock(i + 1, 'لقطة: ' + sh.t, '', '', d.vstyle === 'cine' ? 'var(--navy)' : 'var(--green)'); texts.push(sh.text); });
+    out.innerHTML = html;
+  } else if (d.mode === 'voice') {
+    out.innerHTML =
+      outBlock(1, 'برومت كتابة نص الصوت', 'في أي ذكاء اصطناعي: الصق البرومت' + (d.img ? ' وارفق الصورة' : '') + '، فيكتب لك وصف Style والنص. انسخهما إلى AI Studio وولّد الصوت.' + imgStep, '', 'var(--orange)') +
+      outBlock(2, d.vstyle === 'cine' ? 'برومت المشهد السينمائي' : 'برومت الموشن جرافيك', P.where + ' الصق البرومت وارفق ' + (d.plat === 'gemini' || d.plat === 'code' ? 'ملف الصوت + ' : '') + 'النص' + (d.img ? ' + الصورة' : '') + (d.plat === 'code' ? '.' : '. بعدها اضغط «Load voiceover» داخل النتيجة واختر ملف الصوت.'), '', 'var(--blue)') +
+      (d.plat !== 'gemini' && d.plat !== 'code' ? '<div class="note warn">⚠️ هذه الأداة لا تسمع ملف الصوت، فالتوقيت تقديري من النص. عدّل الأوقات من قائمة TIMELINE في أعلى الكود. للتوقيت الدقيق وملف MP4 جاهز، استخدم Claude Code على الكمبيوتر.</div>' : '');
+    texts.push(buildVoiceScriptPrompt(d), d.plat === 'code' ? buildCodePrompt(d, true) : buildVideoPrompt(d));
+  } else {
+    const warn = !d.steps.length && !d.img ? '<div class="note warn">⚠️ لا توجد خطوات ولا صورة، فستقترح الأداة الخطوات بنفسها. للدقة: ارفع صورة البطاقة أو اكتب الخطوات.</div>' : '';
+    out.innerHTML = outBlock(1, (d.vstyle === 'cine' ? 'برومت المشهد السينمائي' : 'برومت الموشن جرافيك') + ' (بدون كلام)', P.where + ' الصق البرومت' + (d.img ? ' وارفق الصورة' : '') + '.' + imgStep, '', 'var(--green)') + warn;
+    texts.push(d.plat === 'code' ? buildCodePrompt(d, false) : buildSilentPrompt(d));
+  }
+  out.insertAdjacentHTML('afterbegin', `<div class="note info" style="margin:0 0 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap"><span>${d.img ? `📎 الصورة <strong>${IMG.name.replace(/[<>&]/g,'')}</strong> لا تُرسل تلقائيًا. ارفقها بنفسك.` : '💡 ارفع صورة البطاقة ليكون النشاط أوضح للأداة.'}</span>${gem}</div>`);
+  const rec = d.plat === 'video' ? '🎬 كل لقطة تُنزَّل كملف فيديو من الأداة نفسها، فلا تحتاج تسجيل شاشة.'
+    : d.dev === 'code' ? '🎬 Claude Code يسلّمك ملف MP4 جاهز، فلا تحتاج تسجيل شاشة.'
+    : d.dev === 'mobile' ? '🎬 النتيجة صفحة متحركة. لتحويلها إلى فيديو: اضغط تشغيل وسجّل الشاشة من جوالك. في آيفون يُسجَّل صوت التطبيق تلقائيًا، وفي أندرويد اختر <strong>صوت الجهاز / Media</strong>. اقلب الجوال إذا كان المقاس أفقيًا.'
+    : '🎬 النتيجة صفحة متحركة. لتحويلها إلى فيديو: شغّلها بملء الشاشة (F11) وسجّل الشاشة بـ Win+Alt+R في ويندوز، أو ببرنامج OBS.';
+  out.insertAdjacentHTML('beforeend', `<div class="note info">${rec}</div>`);
+  out.querySelectorAll('pre').forEach((p,i) => p.textContent = texts[i]);
+  if ($('trShots')) $('trShots').onclick = e => busy(e.currentTarget, 'جاري الترجمة…', async () => {
+    const pres = [...out.querySelectorAll('pre')].slice(d.mode === 'voice' ? 1 : 0);
+    try {
+      const txt = await callAI('Translate every Arabic word in these video-generation prompts into natural English. Keep everything else exactly the same, including line breaks. Keep the separator lines "=====" exactly as they are. Return ONLY the prompts.\n\n' + pres.map(p => p.textContent).join('\n=====\n'), false);
+      const parts = txt.split(/\n?=====\n?/).map(x => x.trim());
+      if (parts.length !== pres.length) throw new Error('عدد اللقطات في الرد غير مطابق، حاول مرة ثانية.');
+      pres.forEach((p, i) => p.textContent = parts[i]);
+      out.querySelectorAll('.note.warn').forEach(n => n.remove());
+    } catch (err) { $('trShots').insertAdjacentHTML('afterend', `<div class="note warn">⚠️ فشلت الترجمة: ${String(err.message).replace(/[<>&]/g, '')}</div>`); }
+  });
+  if (d.mode === 'voice' && provider(apiKey())) {
+    const first = out.querySelector('.out');
+    first.insertAdjacentHTML('beforeend', '<div class="btns" style="margin-top:10px"><button type="button" class="primary" id="writeNow">⚡ اكتب نص الصوت الآن</button></div><div id="writeOut"></div>');
+    $('writeNow').onclick = e => busy(e.currentTarget, 'جاري الكتابة…', async () => {
+      try {
+        const txt = await callAI(texts[0], true);
+        $('writeOut').innerHTML = outBlock('✓', 'نص الصوت الجاهز', 'انسخ وصف Style إلى خانة Style في AI Studio، والنص إلى المربع الرئيسي.', '', 'var(--green)');
+        const pre = $('writeOut').querySelector('pre'); pre.textContent = txt; pre.style.direction = 'rtl'; pre.style.textAlign = 'right';
+        const b = $('writeOut').querySelector('.copy'); b.onclick = () => copyText(pre.textContent, b);
+      } catch (err) { $('writeOut').innerHTML = `<div class="note warn">⚠️ فشلت الكتابة: ${String(err.message).replace(/[<>&]/g, '')}</div>`; }
+    });
+  }
+  out.querySelectorAll('.copy').forEach(b => b.onclick = () => copyText($(b.dataset.target).textContent, b));
+  if (matchMedia('(max-width:900px)').matches) out.scrollIntoView({behavior:'smooth'});
+}
+
+async function copyImage(btn){
+  let ok = false;
+  try {
+    const img = $('imgPrev'), c = document.createElement('canvas');
+    c.width = img.naturalWidth; c.height = img.naturalHeight; c.getContext('2d').drawImage(img, 0, 0);
+    const blob = await new Promise(r => c.toBlob(r, 'image/png'));
+    await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]); ok = true;
+  } catch(e) {}
+  btn.textContent = ok ? '✓ تم نسخ الصورة' : 'تعذّر النسخ — ارفقها يدويًا';
+  setTimeout(() => btn.textContent = '📋 نسخ الصورة', 2000);
+}
+
+async function copyText(t, btn){
+  let ok = false;
+  try { await navigator.clipboard.writeText(t); ok = true; } catch(e) {
+    const ta = document.createElement('textarea'); ta.value = t; document.body.appendChild(ta); ta.select();
+    try { ok = document.execCommand('copy'); } catch(e2) {} ta.remove();
+  }
+  const label = btn.dataset.label || (btn.dataset.label = btn.textContent);
+  btn.textContent = ok ? '✓ تم النسخ' : 'انسخ يدويًا'; btn.classList.toggle('done', ok);
+  setTimeout(() => { btn.textContent = label; btn.classList.remove('done'); }, 1800);
+}
+
+const EXAMPLE = {
+  title: 'توازن وارمِ', desc: 'تدريب على التوازن أثناء الوقوف والتحكم بالرمي', level: 'المستوى العالي',
+  steps: 'جهّز الأدوات: ضع أكياس الحبوب على الطاولة والحلقات أمام لوح التوازن\nقف بثبات: قف على لوح التوازن بمساعدة المعلمة وباعد بين قدميك\nخذ كيسًا: خذ كيس حبوب من الطاولة مع المحافظة على توازنك\nصوّب وارمِ: انظر إلى الحلقة وارمِ كيس الحبوب برفق داخلها\nكرّر: استعد توازنك ثم خذ كيسًا آخر وكرّر الرمي',
+  tools: 'طاولة وبساط\nحلقات أرضية\nأكياس حبوب\nلوح توازن',
+  benefits: 'تنمية التوازن أثناء الوقوف\nتحسين نقل الوزن والتحكم بالجسم\nتنمية التآزر بين العين واليد\nتعزيز التركيز وتبادل الأدوار',
+  chars: 'Boy: about 5 years old, short dark-brown hair, maroon polo shirt with yellow collar trim, blue jeans, white sneakers.\nTeacher: young woman, long dark-brown hair in a ponytail, all-black long-sleeve outfit, light-grey sneakers.'
+};
+
+// reference image
+function setImg(file){
+  if (!file || !file.type.startsWith('image/')) return;
+  if (IMG) URL.revokeObjectURL(IMG.url);
+  IMG = { name: file.name, url: URL.createObjectURL(file), file };
+  $('imgPrev').src = IMG.url; $('imgName').textContent = file.name;
+  $('dropEmpty').classList.add('hidden'); $('dropFull').classList.remove('hidden');
+  if (typeof keyUI === 'function') keyUI();
+}
+function clearImg(){
+  if (IMG) URL.revokeObjectURL(IMG.url); IMG = null; $('img').value = '';
+  $('dropEmpty').classList.remove('hidden'); $('dropFull').classList.add('hidden');
+  if (typeof keyUI === 'function') keyUI();
+}
+const drop = $('drop');
+drop.addEventListener('click', e => { if (!['imgDel','imgCopy'].includes(e.target.id)) $('img').click(); });
+$('imgCopy').onclick = e => { e.stopPropagation(); copyImage(e.target); };
+drop.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); $('img').click(); } });
+$('img').addEventListener('change', e => setImg(e.target.files[0]));
+['dragenter','dragover'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('over'); }));
+['dragleave','drop'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('over'); }));
+drop.addEventListener('drop', e => setImg(e.dataTransfer.files[0]));
+document.addEventListener('paste', e => { const f = [...((e.clipboardData && e.clipboardData.files) || [])].find(f => f.type.startsWith('image/')); if (f) setImg(f); });
+$('imgDel').onclick = e => { e.stopPropagation(); clearImg(); };
+
+// ── optional API key ──
+const DEFAULT_MODEL = { anthropic: 'claude-sonnet-5-5', gemini: 'gemini-2.5-flash' };
+const provider = k => k.startsWith('sk-ant-') ? 'anthropic' : k.startsWith('AIza') ? 'gemini' : null;
+const apiKey = () => $('apiKey').value.trim();
+function keyUI(){
+  const p = provider(apiKey());
+  $('keyBadge').textContent = p ? (p === 'gemini' ? 'Gemini ✓' : 'Claude ✓') : '';
+  $('apiModel').placeholder = p ? DEFAULT_MODEL[p] : 'يتحدد حسب المفتاح';
+  $('autoBox').classList.toggle('hidden', !p);
+  $('manualHint').classList.toggle('hidden', !!p);
+  $('autoHint').textContent = IMG ? '' : 'ارفع الصورة أولًا';
+  if ($('keyRemember').checked) store.set('pb-key', apiKey()); else store.set('pb-key', '');
+  store.set('pb-model', $('apiModel').value.trim());
+}
+const fileB64 = f => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result).split(',')[1]); r.onerror = rej; r.readAsDataURL(f); });
+async function callAI(text, withImage){
+  const key = apiKey(), p = provider(key);
+  if (!p) throw new Error('المفتاح غير صحيح. يجب أن يبدأ بـ AIza (Gemini) أو sk-ant- (Claude).');
+  const model = $('apiModel').value.trim() || DEFAULT_MODEL[p];
+  let img = null;
+  if (withImage && IMG) img = { mime: IMG.file.type || 'image/png', data: await fileB64(IMG.file) };
+  let res, j;
+  if (p === 'gemini') {
+    const parts = []; if (img) parts.push({ inline_data: { mime_type: img.mime, data: img.data } }); parts.push({ text });
+    res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
+      method: 'POST', headers: { 'content-type': 'application/json', 'x-goog-api-key': key }, body: JSON.stringify({ contents: [{ parts }] }) });
+    j = await res.json();
+    if (!res.ok) throw new Error((j.error && j.error.message) || res.status);
+    return (j.candidates?.[0]?.content?.parts || []).map(x => x.text || '').join('');
+  } else {
+    const content = []; if (img) content.push({ type: 'image', source: { type: 'base64', media_type: img.mime, data: img.data } }); content.push({ type: 'text', text });
+    res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST', headers: { 'content-type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+      body: JSON.stringify({ model, max_tokens: 4000, messages: [{ role: 'user', content }] }) });
+    j = await res.json();
+    if (!res.ok) throw new Error((j.error && j.error.message) || res.status);
+    return (j.content || []).filter(x => x.type === 'text').map(x => x.text).join('');
+  }
+}
+async function busy(btn, label, fn){
+  const old = btn.innerHTML; btn.disabled = true; btn.innerHTML = `<span class="spin">⏳</span> ${label}`;
+  try { return await fn(); } finally { btn.disabled = false; btn.innerHTML = old; }
+}
+$('anaAuto').onclick = e => {
+  if (!IMG) { $('anaMsg').innerHTML = '<div class="note warn">⚠️ ارفع صورة البطاقة أولًا.</div>'; return; }
+  busy(e.currentTarget, 'جاري التحليل…', async () => {
+    try { $('anaIn').value = await callAI(ANALYZE_PROMPT, true); $('anaFill').click(); }
+    catch (err) { $('anaMsg').innerHTML = `<div class="note warn">⚠️ فشل التحليل: ${String(err.message).replace(/[<>&]/g, '')}</div>`; }
+  });
+};
+['input','change'].forEach(ev => { $('apiKey').addEventListener(ev, keyUI); $('apiModel').addEventListener(ev, keyUI); $('keyRemember').addEventListener(ev, keyUI); });
+$('keyShow').onclick = () => { $('apiKey').type = $('apiKey').type === 'password' ? 'text' : 'password'; };
+$('keyDel').onclick = () => { $('apiKey').value = ''; keyUI(); };
+$('apiKey').value = store.get('pb-key') || ''; $('apiModel').value = store.get('pb-model') || '';
+
+const ANALYZE_PROMPT = `Read the attached activity card image carefully and extract its content.
+Reply with ONLY a JSON object (no extra text, no code fences) in exactly this shape, keeping the original wording and language of the card:
+{"title": "", "description": "", "level": "", "tools": [], "steps": [], "benefits": [], "characters": ""}
+- steps: one item per step, in order, formatted "step title: step text".
+- characters: a short English description of the people shown (age, hair, clothes), or "" if none.
+- Use "" or [] for anything that is not on the card.`;
+$('anaCopy').onclick = e => copyText(ANALYZE_PROMPT, e.target);
+$('anaFill').onclick = () => {
+  const raw = $('anaIn').value, a = raw.indexOf('{'), b = raw.lastIndexOf('}'), msg = $('anaMsg');
+  try {
+    const j = JSON.parse(raw.slice(a, b + 1));
+    const arr = v => Array.isArray(v) ? v.join('\n') : (v || '');
+    if (j.title) $('title').value = j.title;
+    if (j.description) $('desc').value = j.description;
+    $('level').value = j.level || $('level').value;
+    $('steps').value = arr(j.steps); $('tools').value = arr(j.tools); $('benefits').value = arr(j.benefits);
+    if (j.characters) $('chars').value = j.characters;
+    $('opt').open = true; save();
+    msg.innerHTML = '<div class="note info">✓ تمت تعبئة الحقول. راجعها ثم اضغط «أنشئ البرومت».</div>';
+  } catch (e) {
+    msg.innerHTML = '<div class="note warn">⚠️ ما قدرت أقرأ الرد. تأكد أنك نسخت الرد كاملًا من { إلى }.</div>';
+  }
+};
+
+document.querySelectorAll('input[name=mode], input[name=dev], #lang').forEach(e => e.addEventListener('change', syncUI));
+$('genBtn').onclick = generate;
+$('exBtn').onclick = () => { load(EXAMPLE); $('opt').open = true; generate(); };
+$('clrBtn').onclick = () => {
+  FIELDS.forEach(f => { if ($(f).tagName !== 'SELECT') $(f).value = ''; });
+  $('outputs').innerHTML = '<div class="empty">املأ البيانات ثم اضغط «أنشئ البرومت».</div>';
+  $('formNote').innerHTML = ''; save();
+};
+try { const s = store.get('pb-data'); if (s) load(JSON.parse(s)); } catch(e) {}
+keyUI();
+syncUI();
+</script>
+</body>
+</html>
