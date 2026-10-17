@@ -310,9 +310,9 @@
 
       <details id="keyBox" class="keyBox">
         <summary>🔑 مفتاح API <small>(اختياري — للتحليل وكتابة النص تلقائيًا)</small> <span id="keyBadge" class="kbadge"></span></summary>
-        <label for="apiKey">المفتاح <small>(Gemini يبدأ بـ AIza، Claude يبدأ بـ sk-ant-)</small></label>
+        <label for="apiKey">المفتاح <small>(Gemini يبدأ بـ AIza أو AQ.، Claude يبدأ بـ sk-ant-)</small></label>
         <div style="display:flex;gap:8px">
-          <input type="password" id="apiKey" autocomplete="off" spellcheck="false" style="direction:ltr" placeholder="AIza… أو sk-ant-…">
+          <input type="password" id="apiKey" autocomplete="off" spellcheck="false" style="direction:ltr" placeholder="AIza… أو AQ.… أو sk-ant-…">
           <button type="button" class="ghost small" id="keyShow">👁️</button>
         </div>
         <label for="apiModel">الموديل <small>(اتركه فاضيًا للافتراضي)</small></label>
@@ -339,8 +339,8 @@
         <div id="vDropEmpty">🖼️ اسحب صورة البطاقة هنا أو <u>اضغط للاختيار</u></div>
         <div id="vDropFull" class="hidden"><img id="vImgPrev" alt="صورة البطاقة" style="max-width:100%;max-height:220px;border-radius:12px;display:block;margin:0 auto 10px"><div class="imgMeta"><span id="vImgName"></span><button type="button" class="ghost small" id="vImgDel">إزالة</button></div></div>
       </div>
-      <label for="vKey">مفتاح Gemini <small>(يبدأ بـ AIza — يُحفظ في متصفحك فقط)</small></label>
-      <div style="display:flex;gap:8px"><input type="password" id="vKey" autocomplete="off" spellcheck="false" style="direction:ltr" placeholder="AIza…"><button type="button" class="ghost small" id="vKeyShow">👁️</button></div>
+      <label for="vKey">مفتاح Gemini <small>(يبدأ بـ AIza أو AQ. — يُحفظ في متصفحك فقط)</small></label>
+      <div style="display:flex;gap:8px"><input type="password" id="vKey" autocomplete="off" spellcheck="false" style="direction:ltr" placeholder="AIza… أو AQ.…"><button type="button" class="ghost small" id="vKeyShow">👁️</button></div>
       <div class="btns"><button type="button" class="primary" id="vRead">⚡ اقرأ البطاقة</button><button type="button" class="ghost" id="vExample">مثال: توازن والتقط ورتّب</button></div>
       <div id="vMsg"></div>
       <details class="ana">
@@ -750,7 +750,7 @@ $('imgDel').onclick = e => { e.stopPropagation(); clearImg(); };
 
 // ── optional API key ──
 const DEFAULT_MODEL = { anthropic: 'claude-sonnet-5-5', gemini: 'gemini-2.5-flash' };
-const provider = k => k.startsWith('sk-ant-') ? 'anthropic' : k.startsWith('AIza') ? 'gemini' : null;
+const provider = k => k.startsWith('sk-ant-') ? 'anthropic' : (k.startsWith('AIza') || k.startsWith('AQ.')) ? 'gemini' : null;
 const apiKey = () => $('apiKey').value.trim();
 function keyUI(){
   const p = provider(apiKey());
@@ -765,7 +765,7 @@ function keyUI(){
 const fileB64 = f => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result).split(',')[1]); r.onerror = rej; r.readAsDataURL(f); });
 async function callAI(text, withImage){
   const key = apiKey(), p = provider(key);
-  if (!p) throw new Error('المفتاح غير صحيح. يجب أن يبدأ بـ AIza (Gemini) أو sk-ant- (Claude).');
+  if (!p) throw new Error('المفتاح غير صحيح. يجب أن يبدأ بـ AIza أو AQ. (Gemini) أو sk-ant- (Claude).');
   const model = $('apiModel').value.trim() || DEFAULT_MODEL[p];
   let img = null;
   const imgFile = withImage instanceof Blob ? withImage : (withImage && IMG ? IMG.file : null);
@@ -941,7 +941,7 @@ Rules:
   }
   $('vRead').onclick = e => {
     if (!VIMG) return msg('vMsg', '⚠️ ارفع صورة البطاقة أولًا.', 'warn');
-    if (!provider(apiKey())) return msg('vMsg', '⚠️ اكتب مفتاح Gemini (يبدأ بـ AIza)، أو استخدم الطريقة اليدوية تحت.', 'warn');
+    if (!provider(apiKey())) return msg('vMsg', '⚠️ اكتب مفتاح Gemini (يبدأ بـ AIza أو AQ.)، أو استخدم الطريقة اليدوية تحت.', 'warn');
     busy(e.currentTarget, 'Gemini يقرأ البطاقة…', async () => {
       try { useJSON(await callAI(VIDEO_PROMPT, VIMG.file)); msg('vMsg', '✓ تمت القراءة. راجع النصوص تحت، وشوف المعاينة.'); }
       catch (err) { msg('vMsg', `⚠️ ما قدرت أقرأ البطاقة: ${esc(err.message)}. جرّب مرة ثانية.`, 'warn'); }
