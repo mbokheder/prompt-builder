@@ -749,7 +749,7 @@ document.addEventListener('paste', e => { const f = [...((e.clipboardData && e.c
 $('imgDel').onclick = e => { e.stopPropagation(); clearImg(); };
 
 // ── optional API key ──
-const DEFAULT_MODEL = { anthropic: 'claude-sonnet-5-5', gemini: 'gemini-2.5-flash' };
+const DEFAULT_MODEL = { anthropic: 'claude-sonnet-5-5', gemini: 'gemini-3.8-flash' };
 const provider = k => k.startsWith('sk-ant-') ? 'anthropic' : (k.startsWith('AIza') || k.startsWith('AQ.')) ? 'gemini' : null;
 const apiKey = () => $('apiKey').value.trim();
 function keyUI(){
@@ -762,6 +762,20 @@ function keyUI(){
   if ($('keyRemember').checked) store.set('pb-key', apiKey()); else store.set('pb-key', '');
   store.set('pb-model', $('apiModel').value.trim());
 }
+const isRetiredModel = e => e.status === 404 || /no longer available|not found|not supported|deprecated|retired/i.test(e.message || '');
+const flashScore = n => { const m = /^gemini-(\d+(?:\.\d+)?)-flash$/.exec(n); return m ? +m[1] : -1; };
+async function newestFlash(key, errMsg, failed){
+  // 1) the model Google suggests in the error, 2) the newest "gemini-X-flash" in the model list
+  const sug = [...String(errMsg).matchAll(/models\/(gemini-[\w.-]+)/g)].map(m => m[1]).filter(n => n !== failed && flashScore(n) > 0);
+  if (sug.length) return sug[0];
+  try {
+    const r = await fetch('https://generativelanguage.googleapis.com/v1beta/models?pageSize=200', { headers: { 'x-goog-api-key': key } });
+    const j = await r.json();
+    const names = (j.models || []).filter(m => (m.supportedGenerationMethods || []).includes('generateContent')).map(m => m.name.replace(/^models\//, ''));
+    const best = names.filter(n => n !== failed && flashScore(n) > 0).sort((a, b) => flashScore(b) - flashScore(a))[0];
+    return best || null;
+  } catch (e) { return null; }
+}
 const fileB64 = f => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result).split(',')[1]); r.onerror = rej; r.readAsDataURL(f); });
 async function callAI(text, withImage){
   const key = apiKey(), p = provider(key);
@@ -773,11 +787,23 @@ async function callAI(text, withImage){
   let res, j;
   if (p === 'gemini') {
     const parts = []; if (img) parts.push({ inline_data: { mime_type: img.mime, data: img.data } }); parts.push({ text });
-    res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
-      method: 'POST', headers: { 'content-type': 'application/json', 'x-goog-api-key': key }, body: JSON.stringify({ contents: [{ parts }] }) });
-    j = await res.json();
-    if (!res.ok) throw new Error((j.error && j.error.message) || res.status);
-    return (j.candidates?.[0]?.content?.parts || []).map(x => x.text || '').join('');
+    const ask = async m => {
+      const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(m)}:generateContent`, {
+        method: 'POST', headers: { 'content-type': 'application/json', 'x-goog-api-key': key }, body: JSON.stringify({ contents: [{ parts }] }) });
+      const jj = await r.json().catch(() => ({}));
+      if (!r.ok) { const e = new Error((jj.error && jj.error.message) || r.status); e.status = r.status; throw e; }
+      return (jj.candidates?.[0]?.content?.parts || []).map(x => x.text || '').join('');
+    };
+    const userModel = $('apiModel').value.trim();
+    const first = userModel || store.get('pb-model-auto') || DEFAULT_MODEL.gemini;
+    try { return await ask(first); }
+    catch (err) {
+      // Google retires models often: if this one is gone, find the newest available Flash model and retry once
+      if (userModel || !isRetiredModel(err)) throw err;
+      const next = await newestFlash(key, err.message, first);
+      if (!next) throw err;
+      const out = await ask(next); store.set('pb-model-auto', next); return out;
+    }
   } else {
     const content = []; if (img) content.push({ type: 'image', source: { type: 'base64', media_type: img.mime, data: img.data } }); content.push({ type: 'text', text });
     res = await fetch('https://api.anthropic.com/v1/messages', {
