@@ -1027,6 +1027,7 @@ Rules:
     const j = JSON.parse(raw.slice(a, b + 1));
     VS = VideoEngine.normalize(j); VS.setup = { surface: VS.surface, item: VS.item, target: VS.target, tongs: VS.tongs, helper: VS.helper };
     ['surface', 'item', 'target', 'tongs', 'helper'].forEach(k => delete VS[k]);
+    if (!VS.credit) VS.credit = store.get('pb-credit') || '';
     saveVS(); renderForm(); rebuild();
   }
   $('vRead').onclick = e => {
@@ -1053,7 +1054,7 @@ Rules:
     $('tabVideo').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
   $('vClear').onclick = () => { if (!VS && !VIMG) return clearAll(); if (confirm('تمسح النشاط الحالي وتبدأ فيديو جديد؟')) clearAll(); };
-  $('vExample').onclick = () => { VS = JSON.parse(JSON.stringify(EXAMPLE)); saveVS(); renderForm(); rebuild(); msg('vMsg', ''); };
+  $('vExample').onclick = () => { VS = JSON.parse(JSON.stringify(EXAMPLE)); VS.credit = store.get('pb-credit') || ''; saveVS(); renderForm(); rebuild(); msg('vMsg', ''); };
 
   // ── editable form ──
   const opts = (map, v) => Object.entries(map).map(([k, l]) => `<option value="${k}"${k === v ? ' selected' : ''}>${l}</option>`).join('');
@@ -1063,6 +1064,7 @@ Rules:
     if (!VS) { $('vForm').innerHTML = '<div class="empty" style="padding:20px">تظهر الحقول هنا بعد قراءة البطاقة.</div>'; return; }
     const su = VS.setup;
     let h = pairRow('العنوان', 'title') + pairRow('الوصف', 'desc') + pairRow('المستوى', 'level') + pairRow('ملاحظة السلامة <small>(اختياري)</small>', 'help');
+    h += `<label for="vCredit">✍️ بصمة العمل <small>(اختياري — تظهر في نهاية الفيديو، واتركها فاضية إذا ما تبي)</small></label><div class="vrow" style="display:flex;align-items:center;gap:10px;margin:0"><span style="font-weight:700;white-space:nowrap">هذا العمل من تنسيق</span><input type="text" id="vCredit" data-p="credit" value="${esc(VS.credit || '')}" placeholder="اكتب الاسم"></div>`;
     h += `<h3 class="qsec" style="margin-top:20px">🎬 المشهد</h3><div class="row">
       <div><label>يقف على</label><select data-p="setup.surface">${opts(SURF, su.surface)}</select></div>
       <div><label>الأداة الصغيرة</label><select data-p="setup.item">${opts(ITEM, su.item)}</select></div></div>
@@ -1086,7 +1088,7 @@ Rules:
     $('vForm').innerHTML = h;
   }
   function setPath(path, v) { const ks = path.split('.'); let o = VS; ks.slice(0, -1).forEach(k => { o = o[k]; }); o[ks[ks.length - 1]] = v; }
-  $('vForm').addEventListener('input', e => { const p = e.target.dataset.p; if (!p) return; setPath(p, e.target.type === 'checkbox' ? e.target.checked : e.target.value); saveVS(); rebuildSoon(); });
+  $('vForm').addEventListener('input', e => { const p = e.target.dataset.p; if (!p) return; if (p === 'credit') store.set('pb-credit', e.target.value.trim()); setPath(p, e.target.type === 'checkbox' ? e.target.checked : e.target.value); saveVS(); rebuildSoon(); });
   $('vForm').addEventListener('change', e => { if (e.target.tagName === 'SELECT' || e.target.type === 'checkbox') { saveVS(); rebuild(); } });
   $('vForm').addEventListener('click', e => {
     const d = e.target.dataset;

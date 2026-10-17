@@ -440,7 +440,7 @@ function normalize(s) {
   let target = ['cone', 'hoop', 'basket'].includes(su.target) ? su.target : 'hoop';
   if (target === 'cone') item = 'disc';
   return {
-    title: pair(s.title), desc: pair(s.desc), level: pair(s.level), help: pair(s.help),
+    title: pair(s.title), desc: pair(s.desc), level: pair(s.level), help: pair(s.help), credit: str(s.credit),
     surface, item, target, tongs: !!su.tongs, helper: su.helper !== false,
     steps,
     tools: (Array.isArray(s.tools) ? s.tools : []).slice(0, 6).map(x => ({ ar: str(x.ar || x), en: str(x.en), kind: TOOL_KINDS.includes(x.kind) ? x.kind : 'other' })),
@@ -978,6 +978,19 @@ function create(canvas, spec) {
     if (t < T.tools[0] + .1 && t > .8) drawTitle(t, [P(t, 1.0, 1.3), P(t, 1.35, 1.65), P(t, 1.7, 2.0)], P(t, 2.1, 2.5), E.back(P(t, .85, 1.3)), 1, 0);
     const o = T.outro[0];
     if (t > o + 3.3) drawTitle(t, [P(t, o + 3.5, o + 3.8), P(t, o + 3.75, o + 4.05), P(t, o + 4.0, o + 4.3)], P(t, o + 4.3, o + 4.7), E.back(P(t, o + 3.35, o + 3.8)), .8, 10);
+    // credit («بصمة العمل»): only when a name was written
+    const ck0 = S.credit ? E.back(P(t, o + 4.9, o + 5.4)) : 0;
+    if (ck0 > 0) {
+      const lab = 'هذا العمل من تنسيق', nm = S.credit;
+      font(ctx, 38, 700); const lw = ctx.measureText(lab).width; const ns = fitSize(ctx, nm, 900, 46, 900); font(ctx, ns, 900); const nw = ctx.measureText(nm).width;
+      const w = lw + nw + 110, x = 960 - w / 2, y = 330;
+      ctx.save(); ctx.translate(960, y + 36); ctx.scale(ck0, ck0); ctx.translate(-960, -(y + 36));
+      box(ctx, x, y, w, 72, 36, 'rgba(255,255,255,.95)', C.orange, 5, 8);
+      text(ctx, '✍️', x + w - 34, y + 38, { size: 32 });
+      text(ctx, lab, x + w - 64, y + 38, { size: 38, w: 700, color: C.navy, align: 'right' });
+      text(ctx, nm, x + w - 64 - lw - 16, y + 38, { size: ns, color: C.orange, align: 'right' });
+      ctx.restore();
+    }
     // description
     const dk = t < T.tools[0] ? E.back(P(t, 3.0, 3.5)) * (1 - E.in(P(t, 7.4, 7.8))) : 0;
     if (dk > 0 && S.desc.ar) { ctx.save(); ctx.translate(960, 510); ctx.scale(dk, dk); ctx.translate(-960, -510); twoLineBox(150, 430, 1620, S.desc.ar, S.desc.en, { stroke: C.blue }); ctx.restore(); }
