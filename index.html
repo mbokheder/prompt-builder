@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>مولّد البرومتات</title>
+<title>مساعد الموشن — دكتور حلول</title>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
   :root{
@@ -105,8 +105,8 @@
   <header>
     <div class="logo"><i style="height:14px"></i><i style="height:22px"></i><i style="height:32px"></i></div>
     <div>
-      <h1>مولّد البرومتات</h1>
-      <p>أدخل بيانات النشاط، واحصل على برومتات موشن جرافيك جاهزة لـ Claude أو Gemini أو أي أداة.</p>
+      <h1>مساعد الموشن التعليمي</h1>
+      <p>من <strong>دكتور حلول</strong> · خاص بالمعلمة <strong>إيمان محمد بوخضر</strong></p>
     </div>
     <button class="ghost themeBtn" id="themeBtn" type="button" aria-label="تبديل الوضع">🌓</button>
   </header>
@@ -339,9 +339,7 @@
         <div id="vDropEmpty">🖼️ اسحب صورة البطاقة هنا أو <u>اضغط للاختيار</u></div>
         <div id="vDropFull" class="hidden"><img id="vImgPrev" alt="صورة البطاقة" style="max-width:100%;max-height:220px;border-radius:12px;display:block;margin:0 auto 10px"><div class="imgMeta"><span id="vImgName"></span><button type="button" class="ghost small" id="vImgDel">إزالة</button></div></div>
       </div>
-      <label for="vKey">مفتاح Gemini <small>(يبدأ بـ AIza أو AQ. — يُحفظ في متصفحك فقط)</small></label>
-      <div style="display:flex;gap:8px"><input type="password" id="vKey" autocomplete="off" spellcheck="false" style="direction:ltr" placeholder="AIza… أو AQ.…"><button type="button" class="ghost small" id="vKeyShow">👁️</button></div>
-      <div class="btns"><button type="button" class="primary" id="vRead">⚡ اقرأ البطاقة</button><button type="button" class="ghost" id="vExample">مثال: توازن والتقط ورتّب</button></div>
+      <div class="btns"><button type="button" class="primary" id="vRead">⚡ اقرأ البطاقة</button><button type="button" class="ghost" id="vExample">مثال: توازن والتقط ورتّب</button><button type="button" class="ghost" id="vClear">🧹 مسح لفيديو جديد</button></div>
       <div id="vMsg"></div>
       <details class="ana">
         <summary>ما عندك مفتاح؟ <small>— استخدم تطبيق Gemini العادي</small></summary>
@@ -357,6 +355,21 @@
       <h2 style="margin-top:26px"><span class="dot" style="background:var(--blue)"></span>٢. راجع النصوص والحركات</h2>
       <p class="where">النص العربي كبير والإنجليزي تحته. عدّل أي شي، والمعاينة تتحدّث تلقائيًا.</p>
       <div id="vForm"></div>
+
+      <details id="vKeyBox" class="keyBox">
+        <summary>🔑 مفتاح Gemini <small>(مرة وحدة بس)</small> <span id="vKeyBadge" class="kbadge"></span></summary>
+        <div id="vKeyEdit">
+          <label for="vKey">الصق المفتاح <small>(يبدأ بـ AIza أو AQ.)</small></label>
+          <div style="display:flex;gap:8px"><input type="password" id="vKey" autocomplete="off" spellcheck="false" style="direction:ltr" placeholder="AIza… أو AQ.…"><button type="button" class="ghost small" id="vKeyShow">👁️</button></div>
+          <div class="btns" style="margin-top:8px"><button type="button" class="primary small" id="vKeySave">💾 احفظ</button></div>
+        </div>
+        <div id="vKeySaved" class="hidden">
+          <p class="where" style="margin:6px 0">✓ المفتاح محفوظ في هذا المتصفح، وما تحتاج تكتبه مرة ثانية.</p>
+          <div class="btns" style="margin-top:4px"><button type="button" class="ghost small" id="vKeyChange">✏️ تغيير</button><button type="button" class="ghost small" id="vKeyDel">🗑️ حذف</button></div>
+        </div>
+        <div id="vKeyMsg"></div>
+        <div class="note info" style="font-size:13px">🔒 المفتاح يبقى في متصفحك فقط، ويُرسل مباشرة إلى Google عند قراءة البطاقة.</div>
+      </details>
     </section>
 
     <section class="card vSticky" aria-labelledby="vPrevTitle">
@@ -952,10 +965,28 @@ Rules:
   document.addEventListener('paste', e => { if ($('tabVideo').classList.contains('hidden')) return; const f = [...((e.clipboardData && e.clipboardData.files) || [])].find(f => f.type.startsWith('image/')); if (f) vSetImg(f); });
 
   // ── key (shared with the full tab) ──
-  $('vKey').value = $('apiKey').value;
-  $('vKey').addEventListener('input', () => { $('apiKey').value = $('vKey').value.trim(); keyUI(); });
-  $('apiKey').addEventListener('input', () => { $('vKey').value = $('apiKey').value; });
+  // shown once: after saving, the key folds away to a small "saved ✓" line at the bottom
+  function vKeyUI(edit) {
+    const ok = !!provider(apiKey());
+    $('vKeyBadge').textContent = ok ? 'محفوظ ✓' : '';
+    $('vKeyEdit').classList.toggle('hidden', ok && !edit);
+    $('vKeySaved').classList.toggle('hidden', !ok || !!edit);
+    if (edit) { $('vKey').value = ''; $('vKey').focus(); }
+  }
+  function askForKey() { const d = $('vKeyBox'); d.open = true; vKeyUI(true); d.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+  $('vKeySave').onclick = () => {
+    const k = $('vKey').value.trim();
+    if (!provider(k)) return msg('vKeyMsg', '⚠️ المفتاح لازم يبدأ بـ AIza أو AQ. — انسخه كامل من AI Studio.', 'warn');
+    $('apiKey').value = k; $('keyRemember').checked = true; keyUI();
+    $('vKey').value = ''; msg('vKeyMsg', ''); vKeyUI(); $('vKeyBox').open = false;
+    msg('vMsg', '✓ حفظت المفتاح. الحين ارفع البطاقة واضغط «اقرأ البطاقة».');
+  };
+  $('vKey').addEventListener('keydown', e => { if (e.key === 'Enter') $('vKeySave').click(); });
+  $('vKeyChange').onclick = () => vKeyUI(true);
+  $('vKeyDel').onclick = () => { $('apiKey').value = ''; keyUI(); vKeyUI(true); };
+  $('apiKey').addEventListener('input', () => vKeyUI());
   $('vKeyShow').onclick = () => { $('vKey').type = $('vKey').type === 'password' ? 'text' : 'password'; };
+  vKeyUI();
 
   const msg = (el, html, cls = 'info') => { $(el).innerHTML = html ? `<div class="note ${cls}">${html}</div>` : ''; };
   function useJSON(raw) {
@@ -967,7 +998,7 @@ Rules:
   }
   $('vRead').onclick = e => {
     if (!VIMG) return msg('vMsg', '⚠️ ارفع صورة البطاقة أولًا.', 'warn');
-    if (!provider(apiKey())) return msg('vMsg', '⚠️ اكتب مفتاح Gemini (يبدأ بـ AIza أو AQ.)، أو استخدم الطريقة اليدوية تحت.', 'warn');
+    if (!provider(apiKey())) { msg('vMsg', '⚠️ تحتاج مفتاح Gemini أول مرة — الصقه في المربع اللي انفتح تحت، أو استخدم «ما عندك مفتاح؟».', 'warn'); return askForKey(); }
     busy(e.currentTarget, 'Gemini يقرأ البطاقة…', async () => {
       try { useJSON(await callAI(VIDEO_PROMPT, VIMG.file)); msg('vMsg', '✓ تمت القراءة. راجع النصوص تحت، وشوف المعاينة.'); }
       catch (err) { msg('vMsg', `⚠️ ما قدرت أقرأ البطاقة: ${esc(err.message)}. جرّب مرة ثانية.`, 'warn'); }
@@ -975,6 +1006,20 @@ Rules:
   };
   $('vPromptCopy').onclick = e => copyText(VIDEO_PROMPT, e.target);
   $('vFill').onclick = () => { try { useJSON($('vPaste').value); msg('vMsg', '✓ تمت التعبئة.'); } catch (e) { msg('vMsg', '⚠️ ما قدرت أقرأ الرد. انسخه كاملًا من { إلى }.', 'warn'); } };
+  // start a new activity: clears card, texts and preview (keeps the saved key)
+  function clearAll() {
+    stopPlay();
+    VS = null; store.set('pb-video', 'null');
+    if (VIMG) URL.revokeObjectURL(VIMG.url); VIMG = null; $('vImg').value = '';
+    $('vDropEmpty').classList.remove('hidden'); $('vDropFull').classList.add('hidden');
+    $('vPaste').value = ''; msg('vRecMsg', ''); eng = null; musicKey = '';
+    $('vSeek').value = 0; $('vTime').textContent = '0:00 / 0:00';
+    cv.getContext('2d').clearRect(0, 0, cv.width, cv.height);
+    renderForm(); $('vEmpty').classList.remove('hidden');
+    msg('vMsg', '✓ انمسح كل شي. ارفع بطاقة النشاط الجديد.');
+    $('tabVideo').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  $('vClear').onclick = () => { if (!VS && !VIMG) return clearAll(); if (confirm('تمسح النشاط الحالي وتبدأ فيديو جديد؟')) clearAll(); };
   $('vExample').onclick = () => { VS = JSON.parse(JSON.stringify(EXAMPLE)); saveVS(); renderForm(); rebuild(); msg('vMsg', ''); };
 
   // ── editable form ──
@@ -1082,7 +1127,7 @@ Rules:
       const blob = new Blob(chunks, { type }), url = URL.createObjectURL(blob);
       const name = (VS.title.ar || 'فيديو').replace(/[\\/:*?"<>|]/g, '').trim() + '.' + ext;
       const a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
-      msg('vRecMsg', `✓ جاهز: <a href="${url}" download="${esc(name)}">${esc(name)}</a> (${(blob.size / 1048576).toFixed(1)} MB)${ext === 'webm' ? '<br>الملف بصيغة WebM ويشتغل في Chrome وVLC. إذا احتجت MP4 افتح الصفحة من Chrome الحديث أو Safari.' : ''}`);
+      msg('vRecMsg', `✓ جاهز: <a href="${url}" download="${esc(name)}">${esc(name)}</a> (${(blob.size / 1048576).toFixed(1)} MB)${ext === 'webm' ? '<br>الملف بصيغة WebM ويشتغل في Chrome وVLC. إذا احتجت MP4 افتح الصفحة من Chrome الحديث أو Safari.' : ''}<div class="btns" style="margin-top:8px"><button type="button" class="ghost small" onclick="document.getElementById('vClear').click()">🧹 مسح لفيديو جديد</button></div>`);
     } catch (err) {
       msg('vRecMsg', `⚠️ تعذّر التسجيل: ${esc(err.message)}`, 'warn');
     } finally {
