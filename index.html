@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>مولّد البرومتات</title>
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
   :root{
     --navy:#1d2a6e; --orange:#ff7a1a; --blue:#2f6fe0; --yellow:#ffd21f; --red:#e53935; --green:#20a35a;
@@ -31,7 +31,7 @@
   .dot{width:14px;height:14px;border-radius:50%;display:inline-block}
   label{display:block;font-weight:700;font-size:15px;margin:14px 0 6px}
   label small{font-weight:400;color:var(--muted)}
-  input[type=text],textarea,select{width:100%;font:inherit;color:var(--text);background:var(--field);border:2px solid var(--line);border-radius:14px;padding:10px 14px;outline:none;transition:border-color .15s}
+  input[type=text],input[type=password],textarea,select{width:100%;font:inherit;color:var(--text);background:var(--field);border:2px solid var(--line);border-radius:14px;padding:10px 14px;outline:none;transition:border-color .15s}
   input[type=text]:focus,textarea:focus,select:focus{border-color:var(--blue)}
   textarea{min-height:92px;resize:vertical}
   .seg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -85,6 +85,19 @@
   .imgMeta{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:13px;color:var(--text);word-break:break-all}
   button.small{padding:4px 12px;font-size:13px}
   .themeBtn{margin-inline-start:auto}
+  .vStage{position:relative;border-radius:16px;overflow:hidden;background:#0d1530;aspect-ratio:16/9}
+  .vStage canvas{display:block;width:100%;height:100%}
+  .vEmpty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;color:#cfd8ff;font-weight:700;padding:20px}
+  .vCtrl{display:flex;align-items:center;gap:10px;margin-top:10px}
+  .vCtrl input[type=range]{flex:1;accent-color:var(--orange)}
+  .vProg{height:12px;border-radius:8px;background:var(--line);overflow:hidden;margin-top:12px}
+  .vProg div{height:100%;width:0;background:linear-gradient(90deg,var(--orange),var(--yellow));transition:width .2s}
+  .vrow{border:2px solid var(--line);border-radius:16px;padding:10px 12px 12px;margin-bottom:10px;background:var(--field)}
+  .vrow input[type=text],.vrow select{background:var(--card)}
+  .vrowHead{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+  .vrowHead select{flex:1}
+  .vrow .row{gap:8px;margin-bottom:6px}
+  @media (min-width:901px){.vSticky{position:sticky;top:12px}}
 </style>
 </head>
 <body>
@@ -101,6 +114,7 @@
   <nav class="tabs" role="tablist">
     <button type="button" role="tab" class="tab" id="tabBtnQuick" data-tab="quick">⚡ البرومت السريع</button>
     <button type="button" role="tab" class="tab" id="tabBtnFull" data-tab="full">🛠️ المولّد الكامل</button>
+    <button type="button" role="tab" class="tab" id="tabBtnVideo" data-tab="video">🎬 فيديو بدون كلام</button>
   </nav>
 
   <!-- QUICK TAB -->
@@ -313,6 +327,54 @@
     <section class="card" aria-labelledby="outTitle" aria-live="polite">
       <h2 id="outTitle"><span class="dot" style="background:var(--blue)"></span>البرومتات الجاهزة</h2>
       <div id="outputs"><div class="empty">املأ البيانات ثم اضغط «أنشئ البرومت».</div></div>
+    </section>
+  </div>
+
+  <!-- VIDEO TAB -->
+  <div id="tabVideo" class="grid">
+    <section class="card" aria-labelledby="vTitle">
+      <h2 id="vTitle"><span class="dot" style="background:var(--orange)"></span>١. بطاقة النشاط</h2>
+      <div id="vDrop" class="drop" tabindex="0" role="button" aria-label="اختر صورة البطاقة">
+        <input type="file" id="vImg" accept="image/*" hidden>
+        <div id="vDropEmpty">🖼️ اسحب صورة البطاقة هنا أو <u>اضغط للاختيار</u></div>
+        <div id="vDropFull" class="hidden"><img id="vImgPrev" alt="صورة البطاقة" style="max-width:100%;max-height:220px;border-radius:12px;display:block;margin:0 auto 10px"><div class="imgMeta"><span id="vImgName"></span><button type="button" class="ghost small" id="vImgDel">إزالة</button></div></div>
+      </div>
+      <label for="vKey">مفتاح Gemini <small>(يبدأ بـ AIza — يُحفظ في متصفحك فقط)</small></label>
+      <div style="display:flex;gap:8px"><input type="password" id="vKey" autocomplete="off" spellcheck="false" style="direction:ltr" placeholder="AIza…"><button type="button" class="ghost small" id="vKeyShow">👁️</button></div>
+      <div class="btns"><button type="button" class="primary" id="vRead">⚡ اقرأ البطاقة</button><button type="button" class="ghost" id="vExample">مثال: توازن والتقط ورتّب</button></div>
+      <div id="vMsg"></div>
+      <details class="ana">
+        <summary>ما عندك مفتاح؟ <small>— استخدم تطبيق Gemini العادي</small></summary>
+        <ol class="tips">
+          <li>انسخ البرومت وأرسله مع صورة البطاقة في Gemini.</li>
+          <li>انسخ الرد كاملًا والصقه هنا، ثم اضغط «عبّئ».</li>
+        </ol>
+        <div class="btns" style="margin-top:8px"><button type="button" class="copy" id="vPromptCopy">📋 نسخ البرومت</button><a class="gem" href="https://gemini.google.com/app" target="_blank" rel="noopener">فتح Gemini ↗</a></div>
+        <textarea id="vPaste" placeholder='الصق الرد هنا… {"title": …}' style="margin-top:10px;direction:ltr;text-align:left"></textarea>
+        <div class="btns" style="margin-top:8px"><button type="button" class="primary" id="vFill">✨ عبّئ</button></div>
+      </details>
+
+      <h2 style="margin-top:26px"><span class="dot" style="background:var(--blue)"></span>٢. راجع النصوص والحركات</h2>
+      <p class="where">النص العربي كبير والإنجليزي تحته. عدّل أي شي، والمعاينة تتحدّث تلقائيًا.</p>
+      <div id="vForm"></div>
+    </section>
+
+    <section class="card vSticky" aria-labelledby="vPrevTitle">
+      <h2 id="vPrevTitle"><span class="dot" style="background:var(--green)"></span>٣. المعاينة والتحميل</h2>
+      <div class="vStage"><canvas id="vCanvas" width="1280" height="720" dir="rtl"></canvas><div id="vEmpty" class="vEmpty">ارفع البطاقة واضغط «اقرأ البطاقة»<br>أو جرّب المثال</div></div>
+      <div class="vCtrl">
+        <button type="button" class="primary small" id="vPlay" style="min-width:96px">▶ تشغيل</button>
+        <input type="range" id="vSeek" min="0" max="80" step="0.05" value="0" aria-label="الوقت">
+        <span id="vTime" class="where" style="margin:0;white-space:nowrap;direction:ltr">0:00 / 0:00</span>
+      </div>
+      <div class="row" style="margin-top:6px">
+        <div><label for="vQual" style="margin-top:4px">الجودة</label>
+          <select id="vQual"><option value="1080">عالية 1080p (بروجكتر)</option><option value="720">أسرع 720p (للجوال)</option></select></div>
+        <div style="display:flex;align-items:flex-end"><button type="button" class="primary" id="vRec" style="width:100%">⬇️ نزّل الفيديو</button></div>
+      </div>
+      <div id="vProg" class="vProg hidden"><div id="vBar"></div></div>
+      <div id="vRecMsg"></div>
+      <div class="note info" style="font-size:13px">🎵 الموسيقى مؤلَّفة داخل الصفحة، يعني ما فيها حقوق لأحد. التحميل يسجّل الفيديو بسرعته الطبيعية، فخلّ الصفحة مفتوحة قدّامك حتى يخلص، ولا تقفل الشاشة.</div>
     </section>
   </div>
 </div>
@@ -706,7 +768,8 @@ async function callAI(text, withImage){
   if (!p) throw new Error('المفتاح غير صحيح. يجب أن يبدأ بـ AIza (Gemini) أو sk-ant- (Claude).');
   const model = $('apiModel').value.trim() || DEFAULT_MODEL[p];
   let img = null;
-  if (withImage && IMG) img = { mime: IMG.file.type || 'image/png', data: await fileB64(IMG.file) };
+  const imgFile = withImage instanceof Blob ? withImage : (withImage && IMG ? IMG.file : null);
+  if (imgFile) img = { mime: imgFile.type || 'image/png', data: await fileB64(imgFile) };
   let res, j;
   if (p === 'gemini') {
     const parts = []; if (img) parts.push({ inline_data: { mime_type: img.mime, data: img.data } }); parts.push({ text });
@@ -796,12 +859,215 @@ try { const q = JSON.parse(store.get('pb-quick') || '{}'); if (q.lang) $('qLang'
 quickRender();
 
 function showTab(t){
-  $('tabQuick').classList.toggle('hidden', t !== 'quick'); $('tabFull').classList.toggle('hidden', t !== 'full');
+  $('tabQuick').classList.toggle('hidden', t !== 'quick'); $('tabFull').classList.toggle('hidden', t !== 'full'); $('tabVideo').classList.toggle('hidden', t !== 'video');
   document.querySelectorAll('.tab').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === t));
   store.set('pb-tab', t);
 }
 document.querySelectorAll('.tab').forEach(b => b.onclick = () => showTab(b.dataset.tab));
 showTab(store.get('pb-tab') || 'quick');
+</script>
+<script src="video-engine.js"></script>
+<script>
+// ── video tab: wordless video made in the browser (video-engine.js) ──
+(function () {
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+  const ACT = { ready: 'استعد / اصعد', balance: 'حافظ على التوازن', squat: 'انزل (قرفصاء)', pick: 'التقط', stand: 'قف', place: 'ضع / رتّب', throw: 'ارمِ', repeat: 'كرّر', walk: 'امشِ', jump: 'اقفز', oneleg: 'قف على قدم واحدة' };
+  const KIND = { board: 'لوح توازن', beam: 'عارضة توازن', discs: 'أقماع قرصية', cone: 'قمع طويل', tongs: 'ملقط', mat: 'بساط', bags: 'أكياس حبوب', hoop: 'حلقة', ball: 'كرة', basket: 'سلة', table: 'طاولة', helper: 'مساعدة بالغ', other: 'أخرى' };
+  const ICON = { balance: 'توازن', weight: 'نقل الوزن', eye: 'العين واليد', focus: 'تركيز', heart: 'قلب', brain: 'تفكير', hand: 'اليد', star: 'نجمة' };
+  const SURF = { board: 'لوح توازن دائري', beam: 'عارضة توازن', floor: 'الأرض' }, ITEM = { disc: 'أقماع قرصية', bag: 'أكياس حبوب', ball: 'كرات' }, TGT = { cone: 'قمع طويل (ترتيب)', hoop: 'حلقة على الأرض', basket: 'سلة' };
+  const VIDEO_PROMPT = `Read the attached children's activity card image. Reply with ONLY a JSON object (no code fences, no extra text) in exactly this shape:
+{"title":{"ar":"","en":""},"desc":{"ar":"","en":""},"level":{"ar":"","en":""},"help":{"ar":"","en":""},
+"setup":{"surface":"","item":"","target":"","tongs":false,"helper":true},
+"steps":[{"ar":"","en":"","capAr":"","capEn":"","action":""}],
+"tools":[{"ar":"","en":"","kind":""}],
+"benefits":[{"ar":"","en":"","icon":""}]}
+Rules:
+- Copy the Arabic text exactly as written on the card: title, description (desc), level, each step title (ar) and its sentence (capAr), tools, benefits, and any safety / adult-help note (help).
+- Add short, simple English translations for young children in every "en" and "capEn".
+- steps: in the card's order. "action" is the ONE word that best matches what the child's body does in that step: ready (get into position / stand on the equipment), balance (hold the balance), squat (bend the knees / reach down), pick (grab or pick up an object), stand (stand back up), place (put / stack / arrange an object), throw (throw or toss), repeat (do it again), walk (walk or step along), jump (jump or hop), oneleg (stand on one leg).
+- setup.surface: what the child stands on: "board" (round balance / wobble board), "beam" (balance beam) or "floor". setup.item: the small object handled: "disc" (flat disc cones), "bag" (bean bags) or "ball". setup.target: where the object goes: "cone" (stacked on a tall cone), "hoop" (floor hoop or ring) or "basket" (basket or box). setup.tongs: true if tongs are used. setup.helper: true if an adult appears.
+- tools[].kind: one of board, beam, discs, cone, tongs, mat, bags, hoop, ball, basket, table, helper, other.
+- benefits[].icon: one of balance, weight, eye, focus, heart, brain, hand, star.
+- Use "" for anything that is not on the card.`;
+  const EXAMPLE = {
+    title: { ar: 'توازن والتقط ورتّب', en: 'Balance, Pick & Stack' },
+    desc: { ar: 'انزل بوضعية القرفصاء، ثم قف ورتّب الأقماع مع الحفاظ على توازنك', en: 'Squat down, then stand up and stack the cones while keeping your balance' },
+    level: { ar: 'مستوى متقدم', en: 'Advanced level' }, help: { ar: 'مساعدة شخص بالغ عند الحاجة', en: 'Adult help when needed' },
+    setup: { surface: 'board', item: 'disc', target: 'cone', tongs: true, helper: true },
+    steps: [
+      { ar: 'استعد', en: 'Get ready', capAr: 'قف على لوح التوازن وقدماك متباعدتان، وأمسك الملقط.', capEn: 'Stand on the balance board with feet apart, holding the tongs.', action: 'ready' },
+      { ar: 'انزل وامدد يدك', en: 'Squat and reach', capAr: 'اثنِ ركبتيك وامدد يدك نحو أحد الأقماع القرصية.', capEn: 'Bend your knees and reach toward a disc cone.', action: 'squat' },
+      { ar: 'التقط', en: 'Pick up', capAr: 'أمسك حافة القمع القرصي باستخدام الملقط.', capEn: 'Grip the edge of the disc cone with the tongs.', action: 'pick' },
+      { ar: 'قف ورتّب', en: 'Stand and stack', capAr: 'قف ببطء وضع القمع القرصي فوق القمع الطويل.', capEn: 'Stand up slowly and place the disc on the tall cone.', action: 'place' },
+      { ar: 'كرّر', en: 'Repeat', capAr: 'اترك القمع القرصي، واستعد توازنك، ثم كرّر.', capEn: 'Let go of the disc, regain your balance, then repeat.', action: 'repeat' }],
+    tools: [{ ar: 'لوح توازن', en: 'Balance board', kind: 'board' }, { ar: 'أقماع قرصية', en: 'Disc cones', kind: 'discs' }, { ar: 'قمع طويل', en: 'Tall cone', kind: 'cone' }, { ar: 'ملقط وبساط', en: 'Tongs & mat', kind: 'tongs' }],
+    benefits: [{ ar: 'تحسين التوازن أثناء القرفصاء والوقوف', en: 'Better balance while squatting and standing', icon: 'balance' }, { ar: 'تنمية التحكم في نقل وزن الجسم', en: 'Control of shifting body weight', icon: 'weight' },
+      { ar: 'تعزيز التآزر البصري الحركي والتحكم في القبضة', en: 'Eye–hand coordination and grip control', icon: 'eye' }, { ar: 'زيادة التركيز والتخطيط الحركي', en: 'Focus and motor planning', icon: 'focus' }],
+  };
+  let VS = null, VIMG = null, eng = null, music = null, musicKey = '', playing = null, recording = false;
+  const cv = $('vCanvas');
+
+  // ── image ──
+  function vSetImg(f) {
+    if (!f || !f.type.startsWith('image/')) return;
+    if (VIMG) URL.revokeObjectURL(VIMG.url);
+    VIMG = { file: f, url: URL.createObjectURL(f) };
+    $('vImgPrev').src = VIMG.url; $('vImgName').textContent = f.name || 'صورة';
+    $('vDropEmpty').classList.add('hidden'); $('vDropFull').classList.remove('hidden');
+  }
+  const vd = $('vDrop');
+  vd.addEventListener('click', e => { if (e.target.id !== 'vImgDel') $('vImg').click(); });
+  vd.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); $('vImg').click(); } });
+  $('vImg').addEventListener('change', e => vSetImg(e.target.files[0]));
+  ['dragenter', 'dragover'].forEach(ev => vd.addEventListener(ev, e => { e.preventDefault(); vd.classList.add('over'); }));
+  ['dragleave', 'drop'].forEach(ev => vd.addEventListener(ev, e => { e.preventDefault(); vd.classList.remove('over'); }));
+  vd.addEventListener('drop', e => vSetImg(e.dataTransfer.files[0]));
+  $('vImgDel').onclick = e => { e.stopPropagation(); if (VIMG) URL.revokeObjectURL(VIMG.url); VIMG = null; $('vImg').value = ''; $('vDropEmpty').classList.remove('hidden'); $('vDropFull').classList.add('hidden'); };
+  document.addEventListener('paste', e => { if ($('tabVideo').classList.contains('hidden')) return; const f = [...((e.clipboardData && e.clipboardData.files) || [])].find(f => f.type.startsWith('image/')); if (f) vSetImg(f); });
+
+  // ── key (shared with the full tab) ──
+  $('vKey').value = $('apiKey').value;
+  $('vKey').addEventListener('input', () => { $('apiKey').value = $('vKey').value.trim(); keyUI(); });
+  $('apiKey').addEventListener('input', () => { $('vKey').value = $('apiKey').value; });
+  $('vKeyShow').onclick = () => { $('vKey').type = $('vKey').type === 'password' ? 'text' : 'password'; };
+
+  const msg = (el, html, cls = 'info') => { $(el).innerHTML = html ? `<div class="note ${cls}">${html}</div>` : ''; };
+  function useJSON(raw) {
+    const a = raw.indexOf('{'), b = raw.lastIndexOf('}');
+    const j = JSON.parse(raw.slice(a, b + 1));
+    VS = VideoEngine.normalize(j); VS.setup = { surface: VS.surface, item: VS.item, target: VS.target, tongs: VS.tongs, helper: VS.helper };
+    ['surface', 'item', 'target', 'tongs', 'helper'].forEach(k => delete VS[k]);
+    saveVS(); renderForm(); rebuild();
+  }
+  $('vRead').onclick = e => {
+    if (!VIMG) return msg('vMsg', '⚠️ ارفع صورة البطاقة أولًا.', 'warn');
+    if (!provider(apiKey())) return msg('vMsg', '⚠️ اكتب مفتاح Gemini (يبدأ بـ AIza)، أو استخدم الطريقة اليدوية تحت.', 'warn');
+    busy(e.currentTarget, 'Gemini يقرأ البطاقة…', async () => {
+      try { useJSON(await callAI(VIDEO_PROMPT, VIMG.file)); msg('vMsg', '✓ تمت القراءة. راجع النصوص تحت، وشوف المعاينة.'); }
+      catch (err) { msg('vMsg', `⚠️ ما قدرت أقرأ البطاقة: ${esc(err.message)}. جرّب مرة ثانية.`, 'warn'); }
+    });
+  };
+  $('vPromptCopy').onclick = e => copyText(VIDEO_PROMPT, e.target);
+  $('vFill').onclick = () => { try { useJSON($('vPaste').value); msg('vMsg', '✓ تمت التعبئة.'); } catch (e) { msg('vMsg', '⚠️ ما قدرت أقرأ الرد. انسخه كاملًا من { إلى }.', 'warn'); } };
+  $('vExample').onclick = () => { VS = JSON.parse(JSON.stringify(EXAMPLE)); saveVS(); renderForm(); rebuild(); msg('vMsg', ''); };
+
+  // ── editable form ──
+  const opts = (map, v) => Object.entries(map).map(([k, l]) => `<option value="${k}"${k === v ? ' selected' : ''}>${l}</option>`).join('');
+  const inp = (path, v, ph, ltr) => `<input type="text" data-p="${path}" value="${esc(v)}" placeholder="${ph}"${ltr ? ' style="direction:ltr;text-align:left"' : ''}>`;
+  const pairRow = (label, key) => `<label>${label}</label><div class="row">${inp(key + '.ar', VS[key].ar, 'عربي')}${inp(key + '.en', VS[key].en, 'English', 1)}</div>`;
+  function renderForm() {
+    if (!VS) { $('vForm').innerHTML = '<div class="empty" style="padding:20px">تظهر الحقول هنا بعد قراءة البطاقة.</div>'; return; }
+    const su = VS.setup;
+    let h = pairRow('العنوان', 'title') + pairRow('الوصف', 'desc') + pairRow('المستوى', 'level') + pairRow('ملاحظة السلامة <small>(اختياري)</small>', 'help');
+    h += `<h3 class="qsec" style="margin-top:20px">🎬 المشهد</h3><div class="row">
+      <div><label>يقف على</label><select data-p="setup.surface">${opts(SURF, su.surface)}</select></div>
+      <div><label>الأداة الصغيرة</label><select data-p="setup.item">${opts(ITEM, su.item)}</select></div></div>
+      <div class="row"><div><label>توضع في</label><select data-p="setup.target">${opts(TGT, su.target)}</select></div>
+      <div style="display:flex;flex-direction:column;justify-content:flex-end;gap:4px;padding-bottom:4px">
+        <label style="margin:0;font-weight:400;display:flex;gap:8px;align-items:center"><input type="checkbox" data-p="setup.tongs"${su.tongs ? ' checked' : ''}> يستخدم ملقط</label>
+        <label style="margin:0;font-weight:400;display:flex;gap:8px;align-items:center"><input type="checkbox" data-p="setup.helper"${su.helper ? ' checked' : ''}> تظهر المعلمة</label></div></div>`;
+    h += `<h3 class="qsec" style="margin-top:20px">👣 الخطوات <small>(${VS.steps.length} من ٦)</small></h3>`;
+    VS.steps.forEach((s, i) => {
+      h += `<div class="vrow"><div class="vrowHead"><span class="badge">${i + 1}</span><select data-p="steps.${i}.action">${opts(ACT, s.action)}</select><button type="button" class="ghost small" data-del="steps.${i}" aria-label="احذف">✕</button></div>
+        <div class="row">${inp(`steps.${i}.ar`, s.ar, 'اسم الخطوة')}${inp(`steps.${i}.en`, s.en, 'Step name', 1)}</div>
+        ${inp(`steps.${i}.capAr`, s.capAr, 'الجملة تحت الشاشة')}<div style="height:6px"></div>${inp(`steps.${i}.capEn`, s.capEn, 'Caption', 1)}</div>`;
+    });
+    if (VS.steps.length < 6) h += `<button type="button" class="ghost small" data-add="steps">＋ خطوة</button>`;
+    h += `<h3 class="qsec" style="margin-top:20px">🧰 الأدوات</h3>`;
+    VS.tools.forEach((s, i) => { h += `<div class="vrow"><div class="vrowHead"><select data-p="tools.${i}.kind">${opts(KIND, s.kind)}</select><button type="button" class="ghost small" data-del="tools.${i}" aria-label="احذف">✕</button></div><div class="row">${inp(`tools.${i}.ar`, s.ar, 'اسم الأداة')}${inp(`tools.${i}.en`, s.en, 'Tool', 1)}</div></div>`; });
+    if (VS.tools.length < 6) h += `<button type="button" class="ghost small" data-add="tools">＋ أداة</button>`;
+    h += `<h3 class="qsec" style="margin-top:20px">💪 الفوائد</h3>`;
+    VS.benefits.forEach((s, i) => { h += `<div class="vrow"><div class="vrowHead"><select data-p="benefits.${i}.icon">${opts(ICON, s.icon)}</select><button type="button" class="ghost small" data-del="benefits.${i}" aria-label="احذف">✕</button></div><div class="row">${inp(`benefits.${i}.ar`, s.ar, 'الفائدة')}${inp(`benefits.${i}.en`, s.en, 'Benefit', 1)}</div></div>`; });
+    if (VS.benefits.length < 5) h += `<button type="button" class="ghost small" data-add="benefits">＋ فائدة</button>`;
+    $('vForm').innerHTML = h;
+  }
+  function setPath(path, v) { const ks = path.split('.'); let o = VS; ks.slice(0, -1).forEach(k => { o = o[k]; }); o[ks[ks.length - 1]] = v; }
+  $('vForm').addEventListener('input', e => { const p = e.target.dataset.p; if (!p) return; setPath(p, e.target.type === 'checkbox' ? e.target.checked : e.target.value); saveVS(); rebuildSoon(); });
+  $('vForm').addEventListener('change', e => { if (e.target.tagName === 'SELECT' || e.target.type === 'checkbox') { saveVS(); rebuild(); } });
+  $('vForm').addEventListener('click', e => {
+    const d = e.target.dataset;
+    if (d.del) { const [k, i] = d.del.split('.'); VS[k].splice(+i, 1); }
+    else if (d.add) VS[d.add].push(d.add === 'steps' ? { ar: '', en: '', capAr: '', capEn: '', action: 'balance' } : d.add === 'tools' ? { ar: '', en: '', kind: 'other' } : { ar: '', en: '', icon: 'star' });
+    else return;
+    saveVS(); renderForm(); rebuild();
+  });
+  const saveVS = () => store.set('pb-video', JSON.stringify(VS));
+
+  // ── preview ──
+  const fmt = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+  let rbT = 0; const rebuildSoon = () => { clearTimeout(rbT); rbT = setTimeout(rebuild, 450); };
+  function rebuild() {
+    if (recording) return;
+    stopPlay();
+    $('vEmpty').classList.toggle('hidden', !!VS);
+    if (!VS) return;
+    const spec = Object.assign({}, VS);
+    eng = VideoEngine.create(cv, spec);
+    $('vSeek').max = eng.DUR; const t = Math.min(+$('vSeek').value || 0, eng.DUR);
+    draw(t || 3);
+  }
+  function draw(t) { if (!eng) return; eng.render(t); $('vSeek').value = t; $('vTime').textContent = `${fmt(t)} / ${fmt(eng.DUR)}`; }
+  const fontsReady = Promise.all(['900 40px Cairo', '800 40px Cairo', '700 40px Cairo'].map(f => document.fonts.load(f, 'ابت abc'))).catch(() => {});
+  function getMusic() { const k = JSON.stringify(VS); if (k !== musicKey) { music = eng.music(); musicKey = k; } return music; }
+  function audioBuffer(ac, m) { const b = ac.createBuffer(2, m.L.length, m.sr); b.copyToChannel(m.L, 0); b.copyToChannel(m.R, 1); return b; }
+  function stopPlay() { if (!playing) return; try { playing.src.stop(); } catch (e) {} playing.ac.close(); playing = null; $('vPlay').textContent = '▶ تشغيل'; }
+  $('vPlay').onclick = async () => {
+    if (!eng) return;
+    if (playing) return stopPlay();
+    const ac = new (window.AudioContext || window.webkitAudioContext)(); ac.resume();
+    $('vPlay').innerHTML = '<span class="spin">⏳</span>';
+    await new Promise(r => setTimeout(r, 30));
+    const m = getMusic(); await fontsReady;
+    const src = ac.createBufferSource(); src.buffer = audioBuffer(ac, m); src.connect(ac.destination);
+    let off = +$('vSeek').value; if (off >= eng.DUR - .2) off = 0;
+    const t0 = ac.currentTime + .05; src.start(t0, off);
+    playing = { ac, src }; $('vPlay').textContent = '⏸ إيقاف';
+    const me = playing;
+    const loop = () => { if (playing !== me) return; const t = off + ac.currentTime - t0; draw(Math.min(t, eng.DUR)); if (t >= eng.DUR) return stopPlay(); requestAnimationFrame(loop); };
+    loop();
+  };
+  $('vSeek').addEventListener('input', () => { stopPlay(); draw(+$('vSeek').value); });
+
+  // ── record & download ──
+  $('vRec').onclick = async () => {
+    if (!eng || recording) return;
+    if (!window.MediaRecorder || !cv.captureStream) return msg('vRecMsg', '⚠️ هذا المتصفح ما يدعم تسجيل الفيديو. جرّب Chrome.', 'warn');
+    stopPlay(); recording = true;
+    const ac = new (window.AudioContext || window.webkitAudioContext)(); ac.resume();
+    const btn = $('vRec'), old = btn.innerHTML; btn.disabled = true; btn.innerHTML = '<span class="spin">⏳</span> تجهيز…';
+    $('vProg').classList.remove('hidden'); $('vBar').style.width = '0%'; msg('vRecMsg', '');
+    try {
+      await new Promise(r => setTimeout(r, 30));
+      const m = getMusic(); await fontsReady;
+      const H = +$('vQual').value; cv.width = Math.round(H * 16 / 9); cv.height = H; eng.render(0);
+      const src = ac.createBufferSource(); src.buffer = audioBuffer(ac, m);
+      const dest = ac.createMediaStreamDestination(); src.connect(dest);
+      const stream = cv.captureStream(30); dest.stream.getAudioTracks().forEach(t => stream.addTrack(t));
+      const mime = ['video/mp4;codecs=avc1.640028,mp4a.40.2', 'video/mp4;codecs=avc1,mp4a', 'video/mp4', 'video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm'].find(t => MediaRecorder.isTypeSupported(t)) || '';
+      const rec = new MediaRecorder(stream, Object.assign({ videoBitsPerSecond: H >= 1080 ? 10e6 : 5e6, audioBitsPerSecond: 192e3 }, mime ? { mimeType: mime } : {}));
+      const chunks = []; rec.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data); };
+      const stopped = new Promise(r => { rec.onstop = r; });
+      rec.start(1000);
+      const t0 = ac.currentTime + .2; src.start(t0);
+      btn.innerHTML = '🔴 يسجّل…';
+      await new Promise(res => { const loop = () => { const t = ac.currentTime - t0; eng.render(Math.max(0, t)); $('vBar').style.width = Math.min(100, Math.max(0, t / eng.DUR * 100)) + '%'; if (t >= eng.DUR + .3) return res(); requestAnimationFrame(loop); }; loop(); });
+      rec.stop(); await stopped;
+      const type = rec.mimeType || mime || 'video/webm', ext = /mp4/.test(type) ? 'mp4' : 'webm';
+      const blob = new Blob(chunks, { type }), url = URL.createObjectURL(blob);
+      const name = (VS.title.ar || 'فيديو').replace(/[\\/:*?"<>|]/g, '').trim() + '.' + ext;
+      const a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+      msg('vRecMsg', `✓ جاهز: <a href="${url}" download="${esc(name)}">${esc(name)}</a> (${(blob.size / 1048576).toFixed(1)} MB)${ext === 'webm' ? '<br>الملف بصيغة WebM ويشتغل في Chrome وVLC. إذا احتجت MP4 افتح الصفحة من Chrome الحديث أو Safari.' : ''}`);
+    } catch (err) {
+      msg('vRecMsg', `⚠️ تعذّر التسجيل: ${esc(err.message)}`, 'warn');
+    } finally {
+      ac.close(); recording = false; btn.disabled = false; btn.innerHTML = old; $('vProg').classList.add('hidden');
+      cv.width = 1280; cv.height = 720; draw(+$('vSeek').value);
+    }
+  };
+
+  try { VS = JSON.parse(store.get('pb-video') || 'null'); } catch (e) { VS = null; }
+  renderForm(); fontsReady.then(rebuild);
+})();
 </script>
 </body>
 </html>
