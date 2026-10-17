@@ -98,6 +98,15 @@
   .vrowHead select{flex:1}
   .vrow .row{gap:8px;margin-bottom:6px}
   @media (min-width:901px){.vSticky{position:sticky;top:12px}}
+  .hGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;margin-top:12px}
+  .hItem{border:2px solid var(--line);border-radius:16px;overflow:hidden;background:var(--field);display:flex;flex-direction:column}
+  .hItem.cur{border-color:var(--orange)}
+  .hItem img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;background:#0d1530}
+  .hBody{padding:8px 12px 12px;display:flex;flex-direction:column;gap:4px;flex:1}
+  .hBody b{font-size:16px;line-height:1.4}
+  .hBody small{color:var(--muted);font-size:12.5px}
+  .hBtns{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto;padding-top:6px}
+  .visits{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);border:1px solid var(--line);border-radius:12px;padding:4px 12px;margin-top:6px}
 </style>
 </head>
 <body>
@@ -107,6 +116,7 @@
     <div>
       <h1>مساعد الموشن التعليمي</h1>
       <p>من <strong>دكتور حلول</strong> · خاص بالمعلمة <strong>إيمان محمد بوخضر</strong></p>
+      <span id="visits" class="visits hidden">👁️ عدد الزيارات: <b id="visitsN">…</b></span>
     </div>
     <button class="ghost themeBtn" id="themeBtn" type="button" aria-label="تبديل الوضع">🌓</button>
   </header>
@@ -331,7 +341,8 @@
   </div>
 
   <!-- VIDEO TAB -->
-  <div id="tabVideo" class="grid">
+  <div id="tabVideo">
+  <div class="grid">
     <section class="card" aria-labelledby="vTitle">
       <h2 id="vTitle"><span class="dot" style="background:var(--orange)"></span>١. بطاقة النشاط</h2>
       <div id="vDrop" class="drop" tabindex="0" role="button" aria-label="اختر صورة البطاقة">
@@ -388,6 +399,15 @@
       <div id="vProg" class="vProg hidden"><div id="vBar"></div></div>
       <div id="vRecMsg"></div>
       <div class="note info" style="font-size:13px">🎵 الموسيقى مؤلَّفة داخل الصفحة، يعني ما فيها حقوق لأحد. التحميل يسجّل الفيديو بسرعته الطبيعية، فخلّ الصفحة مفتوحة قدّامك حتى يخلص، ولا تقفل الشاشة.</div>
+    </section>
+
+  </div>
+    <section class="card" style="margin-top:20px" aria-labelledby="hTitle">
+      <div class="outHead"><h2 id="hTitle" style="margin:0"><span class="dot" style="background:var(--navy)"></span>📚 سجل الفيديوهات <small id="hCount" style="font-weight:400;color:var(--muted)"></small></h2>
+        <div class="btns" style="margin:0"><button type="button" class="ghost small" id="hSave">💾 احفظ النشاط الحالي</button><button type="button" class="ghost small" id="hExport">📤 تصدير الكل</button><button type="button" class="ghost small" id="hImportBtn">📥 استيراد</button><input type="file" id="hImport" accept=".json,application/json" hidden></div></div>
+      <p class="where">كل فيديو تنزّله ينحفظ هنا تلقائيًا بكل معلوماته، وتقدر تفتحه كقالب وتعدّل عليه وتسوي فيديو ثاني. السجل محفوظ في هذا المتصفح، ولنقله لجهاز ثاني استخدم «تصدير» ثم «استيراد».</p>
+      <div id="hMsg"></div>
+      <div id="hList" class="hGrid"></div>
     </section>
   </div>
 </div>
@@ -905,6 +925,19 @@ function showTab(t){
 document.querySelectorAll('.tab').forEach(b => b.onclick = () => showTab(b.dataset.tab));
 showTab(store.get('pb-tab') || 'quick');
 </script>
+<script>
+(function () {
+  const NS = 'mbokheder-prompt-builder', live = /github\.io$/.test(location.hostname);
+  let seen = false; try { seen = sessionStorage.getItem('pb-visit') === '1'; } catch (e) {}
+  const url = `https://abacus.jasoncameron.dev/${live && !seen ? 'hit' : 'get'}/${NS}/visits`;
+  fetch(url).then(r => r.ok ? r.json() : Promise.reject()).then(j => {
+    if (typeof j.value !== 'number') return;
+    try { sessionStorage.setItem('pb-visit', '1'); } catch (e) {}
+    document.getElementById('visitsN').textContent = j.value.toLocaleString('ar-u-nu-arab');
+    document.getElementById('visits').classList.remove('hidden');
+  }).catch(() => {});
+})();
+</script>
 <script src="video-engine.js"></script>
 <script>
 // ── video tab: wordless video made in the browser (video-engine.js) ──
@@ -1015,7 +1048,7 @@ Rules:
     $('vPaste').value = ''; msg('vRecMsg', ''); eng = null; musicKey = '';
     $('vSeek').value = 0; $('vTime').textContent = '0:00 / 0:00';
     cv.getContext('2d').clearRect(0, 0, cv.width, cv.height);
-    renderForm(); $('vEmpty').classList.remove('hidden');
+    renderForm(); hRender(); $('vEmpty').classList.remove('hidden');
     msg('vMsg', '✓ انمسح كل شي. ارفع بطاقة النشاط الجديد.');
     $('tabVideo').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
@@ -1063,6 +1096,66 @@ Rules:
     saveVS(); renderForm(); rebuild();
   });
   const saveVS = () => store.set('pb-video', JSON.stringify(VS));
+
+  // ── history: every downloaded video is kept as a reusable template ──
+  const HKEY = 'pb-history';
+  const hLoad = () => { try { const a = JSON.parse(store.get(HKEY) || '[]'); return Array.isArray(a) ? a : []; } catch (e) { return []; } };
+  function hStore(list) {
+    // localStorage is ~5 MB: if full, drop thumbnails of the oldest items and try again
+    for (let i = list.length - 1; i >= -1; i--) {
+      try { localStorage.setItem(HKEY, JSON.stringify(list)); return true; } catch (e) { if (i >= 0) list[i].thumb = ''; }
+    }
+    return false;
+  }
+  const hDate = ms => new Date(ms).toLocaleDateString('ar-u-ca-gregory-nu-arab', { day: 'numeric', month: 'long', year: 'numeric' });
+  const hName = sp => (sp.title && sp.title.ar) || 'بدون عنوان';
+  function hThumb(sp) {
+    try {
+      const c = document.createElement('canvas'); c.width = 384; c.height = 216;
+      const e = VideoEngine.create(c, sp); e.render(e.T.gym[0] + (e.T.steps[1] ? e.T.steps[1].ts + 2.5 - e.T.gym[0] : 4));
+      return c.toDataURL('image/jpeg', .72);
+    } catch (e) { return ''; }
+  }
+  function hSaveCurrent(auto) {
+    if (!VS) return msg('hMsg', '⚠️ ما فيه نشاط مفتوح عشان أحفظه.', 'warn');
+    const list = hLoad(), sp = JSON.parse(JSON.stringify(VS)), id = VS._hid || ('v' + Date.now().toString(36));
+    delete sp._hid;
+    const old = list.find(x => x.id === id), item = { id, title: hName(sp), created: old ? old.created : Date.now(), updated: Date.now(), videos: (old ? old.videos || 0 : 0) + (auto ? 1 : 0), spec: sp, thumb: hThumb(sp) };
+    const rest = list.filter(x => x.id !== id); rest.unshift(item); if (rest.length > 80) rest.length = 80;
+    VS._hid = id; saveVS();
+    const ok = hStore(rest); hRender();
+    msg('hMsg', ok ? (auto ? '📚 انحفظ الفيديو في السجل.' : '✓ انحفظ النشاط في السجل.') : '⚠️ ذاكرة المتصفح ممتلئة. صدّر السجل واحذف القديم.', ok ? 'info' : 'warn');
+  }
+  function hRender() {
+    const list = hLoad(), cur = VS && VS._hid;
+    $('hCount').textContent = list.length ? `(${list.length})` : '';
+    $('hList').innerHTML = list.length ? list.map(x => `<div class="hItem${x.id === cur ? ' cur' : ''}">${x.thumb ? `<img src="${x.thumb}" alt="">` : '<img alt="">'}
+      <div class="hBody"><b>${esc(x.title)}</b><small>${(x.spec.title && x.spec.title.en) ? esc(x.spec.title.en) + ' · ' : ''}${hDate(x.updated || x.created)}${x.videos ? ` · نزّلته ${x.videos} مرة` : ''}</small>
+      <div class="hBtns"><button type="button" class="primary small" data-h-open="${x.id}">🎬 افتح كقالب</button><button type="button" class="ghost small" data-h-file="${x.id}" title="نزّل ملف المعلومات">⬇️</button><button type="button" class="ghost small" data-h-del="${x.id}" title="احذف">🗑️</button></div></div></div>`).join('')
+      : '<div class="empty" style="padding:16px">السجل فاضي. أول فيديو تنزّله بيظهر هنا.</div>';
+  }
+  const dlJSON = (obj, name) => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(obj, null, 1)], { type: 'application/json' })); a.download = name; document.body.appendChild(a); a.click(); a.remove(); };
+  const safeName = t => String(t).replace(/[\\/:*?"<>|]/g, '').trim() || 'نشاط';
+  $('hList').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    const list = hLoad(), d = b.dataset;
+    if (d.hOpen) { const x = list.find(i => i.id === d.hOpen); if (!x) return; VS = JSON.parse(JSON.stringify(x.spec)); VS._hid = x.id; saveVS(); renderForm(); rebuild(); hRender(); msg('vMsg', `✓ فتحت «${esc(x.title)}». عدّل اللي تبيه ونزّل فيديو جديد.`); $('tabVideo').scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+    if (d.hFile) { const x = list.find(i => i.id === d.hFile); if (x) dlJSON({ app: 'motion-helper', items: [{ ...x, thumb: '' }] }, safeName(x.title) + '.json'); }
+    if (d.hDel) { const x = list.find(i => i.id === d.hDel); if (x && confirm(`تحذف «${x.title}» من السجل؟`)) { hStore(list.filter(i => i.id !== d.hDel)); if (VS && VS._hid === d.hDel) { delete VS._hid; saveVS(); } hRender(); } }
+  });
+  $('hSave').onclick = () => hSaveCurrent(false);
+  $('hExport').onclick = () => { const list = hLoad(); if (!list.length) return msg('hMsg', 'السجل فاضي.', 'warn'); dlJSON({ app: 'motion-helper', items: list.map(x => ({ ...x, thumb: '' })) }, 'سجل الفيديوهات.json'); };
+  $('hImportBtn').onclick = () => $('hImport').click();
+  $('hImport').addEventListener('change', async e => {
+    const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+    try {
+      const j = JSON.parse(await f.text()), items = Array.isArray(j.items) ? j.items : (j.title ? [{ spec: j }] : []);
+      if (!items.length) throw new Error();
+      const list = hLoad(); let n = 0;
+      items.forEach(x => { if (!x || !x.spec) return; const id = x.id || ('v' + Date.now().toString(36) + n); const it = { id, title: x.title || hName(x.spec), created: x.created || Date.now(), updated: x.updated || Date.now(), videos: x.videos || 0, spec: x.spec, thumb: hThumb(x.spec) }; const i = list.findIndex(y => y.id === id); if (i >= 0) list[i] = it; else list.push(it); n++; });
+      list.sort((a, b) => (b.updated || 0) - (a.updated || 0)); hStore(list); hRender(); msg('hMsg', `✓ استوردت ${n} نشاط.`);
+    } catch (err) { msg('hMsg', '⚠️ الملف مو ملف سجل صحيح.', 'warn'); }
+  });
 
   // ── preview ──
   const fmt = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
@@ -1127,6 +1220,7 @@ Rules:
       const blob = new Blob(chunks, { type }), url = URL.createObjectURL(blob);
       const name = (VS.title.ar || 'فيديو').replace(/[\\/:*?"<>|]/g, '').trim() + '.' + ext;
       const a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+      hSaveCurrent(true);
       msg('vRecMsg', `✓ جاهز: <a href="${url}" download="${esc(name)}">${esc(name)}</a> (${(blob.size / 1048576).toFixed(1)} MB)${ext === 'webm' ? '<br>الملف بصيغة WebM ويشتغل في Chrome وVLC. إذا احتجت MP4 افتح الصفحة من Chrome الحديث أو Safari.' : ''}<div class="btns" style="margin-top:8px"><button type="button" class="ghost small" onclick="document.getElementById('vClear').click()">🧹 مسح لفيديو جديد</button></div>`);
     } catch (err) {
       msg('vRecMsg', `⚠️ تعذّر التسجيل: ${esc(err.message)}`, 'warn');
@@ -1137,6 +1231,7 @@ Rules:
   };
 
   try { VS = JSON.parse(store.get('pb-video') || 'null'); } catch (e) { VS = null; }
+  hRender();
   renderForm(); fontsReady.then(rebuild);
 })();
 </script>
