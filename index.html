@@ -65,6 +65,12 @@
   .tips{margin:0;padding-inline-start:20px;font-size:14px}
   .empty{color:var(--muted);text-align:center;padding:40px 10px}
   .hidden{display:none !important}
+  .tabs{display:flex;gap:8px;margin:0 0 18px;flex-wrap:wrap}
+  .tab{background:var(--card);color:var(--text);border:2px solid var(--line);border-radius:16px;padding:10px 20px;font-size:16px}
+  .tab[aria-selected="true"]{background:var(--navy);color:#fff;border-color:var(--navy)}
+  .qsec{margin:18px 0 10px;font-size:18px;font-weight:900}
+  .qsec:first-of-type{margin-top:0}
+  .qsec small{font-weight:400;color:var(--muted);font-size:13px}
   .keyBox{margin-top:16px}
   .kbadge{font-size:12px;border-radius:10px;padding:2px 10px;margin-inline-start:6px;background:var(--green);color:#fff}
   .kbadge:empty{display:none}
@@ -92,7 +98,56 @@
     <button class="ghost themeBtn" id="themeBtn" type="button" aria-label="تبديل الوضع">🌓</button>
   </header>
 
-  <div class="grid">
+  <nav class="tabs" role="tablist">
+    <button type="button" role="tab" class="tab" id="tabBtnQuick" data-tab="quick">⚡ البرومت السريع</button>
+    <button type="button" role="tab" class="tab" id="tabBtnFull" data-tab="full">🛠️ المولّد الكامل</button>
+  </nav>
+
+  <!-- QUICK TAB -->
+  <div id="tabQuick" class="grid">
+    <section class="card" aria-labelledby="qTitle">
+      <h2 id="qTitle"><span class="dot" style="background:var(--orange)"></span>ثلاثة حقول فقط</h2>
+      <label for="qLang">اللغة / اللهجة</label>
+      <select id="qLang">
+        <option value="السعودية البيضاء">السعودية البيضاء</option>
+        <option value="الخليجية">الخليجية</option>
+        <option value="الفصحى">الفصحى</option>
+        <option value="المصرية">المصرية</option>
+        <option value="English">الإنجليزية</option>
+        <option value="other">أخرى…</option>
+      </select>
+      <input type="text" id="qLangOther" class="hidden" placeholder="اكتب اللغة أو اللهجة" style="margin-top:8px">
+      <label for="qAbout">العنوان <small>(About)</small></label>
+      <input type="text" id="qAbout" placeholder="مثال: توازن وارمِ">
+      <label for="qExplain">الشرح <small>(Explain)</small></label>
+      <input type="text" id="qExplain" placeholder="مثال: تدريب على التوازن أثناء الوقوف والتحكم بالرمي">
+      <div class="note info">💡 البرومتات تتحدّث تلقائيًا وأنت تكتب. ارفق <strong>صورة البطاقة</strong> مع البرومت عند إرساله.</div>
+      <div class="note info">🖥️ أفضل نتيجة في <strong>Claude Code</strong> على الكمبيوتر: يحلل الصوت فعليًا ويسلّمك MP4 جاهز.</div>
+    </section>
+    <section class="card" aria-labelledby="qOutTitle" aria-live="polite">
+      <h2 id="qOutTitle"><span class="dot" style="background:var(--blue)"></span>البرومتات</h2>
+      <h3 class="qsec">🎙️ بصوت</h3>
+      <div class="out">
+        <div class="outHead"><h3><span class="badge" style="background:var(--orange)">1</span>نص الصوت</h3><button class="copy" type="button" data-target="q1">📋 نسخ</button></div>
+        <p class="where">أرسله مع صورة البطاقة، ثم ولّد الصوت في AI Studio.</p>
+        <pre id="q1"></pre>
+      </div>
+      <div class="out">
+        <div class="outHead"><h3><span class="badge" style="background:var(--blue)">2</span>الفيديو</h3><button class="copy" type="button" data-target="q2">📋 نسخ</button></div>
+        <p class="where">بعد توليد الصوت: أرسله مع ملف الصوت.</p>
+        <pre id="q2"></pre>
+      </div>
+      <h3 class="qsec">🎵 بدون كلام <small>(موسيقى فقط، بدون نصوص)</small></h3>
+      <div class="out">
+        <div class="outHead"><h3><span class="badge" style="background:var(--green)">1</span>المشاهد</h3><button class="copy" type="button" data-target="q3">📋 نسخ</button></div>
+        <p class="where">أرسله مع صورة البطاقة.</p>
+        <pre id="q3"></pre>
+      </div>
+    </section>
+  </div>
+
+  <!-- FULL TAB -->
+  <div id="tabFull" class="grid">
     <!-- INPUTS -->
     <section class="card" aria-labelledby="inTitle">
       <h2 id="inTitle"><span class="dot" style="background:var(--orange)"></span>بيانات النشاط</h2>
@@ -721,6 +776,32 @@ $('clrBtn').onclick = () => {
 try { const s = store.get('pb-data'); if (s) load(JSON.parse(s)); } catch(e) {}
 keyUI();
 syncUI();
+
+// ── quick tab ──
+function quickRender(){
+  const other = $('qLang').value === 'other';
+  $('qLangOther').classList.toggle('hidden', !other);
+  const lang = other ? ($('qLangOther').value.trim() || '[[اللغة]]') : $('qLang').value;
+  const about = $('qAbout').value.trim() || '[[العنوان]]';
+  const explain = $('qExplain').value.trim() || '[[الشرح]]';
+  $('q1').textContent = `write a script in ${lang}, that i will use to give to a tts tool, to generate a voice, that i will then feed back to you, to generate a motion graphics explainer for ${explain}, about ${about}. i will use google ai studio tts, it allows me to add a description for the voice and add expressions for each line in the script using <tags>, so take that into consideration. the content must follow the attached activity card exactly.`;
+  $('q2').textContent = 'attached is the voiceover. Generate the motion graphics video to match the voice over timing perfectly, go all out and impress me. do not generate captions or subtitles.';
+  $('q3').textContent = `attached is the activity card. Generate a wordless motion graphics video for ${explain}, about ${about}. no voice and no text on screen at all, the story must be clear from the visuals alone. add cheerful background music only. follow the card exactly, go all out and impress me.`;
+  store.set('pb-quick', JSON.stringify({ lang: $('qLang').value, other: $('qLangOther').value, about: $('qAbout').value, explain: $('qExplain').value }));
+}
+['qLang','qLangOther','qAbout','qExplain'].forEach(id => $(id).addEventListener('input', quickRender));
+$('qLang').addEventListener('change', quickRender);
+document.querySelectorAll('#tabQuick .copy').forEach(b => b.onclick = () => copyText($(b.dataset.target).textContent, b));
+try { const q = JSON.parse(store.get('pb-quick') || '{}'); if (q.lang) $('qLang').value = q.lang; $('qLangOther').value = q.other || ''; $('qAbout').value = q.about || ''; $('qExplain').value = q.explain || ''; } catch(e) {}
+quickRender();
+
+function showTab(t){
+  $('tabQuick').classList.toggle('hidden', t !== 'quick'); $('tabFull').classList.toggle('hidden', t !== 'full');
+  document.querySelectorAll('.tab').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === t));
+  store.set('pb-tab', t);
+}
+document.querySelectorAll('.tab').forEach(b => b.onclick = () => showTab(b.dataset.tab));
+showTab(store.get('pb-tab') || 'quick');
 </script>
 </body>
 </html>
