@@ -921,8 +921,204 @@ function iconG(kind, color) {
   return g;
 }
 
+
+// ───────────── TEXT EXPLAINER: motion graphics from a text (no characters) ─────────────
+const XTYPES = ['title', 'icon_text', 'list', 'steps', 'number', 'compare', 'quote'];
+function normExplainer(s) {
+  const scenes = (Array.isArray(s.scenes) ? s.scenes : []).slice(0, 14).map(x => ({
+    type: XTYPES.includes(x.type) ? x.type : 'icon_text', emoji: str(x.emoji).slice(0, 8),
+    heading: str(x.heading), headingEn: str(x.headingEn), text: str(x.text), textEn: str(x.textEn), number: str(x.number), say: str(x.say),
+    items: (Array.isArray(x.items) ? x.items : []).slice(0, 6).map(i => ({ emoji: str(i.emoji).slice(0, 8), text: str(i.text), en: str(i.en), side: i.side === 'bad' ? 'bad' : 'good' })),
+  }));
+  if (!scenes.length) scenes.push({ type: 'title', emoji: '✨', heading: str(s.title && s.title.ar) || 'عنوان', headingEn: '', text: '', textEn: '', number: '', say: '', items: [] });
+  return { kind: 'explainer', title: pair(s.title), credit: str(s.credit), scenes, voice: s.voice && isFinite(s.voice.duration) ? s.voice : null };
+}
+// scene timing: by reading length, or snapped to the pauses of the recorded voice
+function planExplainer(X) {
+  const wts = X.scenes.map(x => Math.max(8, (x.say || [x.heading, x.text, ...x.items.map(i => i.text)].join(' ')).length));
+  const T = { X, scenes: [] };
+  if (X.voice) {
+    const v = X.voice, s0 = Math.max(0, v.s0 || 0), s1 = Math.max(s0 + 1, v.s1 || v.duration), tot = wts.reduce((a, b) => a + b, 0);
+    let acc = 0, prev = 0;
+    X.scenes.forEach((x, i) => {
+      acc += wts[i];
+      let b = i === X.scenes.length - 1 ? s1 + .4 : s0 + (s1 - s0) * acc / tot;
+      if (i < X.scenes.length - 1 && v.gaps && v.gaps.length) {           // snap to the nearest pause (within 2.5 s)
+        const g = v.gaps.reduce((best, m) => Math.abs(m - b) < Math.abs(best - b) ? m : best, v.gaps[0]);
+        if (Math.abs(g - b) < 2.5 && g > prev + 1.2) b = g;
+      }
+      b = Math.max(b, prev + 1.2);
+      T.scenes.push(Object.assign({}, x, { n: i, a: prev, b }));
+      prev = b;
+    });
+    T.outro = [prev, Math.max(prev + 4.5, v.duration + 1)];
+  } else {
+    let t = 0;
+    X.scenes.forEach((x, i) => {
+      const words = (x.say || [x.heading, x.text, ...x.items.map(it => it.text)].join(' ')).split(/\s+/).filter(Boolean).length;
+      const d = Math.max(3.6, Math.min(10, 2.4 + words * .34 + (x.items.length ? .6 * x.items.length : 0)));
+      T.scenes.push(Object.assign({}, x, { n: i, a: t, b: t + d })); t += d;
+    });
+    T.outro = [t, t + 5];
+  }
+  T.DUR = T.outro[1];
+  // fields used by synthMusic()
+  const first = T.scenes[0];
+  Object.assign(T, { S: { benefits: [], steps: [] }, items: false, intro: [0, first.b], tools: [first.b, first.b], gym: [first.b, T.outro[0]], ben: [T.outro[0], T.outro[0]], cardT: [], helpT: null, benT: [],
+    steps: T.scenes.slice(1).map(s => ({ ts: s.a })), cheer: T.outro[0], ev: { pops: [], dings: [], bursts: [T.outro[0] + .2] } });
+  T.scenes.forEach(s => s.items.forEach((_, j) => T.ev.pops.push(s.a + .6 + j * Math.min(1.2, (s.b - s.a) * .55 / Math.max(1, s.items.length)))));
+  return T;
+}
+function wrapText(ctx, s, maxW, size, w = 900) {
+  font(ctx, size, w); const words = String(s).split(/\s+/).filter(Boolean), lines = []; let cur = '';
+  for (const wd of words) { const t = cur ? cur + ' ' + wd : wd; if (cur && ctx.measureText(t).width > maxW) { lines.push(cur); cur = wd; } else cur = t; }
+  if (cur) lines.push(cur); return lines;
+}
+function fitWrap(ctx, s, maxW, maxLines, size, min, w = 900) {
+  let sz = size, lines = wrapText(ctx, s, maxW, sz, w);
+  while ((lines.length > maxLines || lines.some(l => (font(ctx, sz, w), ctx.measureText(l).width > maxW))) && sz > min) { sz -= 2; lines = wrapText(ctx, s, maxW, sz, w); }
+  return { lines, size: sz };
+}
+function createExplainer(canvas, spec) {
+  const X = normExplainer(spec), T = planExplainer(X), ctx = canvas.getContext('2d');
+  const PAL = [['#ff7a1a', '#fff1e3'], ['#2f6fe0', '#e7f0ff'], ['#e8a400', '#fff8d6'], ['#e53935', '#ffe9e8'], ['#20a35a', '#e4f8ec'], ['#8e5bff', '#f1eaff'], ['#ff5fa2', '#ffeaf3'], ['#00a6c8', '#e2f8fd']];
+  const shapes = el('g'), fl = []; {
+    const R = rng(11);
+    for (let i = 0; i < 22; i++) { const g = el('g', { opacity: .12 + R() * .1 }, shapes), k = R(); if (k < .35) el('circle', { r: 26 + R() * 46 }, g); else if (k < .6) el('rect', { x: -36, y: -36, width: 72, height: 72, rx: 16 }, g); else if (k < .85) star(g, 34 + R() * 26, '#000'); else el('circle', { r: 36 + R() * 24, fill: 'none', 'stroke-width': 12 }, g);
+      fl.push({ g, x: R() * 1920, y: R() * 1080, vx: (R() - .5) * 26, vy: -8 - R() * 20, vr: (R() - .5) * 30, ph: R() * 6 }); }
+  }
+  const burst = makeBurst(shapes, 41, 160, { power: 1300, spread: 170, w: 600 }), rain = makeBurst(shapes, 43, 120, { dir: 90, power: 200, spread: 40, w: 1900 });
+  const AR_N = ['١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+  const toArabicDigits = s => String(s).replace(/\d/g, d => AR_N[+d - 1] || '٠');
+  function bubble(x, y, r, col, emo, k, rot = 0) {
+    if (k <= 0) return; ctx.save(); ctx.translate(x, y); ctx.scale(k, k); ctx.rotate(rot * D2R);
+    ctx.fillStyle = 'rgba(0,0,0,.12)'; ctx.beginPath(); ctx.arc(0, r * .08, r, 0, TAU); ctx.fill();
+    ctx.fillStyle = col; ctx.beginPath(); ctx.arc(0, 0, r, 0, TAU); ctx.fill(); ctx.lineWidth = r * .08; ctx.strokeStyle = '#fff'; ctx.stroke();
+    if (emo) { ctx.font = `${Math.round(r * 1.05)}px 'Segoe UI Emoji','Apple Color Emoji','Noto Color Emoji',sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = '#fff'; ctx.fillText(emo, 0, r * .06); }
+    ctx.restore();
+  }
+  function lines(ls, x, y, size, color, align, lh = 1.3, k = 1, w = 900) {
+    ls.forEach((l, i) => { const kk = clamp(k * ls.length - i); if (kk <= 0) return; ctx.globalAlpha = kk; text(ctx, l, x + (1 - E.out(kk)) * (align === 'right' ? 40 : 0), y + i * size * lh, { size, w, color, align }); });
+    ctx.globalAlpha = 1; return ls.length * size * lh;
+  }
+  function headingBlock(s, x, y, maxW, col, k, align = 'right', big = 74) {
+    if (!s.heading) return 0;
+    const f = fitWrap(ctx, s.heading, maxW, 2, big, 40);
+    let h = lines(f.lines, x, y, f.size, C.navy, align, 1.2, k);
+    if (s.headingEn) { ctx.globalAlpha = clamp(k * 2 - 1); text(ctx, s.headingEn, x, y + h - f.size * .3, { size: Math.min(40, f.size * .55), w: 800, color: col, align, maxW }); ctx.globalAlpha = 1; h += 44; }
+    return h;
+  }
+  function textBlock(s, x, y, maxW, k, align = 'right', maxLines = 4, big = 50) {
+    if (!s.text) return 0;
+    const f = fitWrap(ctx, s.text, maxW, maxLines, big, 30, big > 50 ? 800 : 700);
+    let h = lines(f.lines, x, y, f.size, '#33406f', align, 1.38, k, 700);
+    if (s.textEn) { const g = fitWrap(ctx, s.textEn, maxW, 2, 32, 22, 700); h += lines(g.lines, x, y + h, g.size, '#6a76a8', align, 1.3, clamp(k * 2 - 1), 700); }
+    return h;
+  }
+  function scene(s, t) {
+    const [col, tint] = PAL[s.n % PAL.length], d = s.b - s.a, lt = t - s.a, inK = E.back(P(lt, 0, .55)), out = 1 - E.in(P(t, s.b - .3, s.b));
+    const g = ctx.createLinearGradient(0, 0, 1920, 1080); g.addColorStop(0, tint); g.addColorStop(1, '#ffffff'); ctx.fillStyle = g; ctx.fillRect(0, 0, 1920, 1080);
+    fl.forEach(f => { const x = ((f.x + f.vx * t) % 2100 + 2100) % 2100 - 90, y = ((f.y + f.vy * t + Math.sin(t + f.ph) * 20) % 1250 + 1250) % 1250 - 85; f.g.setAttribute('transform', `translate(${x} ${y}) rotate(${f.vr * t})`); const n0 = f.g.children[0]; n0.setAttribute(n0.getAttribute('fill') === 'none' ? 'stroke' : 'fill', col); });
+    drawNode(ctx, shapes, 1);
+    ctx.save(); ctx.globalAlpha = out; ctx.translate(960, 540); ctx.scale(.96 + .04 * out, .96 + .04 * out); ctx.translate(-960, -540);
+    const rev = j => P(lt, .5 + j * Math.min(1.2, d * .55 / Math.max(1, s.items.length)), .5 + j * Math.min(1.2, d * .55 / Math.max(1, s.items.length)) + .45);
+    const bob = Math.sin(t * 2.2) * 8;
+    if (s.type === 'title' || s.type === 'quote') {
+      if (s.type === 'quote') { ctx.globalAlpha = .18 * out; text(ctx, '”', 1500, 360, { size: 420, color: col }); text(ctx, '“', 420, 820, { size: 420, color: col }); ctx.globalAlpha = out; }
+      else bubble(960, 300 + bob, 120, col, s.emoji || '✨', inK, Math.sin(t) * 6);
+      const f = fitWrap(ctx, s.type === 'quote' ? (s.text || s.heading) : s.heading, 1500, 3, s.type === 'quote' ? 76 : 110, 44);
+      const y0 = s.type === 'quote' ? 540 - f.lines.length * f.size * .62 : 520;
+      lines(f.lines, 960, y0, f.size, C.navy, 'center', 1.2, P(lt, .2, .9));
+      const en = s.type === 'quote' ? s.textEn : s.headingEn, y1 = y0 + f.lines.length * f.size * 1.2;
+      if (en) { ctx.globalAlpha = P(lt, .7, 1.1) * out; text(ctx, en, 960, y1 + 10, { size: 44, w: 800, color: col, maxW: 1500 }); ctx.globalAlpha = out; }
+      if (s.type === 'quote' && s.heading && s.text) { ctx.globalAlpha = P(lt, .9, 1.3) * out; text(ctx, '— ' + s.heading, 960, y1 + 80, { size: 40, w: 700, color: '#6a76a8' }); ctx.globalAlpha = out; }
+      if (s.type === 'title' && s.text) textBlock(s, 960, y1 + (en ? 80 : 20), 1400, P(lt, .8, 1.6), 'center', 3);
+    } else if (s.type === 'icon_text') {
+      bubble(1480, 520 + bob, 210, col, s.emoji || '💡', inK, Math.sin(t * .8) * 5);
+      const hh = headingBlock(s, 1160, 330, 900, col, P(lt, .25, .8));
+      textBlock(s, 1160, hh ? 330 + hh + 30 : 380, 900, P(lt, hh ? .6 : .25, 1.6), 'right', 5, hh ? 50 : 66);
+    } else if (s.type === 'list' || s.type === 'compare') {
+      const hh = headingBlock(s, 1780, 150, 1500, col, P(lt, .1, .6));
+      if (s.type === 'list') {
+        const n = s.items.length || 1, rh = Math.min(150, (820 - hh) / n);
+        s.items.forEach((it, j) => { const k = E.back(rev(j)), y = 200 + hh + j * rh + rh / 2; if (k <= 0) return;
+          ctx.save(); ctx.translate((1 - k) * 200, 0); box(ctx, 240, y - rh * .42, 1540, rh * .84, rh * .42, '#fff', col, 5, 8);
+          bubble(1700, y, rh * .36, col, it.emoji || '✔️', k);
+          text(ctx, it.text, 1620, y - (it.en ? rh * .12 : 0), { size: Math.min(48, rh * .34), w: 800, align: 'right', maxW: 1300 });
+          if (it.en) text(ctx, it.en, 1620, y + rh * .2, { size: Math.min(32, rh * .22), w: 700, color: col, align: 'right', maxW: 1300 });
+          ctx.restore(); });
+      } else {
+        const cols = [['good', C.green, '✅'], ['bad', C.red, '❌']];
+        cols.forEach(([side, c, mark], ci) => {
+          const x0 = ci ? 200 : 1000, its = s.items.filter(i => i.side === side), rh = Math.min(130, (760 - hh) / Math.max(1, its.length));
+          box(ctx, x0, 210 + hh, 720, 800 - hh, 40, '#fff', c, 6, 10);
+          text(ctx, mark, x0 + 360, 210 + hh + 60, { size: 64 });
+          its.forEach((it, j) => { const k = E.back(rev(s.items.indexOf(it))); if (k <= 0) return; const y = 210 + hh + 140 + j * rh;
+            ctx.save(); ctx.globalAlpha = clamp(k) * out; text(ctx, (it.emoji ? it.emoji + '  ' : '') + it.text, x0 + 680, y, { size: Math.min(42, rh * .38), w: 800, align: 'right', maxW: 640 });
+            if (it.en) text(ctx, it.en, x0 + 680, y + rh * .34, { size: Math.min(28, rh * .24), w: 700, color: c, align: 'right', maxW: 640 }); ctx.restore(); });
+        });
+      }
+    } else if (s.type === 'steps') {
+      const hh = headingBlock(s, 1780, 150, 1500, col, P(lt, .1, .6));
+      const n = Math.max(1, s.items.length), gap = Math.min(380, 1500 / n), x0 = 960 + gap * (n - 1) / 2, y = 560 + hh * .3;
+      ctx.lineWidth = 14; ctx.lineCap = 'round'; ctx.strokeStyle = 'rgba(0,0,0,.08)'; ctx.beginPath(); ctx.moveTo(x0, y); ctx.lineTo(x0 - gap * (n - 1), y); ctx.stroke();
+      const prog = clamp(s.items.reduce((a, _, j) => a + (rev(j) > 0 ? 1 : 0), 0) - 1 + rev(Math.max(0, s.items.findIndex((_, j) => rev(j) < 1)) || 0));
+      ctx.strokeStyle = col; ctx.beginPath(); ctx.moveTo(x0, y); ctx.lineTo(x0 - gap * Math.max(0, Math.min(n - 1, prog)), y); ctx.stroke();
+      s.items.forEach((it, j) => { const k = E.back(rev(j)), x = x0 - j * gap; if (k <= 0) return;
+        bubble(x, y, 78, col, it.emoji || '', k);
+        if (!it.emoji) { ctx.save(); ctx.translate(x, y); ctx.scale(k, k); text(ctx, AR_N[j] || String(j + 1), 0, 6, { size: 72, color: '#fff' }); ctx.restore(); }
+        ctx.globalAlpha = clamp(k) * out; const f = fitWrap(ctx, it.text, gap - 30, 3, 40, 24, 800); lines(f.lines, x, y + 130, f.size, C.navy, 'center', 1.25, 1, 800);
+        if (it.en) text(ctx, it.en, x, y + 130 + f.lines.length * f.size * 1.25, { size: 26, w: 700, color: col, maxW: gap - 30 }); ctx.globalAlpha = out; });
+    } else if (s.type === 'number') {
+      const raw = s.number || '', digits = raw.replace(/[٠-٩]/g, c => '٠١٢٣٤٥٦٧٨٩'.indexOf(c)), m = /^(\D*)(\d+(?:\.\d+)?)(.*)$/.exec(digits);
+      const k = E.out(P(lt, .2, Math.min(2.2, d * .5)));
+      const shown = m ? m[1] + toArabicDigits((+m[2] * k).toFixed(m[2].includes('.') ? 1 : 0)) + toArabicDigits(m[3]) : raw;
+      bubble(960, 250 + bob, 90, col, s.emoji || '📊', inK);
+      ctx.save(); ctx.translate(960, 520); const sc = E.back(P(lt, .1, .6)); ctx.scale(sc, sc);
+      text(ctx, shown, 0, 12, { size: 210, color: 'rgba(0,0,0,.12)' }); text(ctx, shown, 0, 0, { size: 210, color: col, maxW: 1500 }); ctx.restore();
+      headingBlock(s, 960, 700, 1500, col, P(lt, .5, 1.1), 'center', 64);
+      textBlock(s, 960, 820 + (s.headingEn ? 40 : 0), 1400, P(lt, .9, 1.7), 'center', 2);
+    }
+    ctx.restore();
+    // progress bar
+    ctx.fillStyle = 'rgba(0,0,0,.08)'; ctx.fillRect(0, 1068, 1920, 12); ctx.fillStyle = col; ctx.fillRect(1920 * (1 - t / T.outro[0]), 1068, 1920 * t / T.outro[0], 12);
+  }
+  function outro(t) {
+    const o = T.outro[0], lt = t - o;
+    const g = ctx.createLinearGradient(0, 0, 0, 1080); g.addColorStop(0, '#9fd8ff'); g.addColorStop(1, '#fff3e0'); ctx.fillStyle = g; ctx.fillRect(0, 0, 1920, 1080);
+    fl.forEach(f => { const x = ((f.x + f.vx * t) % 2100 + 2100) % 2100 - 90, y = ((f.y + f.vy * t + Math.sin(t + f.ph) * 20) % 1250 + 1250) % 1250 - 85; f.g.setAttribute('transform', `translate(${x} ${y}) rotate(${f.vr * t})`); });
+    burst.update(t, o + .2, 960, 420, 2.4); rain.update(t, o + .4, 960, -60, 3.5); drawNode(ctx, shapes, 1);
+    const k = E.back(P(lt, .1, .6));
+    if (k > 0) { ctx.save(); ctx.translate(960, 420); ctx.scale(k, k); box(ctx, -760, -170, 1520, 340, 80, '#d7efff', '#fff', 8, 18);
+      const f = fitWrap(ctx, X.title.ar || X.scenes[0].heading, 1380, 2, 150, 60); lines(f.lines, 0, X.title.en ? -20 - (f.lines.length - 1) * f.size * .5 : -(f.lines.length - 1) * f.size * .55, f.size, C.navy, 'center', 1.1);
+      if (X.title.en) text(ctx, X.title.en, 0, 110, { size: 58, w: 800, color: C.orange, maxW: 1380 }); ctx.restore(); }
+    const ck = X.credit ? E.back(P(lt, 1, 1.5)) : 0;
+    if (ck > 0) {
+      const lab = 'هذا العمل من تنسيق', nm = X.credit; font(ctx, 38, 700); const lw = ctx.measureText(lab).width; const ns = fitSize(ctx, nm, 900, 46, 900); font(ctx, ns, 900); const nw = ctx.measureText(nm).width;
+      const w = lw + nw + 110, x = 960 - w / 2, y = 700;
+      ctx.save(); ctx.translate(960, y + 36); ctx.scale(ck, ck); ctx.translate(-960, -(y + 36));
+      box(ctx, x, y, w, 72, 36, 'rgba(255,255,255,.95)', C.orange, 5, 8); text(ctx, '✍️', x + w - 34, y + 38, { size: 32 });
+      text(ctx, lab, x + w - 64, y + 38, { size: 38, w: 700, color: C.navy, align: 'right' }); text(ctx, nm, x + w - 64 - lw - 16, y + 38, { size: ns, color: C.orange, align: 'right' }); ctx.restore();
+    }
+  }
+  function render(t) {
+    t = clamp(t, 0, T.DUR);
+    ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1; ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.setTransform(canvas.width / 1920, 0, 0, canvas.height / 1080, 0, 0);
+    if (t >= T.outro[0]) outro(t);
+    else { let cur = T.scenes[0]; T.scenes.forEach(s => { if (t >= s.a) cur = s; }); scene(cur, t); }
+    // colour sweep between scenes
+    [...T.scenes.slice(1).map(s => s.a), T.outro[0]].forEach((b, j) => {
+      if (Math.abs(t - b) >= .35) return; const k = P(t, b - .35, b + .35), c = PAL[(j + 1) % PAL.length][0];
+      ctx.save(); ctx.globalAlpha = 1 - Math.abs(k - .5) * 2; ctx.fillStyle = c; ctx.beginPath(); ctx.arc(1920 - 1920 * E.io(k) + 960 * 0, 540, 2200 * Math.sin(k * Math.PI) * .6, 0, TAU); ctx.fill(); ctx.restore();
+    });
+  }
+  return { DUR: T.DUR, T, S: X, render, mode: 'explainer', music: () => synthMusic(T) };
+}
+
 // ───────────── engine ─────────────
 function create(canvas, spec) {
+  if (spec && spec.kind === 'explainer') return createExplainer(canvas, spec);
   const S = normalize(spec), MEDIA = spec.media || {};
   // card pictures when chosen, or automatically when the cartoon cannot show this card faithfully
   const cartoonOK = S.animatable && S.template !== 'other' && (S.template !== 'workout' || S.exercises.every(x => x.known));
@@ -1621,5 +1817,5 @@ function synthMusic(T, SR = 32000) {
   return { sr: SR, L, R };
 }
 
-global.VideoEngine = { create, normalize, ACTIONS, TOOL_KINDS, BEN_ICONS, MOVES };
+global.VideoEngine = { create, normalize, normExplainer, ACTIONS, TOOL_KINDS, BEN_ICONS, MOVES, XTYPES };
 })(typeof window !== 'undefined' ? window : globalThis);

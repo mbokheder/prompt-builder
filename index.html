@@ -348,7 +348,12 @@
   <div id="tabVideo">
   <div class="grid">
     <section class="card" aria-labelledby="vTitle">
-      <h2 id="vTitle"><span class="dot" style="background:var(--orange)"></span>١. بطاقة النشاط</h2>
+      <h2 id="vTitle"><span class="dot" style="background:var(--orange)"></span>١. نوع الفيديو</h2>
+      <div class="seg" role="radiogroup" style="margin-bottom:14px">
+        <input type="radio" name="vkind" id="vkCard" value="card" checked><label for="vkCard">🃏 من بطاقة نشاط<span>صورة البطاقة ← فيديو</span></label>
+        <input type="radio" name="vkind" id="vkText" value="text"><label for="vkText">📝 شرح من نص<span>موشن جرافيك بدون شخصيات</span></label>
+      </div>
+      <div id="cardPanel">
       <div id="vDrop" class="drop" tabindex="0" role="button" aria-label="اختر صورة البطاقة">
         <input type="file" id="vImg" accept="image/*" hidden>
         <div id="vDropEmpty">🖼️ اسحب صورة البطاقة هنا أو <u>اضغط للاختيار</u></div>
@@ -370,6 +375,42 @@
       <h2 style="margin-top:26px"><span class="dot" style="background:var(--blue)"></span>٢. راجع النصوص والحركات</h2>
       <p class="where">النص العربي كبير والإنجليزي تحته. عدّل أي شي، والمعاينة تتحدّث تلقائيًا.</p>
       <div id="vForm"></div>
+      </div>
+      <div id="textPanel" class="hidden">
+        <div class="row"><div><label for="xTitleAr">العنوان</label><input type="text" id="xTitleAr" data-x="title.ar" placeholder="مثال: غسل اليدين"></div><div><label for="xTitleEn">Title</label><input type="text" id="xTitleEn" data-x="title.en" placeholder="Hand washing" style="direction:ltr;text-align:left"></div></div>
+        <label for="xText">النص اللي تبي تشرحه</label>
+        <textarea id="xText" style="min-height:170px" placeholder="الصق الكلام هنا…"></textarea>
+        <label>🎙️ الصوت</label>
+        <div class="seg" role="radiogroup">
+          <input type="radio" name="xvoice" id="xvMusic" value="music" checked><label for="xvMusic">🎵 موسيقى فقط<span>الكلام يطلع مكتوب على الشاشة</span></label>
+          <input type="radio" name="xvoice" id="xvVoice" value="voice"><label for="xvVoice">🎙️ بصوت مسجّل<span>ترفع ملف الصوت</span></label>
+        </div>
+        <div id="xVoiceBox" class="hidden">
+          <div class="note warn">⚠️ <b>لازم يكون الصوت جاهز قبل:</b>
+            <ol class="tips" style="margin:6px 0 0">
+              <li>اكتب نص الصوت (أو خذ «برومت الصوت» من التاب الأول وأرسله لأي ذكاء اصطناعي).</li>
+              <li>ولّد الصوت في <a href="https://aistudio.google.com/generate-speech" target="_blank" rel="noopener">Google AI Studio</a> ونزّله (WAV أو MP3).</li>
+              <li>ارفعه هنا. الصوت لازم يقرأ <b>نفس النص وبنفس الترتيب</b>، عشان المشاهد تمشي معه.</li>
+            </ol></div>
+          <div id="xAudioDrop" class="drop" tabindex="0" role="button" style="margin-top:10px">🎙️ اختر ملف الصوت <u>من هنا</u></div>
+          <input type="file" id="xAudio" accept="audio/*" hidden>
+          <div id="xAudioInfo" class="where" style="margin-top:6px"></div>
+          <audio id="xAudioPrev" controls class="hidden" style="width:100%;margin-top:6px"></audio>
+        </div>
+        <label style="font-weight:400;display:flex;gap:8px;align-items:center;margin-top:12px"><input type="checkbox" id="xEn" checked> أضف سطر إنجليزي صغير تحت كل نص</label>
+        <div class="btns"><button type="button" class="primary" id="xDesign">✨ صمّم المشاهد</button><button type="button" class="ghost" id="xAuto">⚡ قسّم بدون مفتاح</button><button type="button" class="ghost" id="xClear">🧹 مسح لفيديو جديد</button></div>
+        <div id="xMsg"></div>
+        <details class="ana">
+          <summary>ما عندك مفتاح؟ <small>— استخدم تطبيق Gemini العادي</small></summary>
+          <ol class="tips"><li>اكتب النص فوق، ثم انسخ البرومت وأرسله في Gemini.</li><li>انسخ الرد كاملًا والصقه هنا، ثم اضغط «عبّئ».</li></ol>
+          <div class="btns" style="margin-top:8px"><button type="button" class="copy" id="xPromptCopy">📋 نسخ البرومت</button><a class="gem" href="https://gemini.google.com/app" target="_blank" rel="noopener">فتح Gemini ↗</a></div>
+          <textarea id="xPaste" placeholder='الصق الرد هنا… {"scenes": …}' style="margin-top:10px;direction:ltr;text-align:left"></textarea>
+          <div class="btns" style="margin-top:8px"><button type="button" class="primary" id="xFill">✨ عبّئ</button></div>
+        </details>
+        <h2 style="margin-top:26px"><span class="dot" style="background:var(--blue)"></span>٢. راجع المشاهد</h2>
+        <p class="where">كل مشهد له شكل: عنوان، فكرة مع إيموجي، قائمة، خطوات، رقم، صح وخطأ، اقتباس. عدّل أي شي والمعاينة تتحدّث.</p>
+        <div id="xForm"></div>
+      </div>
 
       <details id="vKeyBox" class="keyBox">
         <summary>🔑 مفتاح Gemini <small>(مرة وحدة بس)</small> <span id="vKeyBadge" class="kbadge"></span></summary>
@@ -487,7 +528,7 @@ function buildVoiceScriptPrompt(d){
     content = d.img ? 'Content must follow the attached image exactly: extract the tools, the steps (in the same order) and the benefits from it. Do not invent new steps.' : 'Based on the title and description, propose:\n- The simple tools needed.\n- 4–5 clear, safe steps in order.\n- 3–4 benefits of the activity.';
   }
   const imgLine = d.img ? 'I attached an image of the activity (card/reference). Read it carefully and use it as the main reference for the content.\n\n' : '';
-  return `${imgLine}Write a voiceover script in ${d.lang} for a ${d.duration} second ${KIND(d)} about the activity "${d.title}" (${d.desc})${lvl}.
+  return `${imgLine}Write a voiceover script in ${d.lang} for a ${d.duration} second ${VKIND(d)} about the activity "${d.title}" (${d.desc})${lvl}.
 
 Audience: ${d.audience}. Tone: warm, playful, encouraging, clear.
 
@@ -533,7 +574,7 @@ function sceneListCine(d){
 
 function isArabic(d){ return /Arabic|السعودية|الخليجية|الفصحى|المصرية/.test(d.lang) || /[؀-ۿ]/.test(d.title); }
 
-const KIND = d => d.vstyle === 'cine' ? 'cinematic cartoon short film (animated-movie look — NOT motion graphics, NOT an infographic)' : 'motion graphics explainer';
+const VKIND = d => d.vstyle === 'cine' ? 'cinematic cartoon short film (animated-movie look — NOT motion graphics, NOT an infographic)' : 'motion graphics explainer';
 
 // what the video must show, scene by scene
 function sceneList(d){
@@ -571,7 +612,7 @@ function buildVideoPrompt(d){
   const music = d.music === 'on'
     ? '- Background music: generate a soft, cheerful looping tune with the Web Audio API (no external files), at low volume under the voice, with a mute button. Add subtle sound effects (pop, whoosh, cheer).'
     : '- No background music: voiceover only, with subtle Web Audio sound effects (pop, whoosh, cheer).';
-  return `${PLAT[d.plat].open} Build a ${KIND(d)} as ONE self-contained HTML file for the activity "${d.title}" — ${d.desc}.
+  return `${PLAT[d.plat].open} Build a ${VKIND(d)} as ONE self-contained HTML file for the activity "${d.title}" — ${d.desc}.
 
 I attached: ${d.plat === 'gemini' ? 'the voiceover audio file + ' : ''}the exact script I used${d.img ? ' + an image of the activity' : ''}.
 
@@ -596,7 +637,7 @@ function buildCodePrompt(d, voice){
     : (d.music === 'on' ? '- Music only (no voice): compose a cheerful, upbeat kids\' background track by code (royalty-free) and merge it, plus subtle sound effects synced to the animation.' : '- Completely silent video: no voice and no music.');
   const att = voice ? `I attached the voiceover audio file + the exact script I used${d.img ? ' + an image of the activity card' : ''}.` : (d.img ? 'I attached an image of the activity card. Read it carefully and follow it exactly. Do not invent new steps.' : '');
   return `${att}
-Generate a ${voice ? '' : 'wordless '}${KIND(d)} video for "${d.title}" — ${d.desc}.
+Generate a ${voice ? '' : 'wordless '}${VKIND(d)} video for "${d.title}" — ${d.desc}.
 ${voice ? '- Analyze the audio, find the exact start time of every line, and match each scene and line to the voiceover timing perfectly.' : '- NO narration, NO voice. Total length about ' + d.duration + ' seconds.'}
 - Review sample frames and fix any visual problems before the final render.
 - Final output: MP4 (${d.ratio}, 30fps)${voice || d.music === 'on' ? ' with the audio merged' : ''}.
@@ -636,7 +677,7 @@ function buildSilentPrompt(d){
   const music = d.music === 'on'
     ? '- Music only (no voice): generate a cheerful, upbeat looping kids\' tune with the Web Audio API (no external files), with a mute button. Add subtle sound effects (pop, whoosh, cheer) synced to the animation.'
     : '- Completely silent: no voice and no music.';
-  return `${PLAT[d.plat].open} Build a wordless ${KIND(d)} as ONE self-contained HTML file for the activity "${d.title}" — ${d.desc}.
+  return `${PLAT[d.plat].open} Build a wordless ${VKIND(d)} as ONE self-contained HTML file for the activity "${d.title}" — ${d.desc}.
 ${d.img ? '\nI attached an image of the activity. Read it carefully and follow it exactly (steps, tools, benefits and look).\n' : ''}
 - NO narration, NO voice. The story must be clear from the visuals alone.
 - Total length about ${dur}–${d.duration.split('–')[1]} seconds. Put the scene timings at the top of the code as an editable TIMELINE array.
@@ -1000,6 +1041,8 @@ Rules:
       { ar: 'تعزيز التآزر البصري الحركي والتحكم في القبضة', en: 'Eye–hand coordination and grip control', icon: 'eye' }, { ar: 'زيادة التركيز والتخطيط الحركي', en: 'Focus and motor planning', icon: 'focus' }],
   };
   let VS = null, VIMG = null, eng = null, music = null, musicKey = '', playing = null, recording = false;
+  let VKIND = store.get('pb-vkind') === 'text' ? 'text' : 'card', XS = null, VOICE = null;
+  const cur = () => VKIND === 'text' ? XS : VS;
   // card pictures and Veo clips are kept in IndexedDB (too big for localStorage)
   const IDB = (() => {
     let dbp = null;
@@ -1205,21 +1248,22 @@ Rules:
     } catch (e) { return ''; }
   }
   function hSaveCurrent(auto) {
-    if (!VS) return msg('hMsg', '⚠️ ما فيه نشاط مفتوح عشان أحفظه.', 'warn');
-    const list = hLoad(), sp = JSON.parse(JSON.stringify(VS)), id = VS._hid || ('v' + Date.now().toString(36));
+    const C = cur(); if (!C) return msg('hMsg', '⚠️ ما فيه نشاط مفتوح عشان أحفظه.', 'warn');
+    const list = hLoad(), sp = JSON.parse(JSON.stringify(C)), id = C._hid || ('v' + Date.now().toString(36));
     delete sp._hid;
     const old = list.find(x => x.id === id), item = { id, title: hName(sp), created: old ? old.created : Date.now(), updated: Date.now(), videos: (old ? old.videos || 0 : 0) + (auto ? 1 : 0), spec: sp, thumb: hThumb(sp) };
     const rest = list.filter(x => x.id !== id); rest.unshift(item); if (rest.length > 80) rest.length = 80;
-    VS._hid = id; saveVS();
-    if (VIMG) IDB.set('img:' + id, VIMG.file);
+    C._hid = id; if (VKIND === 'text') { saveXS(); if (VOICE && XS.voiceMode === 'voice') IDB.set('voice:' + id, VOICE.blob); } else saveVS();
+    if (VKIND === 'card' && VIMG) IDB.set('img:' + id, VIMG.file);
+    if (VKIND === 'card')
     for (let i = 0; i < 8; i++) { if (MEDIA.clipBlobs[i]) IDB.set('clip:' + id + ':' + i, MEDIA.clipBlobs[i]); else IDB.del('clip:' + id + ':' + i); }
     const ok = hStore(rest); hRender();
     msg('hMsg', ok ? (auto ? '📚 انحفظ الفيديو في السجل.' : '✓ انحفظ النشاط في السجل.') : '⚠️ ذاكرة المتصفح ممتلئة. صدّر السجل واحذف القديم.', ok ? 'info' : 'warn');
   }
   function hRender() {
-    const list = hLoad(), cur = VS && VS._hid;
+    const list = hLoad(), curId = cur() && cur()._hid;
     $('hCount').textContent = list.length ? `(${list.length})` : '';
-    $('hList').innerHTML = list.length ? list.map(x => `<div class="hItem${x.id === cur ? ' cur' : ''}">${x.thumb ? `<img src="${x.thumb}" alt="">` : '<img alt="">'}
+    $('hList').innerHTML = list.length ? list.map(x => `<div class="hItem${x.id === curId ? ' cur' : ''}">${x.thumb ? `<img src="${x.thumb}" alt="">` : '<img alt="">'}
       <div class="hBody"><b>${esc(x.title)}</b><small>${(x.spec.title && x.spec.title.en) ? esc(x.spec.title.en) + ' · ' : ''}${hDate(x.updated || x.created)}${x.videos ? ` · نزّلته ${x.videos} مرة` : ''}</small>
       <div class="hBtns"><button type="button" class="primary small" data-h-open="${x.id}">🎬 افتح كقالب</button><button type="button" class="ghost small" data-h-file="${x.id}" title="نزّل ملف المعلومات">⬇️</button><button type="button" class="ghost small" data-h-del="${x.id}" title="احذف">🗑️</button></div></div></div>`).join('')
       : '<div class="empty" style="padding:16px">السجل فاضي. أول فيديو تنزّله بيظهر هنا.</div>';
@@ -1229,11 +1273,16 @@ Rules:
   $('hList').addEventListener('click', e => {
     const b = e.target.closest('button'); if (!b) return;
     const list = hLoad(), d = b.dataset;
-    if (d.hOpen) { const x = list.find(i => i.id === d.hOpen); if (!x) return; VS = editable(x.spec); VS._hid = x.id; saveVS(); renderForm(); hRender();
+    if (d.hOpen && list.find(i => i.id === d.hOpen && i.spec.kind === 'explainer')) {
+      const x = list.find(i => i.id === d.hOpen); XS = JSON.parse(JSON.stringify(x.spec)); XS._hid = x.id; saveXS(); setKind('text'); xLoadUI();
+      (async () => { const v = await IDB.get('voice:' + x.id); if (v) { IDB.set('voice:current', v); await setVoice(v, false); } else { VOICE = null; rebuild(); } })();
+      msg('xMsg', `✓ فتحت «${esc(x.title)}». عدّل اللي تبيه ونزّل فيديو جديد.`); $('tabVideo').scrollIntoView({ behavior: 'smooth', block: 'start' }); return;
+    }
+    if (d.hOpen) { setKind('card'); const x = list.find(i => i.id === d.hOpen); if (!x) return; VS = editable(x.spec); VS._hid = x.id; saveVS(); renderForm(); hRender();
       (async () => { const im = await IDB.get('img:' + x.id); clearClips(); if (im) { vSetImg(im); IDB.set('img:current', im); } else { if (VIMG) $('vImgDel').click(); rebuild(); }
         for (let i = 0; i < 8; i++) { const c = await IDB.get('clip:' + x.id + ':' + i); if (c) { setClip(i, c); IDB.set('clip:current:' + i, c); } } rebuild(); })(); msg('vMsg', `✓ فتحت «${esc(x.title)}». عدّل اللي تبيه ونزّل فيديو جديد.`); $('tabVideo').scrollIntoView({ behavior: 'smooth', block: 'start' }); }
     if (d.hFile) { const x = list.find(i => i.id === d.hFile); if (x) dlJSON({ app: 'motion-helper', items: [{ ...x, thumb: '' }] }, safeName(x.title) + '.json'); }
-    if (d.hDel) { const x = list.find(i => i.id === d.hDel); if (x && confirm(`تحذف «${x.title}» من السجل؟`)) { hStore(list.filter(i => i.id !== d.hDel)); IDB.del('img:' + x.id); for (let i = 0; i < 8; i++) IDB.del('clip:' + x.id + ':' + i); if (VS && VS._hid === d.hDel) { delete VS._hid; saveVS(); } hRender(); } }
+    if (d.hDel) { const x = list.find(i => i.id === d.hDel); if (x && confirm(`تحذف «${x.title}» من السجل؟`)) { hStore(list.filter(i => i.id !== d.hDel)); IDB.del('img:' + x.id); IDB.del('voice:' + x.id); for (let i = 0; i < 8; i++) IDB.del('clip:' + x.id + ':' + i); if (XS && XS._hid === d.hDel) { delete XS._hid; saveXS(); } if (VS && VS._hid === d.hDel) { delete VS._hid; saveVS(); } hRender(); } }
   });
   $('hSave').onclick = () => hSaveCurrent(false);
   const blobURL = b => new Promise(r => { if (!b) return r(''); const f = new FileReader(); f.onload = () => r(f.result); f.onerror = () => r(''); f.readAsDataURL(b); });
@@ -1257,11 +1306,12 @@ Rules:
   function rebuild() {
     if (recording) return;
     stopPlay();
-    $('vEmpty').classList.toggle('hidden', !!VS);
-    if (!VS) return;
-    const spec = Object.assign({}, VS, { media: MEDIA });
+    const C0 = cur(); $('vEmpty').classList.toggle('hidden', !!C0);
+    $('vEmpty').innerHTML = VKIND === 'text' ? 'اكتب النص واضغط «صمّم المشاهد»<br>أو «قسّم بدون مفتاح»' : 'ارفع البطاقة واضغط «اقرأ البطاقة»<br>أو جرّب المثال';
+    if (!C0) { eng = null; $('vModeNow').classList.add('hidden'); $('veoBox').classList.add('hidden'); cv.getContext('2d').clearRect(0, 0, cv.width, cv.height); $('vTime').textContent = '0:00 / 0:00'; return; }
+    const spec = VKIND === 'text' ? Object.assign({}, XS, { credit: store.get('pb-credit') || '', voice: XS.voiceMode === 'voice' && VOICE ? VOICE.info : null }) : Object.assign({}, VS, { media: MEDIA });
     eng = VideoEngine.create(cv, spec);
-    $('vModeNow').classList.remove('hidden'); $('vModeNow').textContent = eng.mode === 'cards' ? '🖼️ صور البطاقة' : '🎨 كرتون متحرك';
+    $('vModeNow').classList.remove('hidden'); $('vModeNow').textContent = eng.mode === 'explainer' ? (spec.voice ? '📝 شرح بصوت' : '📝 شرح بموسيقى') : eng.mode === 'cards' ? '🖼️ صور البطاقة' : '🎨 كرتون متحرك';
     $('veoBox').classList.toggle('hidden', eng.mode !== 'cards'); $('vVeoDel').classList.toggle('hidden', !Object.keys(MEDIA.clips).length);
     Object.values(MEDIA.clips).forEach(v => v.play().catch(() => {}));
     $('vSeek').max = eng.DUR; const t = Math.min(+$('vSeek').value || 0, eng.DUR);
@@ -1269,9 +1319,16 @@ Rules:
   }
   function draw(t) { if (!eng) return; eng.render(t); $('vSeek').value = t; $('vTime').textContent = `${fmt(t)} / ${fmt(eng.DUR)}`; }
   const fontsReady = Promise.all(['900 40px Cairo', '800 40px Cairo', '700 40px Cairo'].map(f => document.fonts.load(f, 'ابت abc'))).catch(() => {});
-  function getMusic() { const k = JSON.stringify(VS) + eng.mode + eng.DUR; if (k !== musicKey) { music = eng.music(); musicKey = k; } return music; }
+  function getMusic() { const k = JSON.stringify(cur()) + eng.mode + eng.DUR; if (k !== musicKey) { music = eng.music(); musicKey = k; } return music; }
   function audioBuffer(ac, m) { const b = ac.createBuffer(2, m.L.length, m.sr); b.copyToChannel(m.L, 0); b.copyToChannel(m.R, 1); return b; }
-  function stopPlay() { if (!playing) return; try { playing.src.stop(); } catch (e) {} playing.ac.close(); playing = null; $('vPlay').textContent = '▶ تشغيل'; }
+  const hasVoice = () => VKIND === 'text' && XS && XS.voiceMode === 'voice' && VOICE && eng && eng.mode === 'explainer';
+  function startAudio(ac, out, m, t0, off) {
+    const ms = ac.createBufferSource(), g = ac.createGain(); ms.buffer = audioBuffer(ac, m); g.gain.value = hasVoice() ? .2 : 1; ms.connect(g); g.connect(out); ms.start(t0, off);
+    const srcs = [ms];
+    if (hasVoice() && off < VOICE.buf.duration) { const vs = ac.createBufferSource(); vs.buffer = VOICE.buf; vs.connect(out); vs.start(t0, off); srcs.push(vs); }
+    return srcs;
+  }
+  function stopPlay() { if (!playing) return; playing.srcs.forEach(x => { try { x.stop(); } catch (e) {} }); playing.ac.close(); playing = null; $('vPlay').textContent = '▶ تشغيل'; }
   $('vPlay').onclick = async () => {
     if (!eng) return;
     if (playing) return stopPlay();
@@ -1279,10 +1336,9 @@ Rules:
     $('vPlay').innerHTML = '<span class="spin">⏳</span>';
     await new Promise(r => setTimeout(r, 30));
     const m = getMusic(); await fontsReady;
-    const src = ac.createBufferSource(); src.buffer = audioBuffer(ac, m); src.connect(ac.destination);
     let off = +$('vSeek').value; if (off >= eng.DUR - .2) off = 0;
-    const t0 = ac.currentTime + .05; src.start(t0, off);
-    playing = { ac, src }; $('vPlay').textContent = '⏸ إيقاف';
+    const t0 = ac.currentTime + .05, srcs = startAudio(ac, ac.destination, m, t0, off);
+    playing = { ac, srcs }; $('vPlay').textContent = '⏸ إيقاف';
     const me = playing;
     const loop = () => { if (playing !== me) return; const t = off + ac.currentTime - t0; draw(Math.min(t, eng.DUR)); if (t >= eng.DUR) return stopPlay(); requestAnimationFrame(loop); };
     loop();
@@ -1346,6 +1402,151 @@ Rules:
   };
   $('vVeoDel').onclick = () => { clearClips(); rebuild(); msg('veoMsg', 'انحذفت المقاطع، ورجعت الصور ثابتة.'); };
 
+
+  // ── TEXT EXPLAINER (motion graphics from a text, music only or a recorded voice) ──
+  const XT = { title: 'عنوان', icon_text: 'فكرة مع إيموجي', list: 'قائمة', steps: 'خطوات', number: 'رقم كبير', compare: 'صح وخطأ', quote: 'اقتباس / نصيحة' };
+  const saveXS = () => store.set('pb-explainer', JSON.stringify(XS));
+  const xPrompt = () => `You are a motion-graphics designer for a teacher. Turn the text below into an explainer-video storyboard. Reply with ONLY a JSON object (no code fences, no extra text):
+{"title":{"ar":"","en":""},"scenes":[{"type":"","emoji":"","heading":"","headingEn":"","text":"","textEn":"","number":"","items":[{"emoji":"","text":"","en":"","side":"good"}],"say":""}]}
+Rules:
+- 4 to 10 scenes following the order of the text; the first scene has type "title".
+- "say": copy the exact part of the original text that the scene covers. All scenes together must cover the whole text, in order (this syncs the video with a recorded voice).
+- On-screen text must be SHORT: heading at most 7 words, text at most 18 words, each item at most 6 words. Keep the language and wording of the text.
+- type: "title" (opening), "icon_text" (one idea with one big emoji), "list" (2–5 items), "steps" (2–5 ordered steps), "number" (a key number or percentage, put it in "number"), "compare" (do vs don't: items with side "good" or "bad"), "quote" (a saying, advice or conclusion).
+- emoji: one emoji that best illustrates each scene and each item.
+- ${$('xEn').checked ? 'Add short, simple English translations in "en" of title, headingEn, textEn and items[].en.' : 'Leave every English field empty.'}
+Text:
+"""${$('xText').value.trim()}"""`;
+  const EMO = [[/ماء|مياه|اشرب|شرب/, '💧'], [/صابون|نظاف|نظيف/, '🧼'], [/يد|أيدي|ايدي|اليدين/, '👐'], [/أكل|طعام|غذاء|فواكه|خضار/, '🍎'], [/نوم|ينام|نام/, '😴'], [/رياض|تمرين|حركة|لعب/, '🏃'], [/قراءة|كتاب|اقرأ|قصة/, '📚'], [/مدرس|فصل|معلم/, '🏫'], [/صحة|قلب|صحي/, '❤️'], [/أسنان|اسنان|فرشا/, '🦷'], [/شمس|نهار|صباح/, '☀️'], [/ليل|قمر/, '🌙'], [/شجر|نبات|زرع/, '🌳'], [/خطر|انتبه|احذر|تحذير/, '⚠️'], [/وقت|دقيقة|ثانية|ساعة/, '⏱️'], [/صديق|أصدقاء|تعاون|فريق/, '🤝'], [/فكر|تعلم|عقل|ذكاء/, '🧠'], [/عين|نظر|شاهد/, '👀'], [/سعاد|فرح|ابتسم/, '😊'], [/مال|ريال|توفير/, '💰']];
+  const GEN = ['💡', '⭐', '✅', '🎯', '📌', '🌟', '👍', '🔑'];
+  const emojiFor = (s, i) => { for (const [re, e] of EMO) if (re.test(s)) return e; return GEN[i % GEN.length]; };
+  function autoSplit() {
+    const raw = $('xText').value.trim(); if (!raw) return null;
+    const title = { ar: $('xTitleAr').value.trim(), en: $('xTitleEn').value.trim() };
+    const sents = raw.split(/(?<=[.!؟?])\s+|\n+/).map(s => s.trim()).filter(Boolean);
+    const scenes = [{ type: 'title', emoji: emojiFor(title.ar + ' ' + raw, 0), heading: title.ar || sents[0].split(/\s+/).slice(0, 7).join(' '), headingEn: title.en, text: '', textEn: '', number: '', items: [], say: title.ar ? '' : sents[0] }];
+    const isB = s => /^([-•*]|\d+[.)-]|[١-٩][.)-])/.test(s);
+    // consecutive bullet lines stay together as one list; other sentences are grouped into at most ~7 scenes
+    const blocks = []; (title.ar ? sents : sents.slice(1)).forEach(s => { const L = blocks[blocks.length - 1]; if (isB(s) && L && L.b) L.items.push(s); else blocks.push({ b: isB(s), items: [s] }); });
+    const per = Math.max(1, Math.ceil(blocks.filter(x => !x.b).length / 7)), rest = []; let acc = [];
+    blocks.forEach(x => { if (x.b) { if (acc.length) { rest.push(acc); acc = []; } rest.push(x.items); } else { acc.push(x.items[0]); if (acc.length >= per) { rest.push(acc); acc = []; } } });
+    if (acc.length) rest.push(acc);
+    for (let i = 0; i < rest.length; i++) {
+      const chunk = rest[i], say = chunk.join(' '), bullets = chunk.filter(isB);
+      if (bullets.length >= 2) scenes.push({ type: 'list', emoji: '', heading: '', headingEn: '', text: '', textEn: '', number: '', say, items: bullets.map((b, j) => ({ emoji: emojiFor(b, j), text: b.replace(/^([-•*]|\d+[.)-]|[١-٩][.)-])\s*/, ''), en: '', side: 'good' })) });
+      else { const m = /([0-9٠-٩]+(?:[.,][0-9٠-٩]+)?\s*%?)/.exec(say);
+        scenes.push(m && say.split(/\s+/).length < 14 ? { type: 'number', emoji: emojiFor(say, i), number: m[1], heading: say.replace(m[1], '').trim().split(/\s+/).slice(0, 7).join(' '), headingEn: '', text: '', textEn: '', items: [], say }
+          : { type: 'icon_text', emoji: emojiFor(say, i + 1), heading: '', headingEn: '', text: say, textEn: '', number: '', items: [], say }); }
+    }
+    return { kind: 'explainer', title, scenes };
+  }
+  function xUse(j) {
+    const n = VideoEngine.normExplainer(j);
+    XS = Object.assign(XS || {}, { kind: 'explainer', title: { ar: n.title.ar || $('xTitleAr').value.trim(), en: n.title.en || $('xTitleEn').value.trim() }, scenes: n.scenes });
+    XS.source = $('xText').value; XS.voiceMode = $('xvVoice').checked ? 'voice' : 'music'; XS.en = $('xEn').checked;
+    $('xTitleAr').value = XS.title.ar; $('xTitleEn').value = XS.title.en;
+    saveXS(); xRenderForm(); rebuild();
+  }
+  $('xDesign').onclick = e => {
+    if (!$('xText').value.trim()) return msg('xMsg', '⚠️ اكتب النص أولًا.', 'warn');
+    if (!provider(apiKey())) { msg('xMsg', '⚠️ تحتاج مفتاح Gemini، أو اضغط «قسّم بدون مفتاح».', 'warn'); return askForKey(); }
+    busy(e.currentTarget, 'Gemini يصمّم المشاهد…', async () => {
+      try { const r = await callAI(xPrompt(), false), a = r.indexOf('{'), b = r.lastIndexOf('}'); xUse(JSON.parse(r.slice(a, b + 1))); msg('xMsg', '✓ تم تصميم المشاهد. راجعها تحت وشوف المعاينة.'); }
+      catch (err) { msg('xMsg', `⚠️ ما قدرت أصمّم المشاهد: ${esc(err.message)}`, 'warn'); }
+    });
+  };
+  $('xAuto').onclick = () => { const s = autoSplit(); if (!s) return msg('xMsg', '⚠️ اكتب النص أولًا.', 'warn'); xUse(s); msg('xMsg', '✓ قسّمت النص لمشاهد. تقدر تعدّلها تحت.'); };
+  $('xPromptCopy').onclick = e => { if (!$('xText').value.trim()) return msg('xMsg', '⚠️ اكتب النص أولًا.', 'warn'); copyText(xPrompt(), e.target); };
+  $('xFill').onclick = () => { try { const r = $('xPaste').value, a = r.indexOf('{'), b = r.lastIndexOf('}'); xUse(JSON.parse(r.slice(a, b + 1))); msg('xMsg', '✓ تمت التعبئة.'); } catch (e) { msg('xMsg', '⚠️ ما قدرت أقرأ الرد. انسخه كاملًا من { إلى }.', 'warn'); } };
+  ['xTitleAr', 'xTitleEn', 'xText'].forEach(id => $(id).addEventListener('input', () => { if (!XS) return; if (id === 'xText') XS.source = $('xText').value; else XS.title[id === 'xTitleAr' ? 'ar' : 'en'] = $(id).value; saveXS(); rebuildSoon(); }));
+  $('xEn').addEventListener('change', () => { if (XS) { XS.en = $('xEn').checked; saveXS(); } });
+  // voice
+  async function analyzeVoice(blob) {
+    const ac = new (window.AudioContext || window.webkitAudioContext)();
+    const buf = await ac.decodeAudioData(await blob.arrayBuffer()); ac.close();
+    const ch = buf.getChannelData(0), sr = buf.sampleRate, win = Math.round(sr * .02), env = [];
+    for (let i = 0; i < ch.length; i += win) { let s = 0, n = 0; const e = Math.min(ch.length, i + win); for (let j = i; j < e; j += 2) { s += ch[j] * ch[j]; n++; } env.push(Math.sqrt(s / Math.max(1, n))); }
+    const sorted = [...env].sort((a, b) => a - b), thr = Math.max(.004, (sorted[Math.floor(sorted.length * .95)] || 0) * .12);
+    const segs = []; let on = -1;
+    env.forEach((v, k) => { if (v > thr && on < 0) on = k; if (v <= thr && on >= 0) { segs.push([on * .02, k * .02]); on = -1; } });
+    if (on >= 0) segs.push([on * .02, env.length * .02]);
+    const m = []; segs.forEach(s => { if (m.length && s[0] - m[m.length - 1][1] < .22) m[m.length - 1][1] = s[1]; else m.push(s.slice()); });
+    const gaps = []; for (let i = 1; i < m.length; i++) if (m[i][0] - m[i - 1][1] >= .22) gaps.push(+((m[i][0] + m[i - 1][1]) / 2).toFixed(2));
+    return { buf, info: { duration: +buf.duration.toFixed(2), s0: m.length ? m[0][0] : 0, s1: m.length ? m[m.length - 1][1] : buf.duration, gaps } };
+  }
+  async function setVoice(blob, save) {
+    VOICE = null; $('xAudioPrev').classList.add('hidden'); $('xAudioInfo').textContent = '';
+    if (!blob) { rebuild(); return; }
+    $('xAudioInfo').textContent = '⏳ أحلل وقفات الصوت…';
+    try {
+      const r = await analyzeVoice(blob); VOICE = { blob, buf: r.buf, info: r.info };
+      $('xAudioPrev').src = URL.createObjectURL(blob); $('xAudioPrev').classList.remove('hidden');
+      $('xAudioInfo').textContent = `✓ الصوت ${Math.round(r.info.duration)} ثانية، ولقيت ${r.info.gaps.length} وقفة. المشاهد بتمشي معه.`;
+      if (save) IDB.set('voice:current', blob);
+    } catch (e) { $('xAudioInfo').textContent = '⚠️ ما قدرت أقرأ ملف الصوت. جرّب WAV أو MP3.'; }
+    rebuild();
+  }
+  $('xAudioDrop').onclick = () => $('xAudio').click();
+  $('xAudio').addEventListener('change', e => { const f = e.target.files[0]; e.target.value = ''; if (f) setVoice(f, true); });
+  document.querySelectorAll('input[name=xvoice]').forEach(r => r.addEventListener('change', () => {
+    const v = $('xvVoice').checked; $('xVoiceBox').classList.toggle('hidden', !v);
+    if (XS) { XS.voiceMode = v ? 'voice' : 'music'; saveXS(); } rebuild();
+  }));
+  // scenes editor
+  function xRenderForm() {
+    if (!XS) { $('xForm').innerHTML = '<div class="empty" style="padding:20px">تظهر المشاهد هنا بعد «صمّم المشاهد».</div>'; return; }
+    let h = `<label for="xCredit">✍️ بصمة العمل <small>(اختياري)</small></label><div class="vrow" style="display:flex;align-items:center;gap:10px;margin:0"><span style="font-weight:700;white-space:nowrap">هذا العمل من تنسيق</span><input type="text" id="xCredit" value="${esc(store.get('pb-credit') || '')}" placeholder="اكتب الاسم"></div>`;
+    XS.scenes.forEach((s, i) => {
+      const P = 'scenes.' + i + '.', f = (k, ph, ltr) => `<input type="text" data-x="${P}${k}" value="${esc(s[k])}" placeholder="${ph}"${ltr ? ' style="direction:ltr;text-align:left"' : ''}>`;
+      h += `<div class="vrow"><div class="vrowHead"><span class="badge">${i + 1}</span><select data-x="${P}type">${opts(XT, s.type)}</select><input type="text" data-x="${P}emoji" value="${esc(s.emoji)}" style="width:70px;text-align:center" placeholder="🙂"><button type="button" class="ghost small" data-xdel="${i}" aria-label="احذف">✕</button></div>
+        <div class="row">${f('heading', 'العنوان')}${f('headingEn', 'Heading', 1)}</div>
+        ${['icon_text', 'title', 'quote', 'number'].includes(s.type) ? `<div class="row">${f('text', 'النص')}${f('textEn', 'Text', 1)}</div>` : ''}
+        ${s.type === 'number' ? `<div class="row">${f('number', 'الرقم (مثل ٢٠ أو 75%)')}<span></span></div>` : ''}`;
+      if (['list', 'steps', 'compare'].includes(s.type)) {
+        s.items.forEach((it, j) => { const Q = P + 'items.' + j + '.';
+          h += `<div style="display:flex;gap:6px;margin-top:6px"><input type="text" data-x="${Q}emoji" value="${esc(it.emoji)}" style="width:56px;text-align:center"><input type="text" data-x="${Q}text" value="${esc(it.text)}" placeholder="عنصر"><input type="text" data-x="${Q}en" value="${esc(it.en)}" placeholder="Item" style="direction:ltr;text-align:left">${s.type === 'compare' ? `<select data-x="${Q}side" style="width:90px">${opts({ good: '✅ صح', bad: '❌ خطأ' }, it.side)}</select>` : ''}<button type="button" class="ghost small" data-xidel="${i}.${j}">✕</button></div>`; });
+        if (s.items.length < 6) h += `<button type="button" class="ghost small" data-xiadd="${i}" style="margin-top:6px">＋ عنصر</button>`;
+      }
+      h += `</div>`;
+    });
+    if (XS.scenes.length < 14) h += `<button type="button" class="ghost small" data-xadd="1">＋ مشهد</button>`;
+    $('xForm').innerHTML = h;
+  }
+  function xSet(path, v) { const ks = path.split('.'); let o = XS; ks.slice(0, -1).forEach(k => { o = o[k]; }); o[ks[ks.length - 1]] = v; }
+  $('xForm').addEventListener('input', e => {
+    if (e.target.id === 'xCredit') { store.set('pb-credit', e.target.value.trim()); return rebuildSoon(); }
+    const p = e.target.dataset.x; if (!p) return; xSet(p, e.target.value); saveXS(); rebuildSoon();
+  });
+  $('xForm').addEventListener('change', e => { if (e.target.tagName === 'SELECT') { saveXS(); if (/\.type$/.test(e.target.dataset.x)) xRenderForm(); rebuild(); } });
+  $('xForm').addEventListener('click', e => {
+    const d = e.target.dataset;
+    if (d.xdel) XS.scenes.splice(+d.xdel, 1);
+    else if (d.xidel) { const [i, j] = d.xidel.split('.'); XS.scenes[+i].items.splice(+j, 1); }
+    else if (d.xiadd) XS.scenes[+d.xiadd].items.push({ emoji: '⭐', text: '', en: '', side: 'good' });
+    else if (d.xadd) XS.scenes.push({ type: 'icon_text', emoji: '💡', heading: '', headingEn: '', text: '', textEn: '', number: '', items: [], say: '' });
+    else return;
+    saveXS(); xRenderForm(); rebuild();
+  });
+  function xClearAll() {
+    stopPlay(); XS = null; store.set('pb-explainer', 'null'); IDB.del('voice:current'); VOICE = null;
+    ['xTitleAr', 'xTitleEn', 'xText', 'xPaste'].forEach(id => $(id).value = ''); $('xvMusic').checked = true; $('xVoiceBox').classList.add('hidden');
+    $('xAudioPrev').classList.add('hidden'); $('xAudioInfo').textContent = ''; msg('vRecMsg', '');
+    xRenderForm(); hRender(); rebuild(); msg('xMsg', '✓ انمسح كل شي. اكتب نص الفيديو الجديد.');
+  }
+  $('xClear').onclick = () => { if (!XS && !$('xText').value.trim()) return xClearAll(); if (confirm('تمسح الشرح الحالي وتبدأ فيديو جديد؟')) xClearAll(); };
+  function xLoadUI() {
+    $('xTitleAr').value = XS ? XS.title.ar : ''; $('xTitleEn').value = XS ? XS.title.en : ''; $('xText').value = XS ? XS.source || '' : '';
+    const v = XS && XS.voiceMode === 'voice'; $('xvVoice').checked = v; $('xvMusic').checked = !v; $('xVoiceBox').classList.toggle('hidden', !v);
+    $('xEn').checked = !XS || XS.en !== false; xRenderForm();
+  }
+  // switch between «from a card» and «from a text»
+  function setKind(k) {
+    VKIND = k; store.set('pb-vkind', k); $('vkCard').checked = k === 'card'; $('vkText').checked = k === 'text';
+    $('cardPanel').classList.toggle('hidden', k !== 'card'); $('textPanel').classList.toggle('hidden', k !== 'text');
+    hRender(); rebuild();
+  }
+  document.querySelectorAll('input[name=vkind]').forEach(r => r.addEventListener('change', () => setKind(r.value)));
+
   // ── record & download ──
   $('vRec').onclick = async () => {
     if (!eng || recording) return;
@@ -1358,21 +1559,20 @@ Rules:
       await new Promise(r => setTimeout(r, 30));
       const m = getMusic(); await fontsReady;
       const H = +$('vQual').value; cv.width = Math.round(H * 16 / 9); cv.height = H; eng.render(0);
-      const src = ac.createBufferSource(); src.buffer = audioBuffer(ac, m);
-      const dest = ac.createMediaStreamDestination(); src.connect(dest);
+      const dest = ac.createMediaStreamDestination();
       const stream = cv.captureStream(30); dest.stream.getAudioTracks().forEach(t => stream.addTrack(t));
       const mime = ['video/mp4;codecs=avc1.640028,mp4a.40.2', 'video/mp4;codecs=avc1,mp4a', 'video/mp4', 'video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm'].find(t => MediaRecorder.isTypeSupported(t)) || '';
       const rec = new MediaRecorder(stream, Object.assign({ videoBitsPerSecond: H >= 1080 ? 10e6 : 5e6, audioBitsPerSecond: 192e3 }, mime ? { mimeType: mime } : {}));
       const chunks = []; rec.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data); };
       const stopped = new Promise(r => { rec.onstop = r; });
       rec.start(1000);
-      const t0 = ac.currentTime + .2; src.start(t0);
+      const t0 = ac.currentTime + .2; startAudio(ac, dest, m, t0, 0);
       btn.innerHTML = '🔴 يسجّل…';
       await new Promise(res => { const loop = () => { const t = ac.currentTime - t0; eng.render(Math.max(0, t)); $('vBar').style.width = Math.min(100, Math.max(0, t / eng.DUR * 100)) + '%'; if (t >= eng.DUR + .3) return res(); requestAnimationFrame(loop); }; loop(); });
       rec.stop(); await stopped;
       const type = rec.mimeType || mime || 'video/webm', ext = /mp4/.test(type) ? 'mp4' : 'webm';
       const blob = new Blob(chunks, { type }), url = URL.createObjectURL(blob);
-      const name = (VS.title.ar || 'فيديو').replace(/[\\/:*?"<>|]/g, '').trim() + '.' + ext;
+      const name = (cur().title.ar || 'فيديو').replace(/[\\/:*?"<>|]/g, '').trim() + '.' + ext;
       const a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
       hSaveCurrent(true);
       msg('vRecMsg', `✓ جاهز: <a href="${url}" download="${esc(name)}">${esc(name)}</a> (${(blob.size / 1048576).toFixed(1)} MB)${ext === 'webm' ? '<br>الملف بصيغة WebM ويشتغل في Chrome وVLC. إذا احتجت MP4 افتح الصفحة من Chrome الحديث أو Safari.' : ''}<div class="btns" style="margin-top:8px"><button type="button" class="ghost small" onclick="document.getElementById('vClear').click()">🧹 مسح لفيديو جديد</button></div>`);
@@ -1385,9 +1585,11 @@ Rules:
   };
 
   try { VS = JSON.parse(store.get('pb-video') || 'null'); if (VS) { const hid = VS._hid; VS = editable(VS); if (hid) VS._hid = hid; } } catch (e) { VS = null; }
+  try { XS = JSON.parse(store.get('pb-explainer') || 'null'); } catch (e) { XS = null; }
   hRender();
-  renderForm();
+  renderForm(); xLoadUI(); $('cardPanel').classList.toggle('hidden', VKIND !== 'card'); $('textPanel').classList.toggle('hidden', VKIND !== 'text'); $('vkText').checked = VKIND === 'text';
   fontsReady.then(async () => {
+    const vb = await IDB.get('voice:current'); if (vb && XS && XS.voiceMode === 'voice') await setVoice(vb, false);
     const im = await IDB.get('img:current'); if (im) vSetImg(im, true);
     for (let i = 0; i < 8; i++) { const c = await IDB.get('clip:current:' + i); if (c) setClip(i, c); }
     rebuild();
