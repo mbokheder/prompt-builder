@@ -90,11 +90,20 @@ function makePerson(parent, o) {
   el('rect', { x: -o.neckW / 2, y: top - 18, width: o.neckW, height: 24, rx: 8, fill: o.skin }, ub);
   const r = o.headR, hy = top - r + 4;
   const head = el('g', {}, ub);
+  const hs = o.hairStyle || (o.kid ? 'kid' : 'ponytail');
   let pony = null;
-  if (!o.kid) pony = el('path', { fill: o.hair, d: `M ${r * .45} ${-r * .75} C ${r * 1.55} ${-r * .7} ${r * 1.6} ${r * .7} ${r * 1.1} ${r * 1.55} C ${r * .95} ${r * .8} ${r * .95} ${-r * .05} ${r * .45} ${-r * .15} Z` }, head);
-  [-1, 1].forEach(s => el('circle', { cx: s * r * .97, cy: r * .1, r: r * .2, fill: o.skin }, head));
+  // hair / scarf parts behind the face
+  if (hs === 'ponytail') pony = el('path', { fill: o.hair, d: `M ${r * .45} ${-r * .75} C ${r * 1.55} ${-r * .7} ${r * 1.6} ${r * .7} ${r * 1.1} ${r * 1.55} C ${r * .95} ${r * .8} ${r * .95} ${-r * .05} ${r * .45} ${-r * .15} Z` }, head);
+  if (hs === 'long') pony = el('path', { fill: o.hair, d: `M ${-r * 1.06} ${-r * .2} C ${-r * 1.35} ${r * 1.1} ${-r * 1.05} ${r * 1.95} ${-r * .55} ${r * 1.85} L ${r * .55} ${r * 1.85} C ${r * 1.05} ${r * 1.95} ${r * 1.35} ${r * 1.1} ${r * 1.06} ${-r * .2} Z` }, head);
+  if (hs === 'bun') el('circle', { cx: 0, cy: -r * 1.02, r: r * .42, fill: o.hair }, head);
+  if (hs === 'pigtails') [-1, 1].forEach(sg => { el('ellipse', { cx: sg * r * 1.12, cy: r * .25, rx: r * .32, ry: r * .48, fill: o.hair }, head); el('circle', { cx: sg * r * .98, cy: -r * .12, r: r * .12, fill: o.trim || '#ff5fa2' }, head); });
+  if (hs === 'hijab') el('path', { fill: o.scarf || o.hair, d: `M ${-r * 1.28} ${r * .1} C ${-r * 1.38} ${-r * 1.5} ${r * 1.38} ${-r * 1.5} ${r * 1.28} ${r * .1} L ${r * 1.55} ${r * 2.05} Q 0 ${r * 2.35} ${-r * 1.55} ${r * 2.05} Z` }, head);
+  if (hs !== 'hijab') [-1, 1].forEach(s2 => el('circle', { cx: s2 * r * .97, cy: r * .1, r: r * .2, fill: o.skin }, head));
   el('circle', { cx: 0, cy: 0, r, fill: o.skin }, head);
-  if (o.kid) el('path', { fill: o.hair, d: `M ${-r - 3} ${r * .1} C ${-r - 5} ${-r * 1.35} ${r + 5} ${-r * 1.35} ${r + 3} ${r * .1} L ${r * .78} ${-r * .3} L ${r * .5} ${-r * .14} L ${r * .25} ${-r * .4} L ${-r * .05} ${-r * .18} L ${-r * .35} ${-r * .45} L ${-r * .65} ${-r * .18} L ${-r * .85} ${-r * .3} Z` }, head);
+  // hair / scarf parts in front
+  if (hs === 'kid') el('path', { fill: o.hair, d: `M ${-r - 3} ${r * .1} C ${-r - 5} ${-r * 1.35} ${r + 5} ${-r * 1.35} ${r + 3} ${r * .1} L ${r * .78} ${-r * .3} L ${r * .5} ${-r * .14} L ${r * .25} ${-r * .4} L ${-r * .05} ${-r * .18} L ${-r * .35} ${-r * .45} L ${-r * .65} ${-r * .18} L ${-r * .85} ${-r * .3} Z` }, head);
+  else if (hs === 'short') el('path', { fill: o.hair, d: `M ${-r - 3} ${r * .05} C ${-r - 5} ${-r * 1.32} ${r + 5} ${-r * 1.32} ${r + 3} ${r * .05} C ${r * .75} ${-r * .55} ${-r * .75} ${-r * .55} ${-r - 3} ${r * .05} Z` }, head);
+  else if (hs === 'hijab') el('path', { fill: o.scarf || o.hair, 'fill-rule': 'evenodd', d: `M ${-r * 1.22} 0 A ${r * 1.22} ${r * 1.25} 0 1 1 ${r * 1.22} 0 L ${r * 1.22} ${r * .6} Q ${r * .9} ${r * 1.25} 0 ${r * 1.3} Q ${-r * .9} ${r * 1.25} ${-r * 1.22} ${r * .6} Z M ${-r * .8} ${r * .08} A ${r * .8} ${r * .9} 0 1 0 ${r * .8} ${r * .08} A ${r * .8} ${r * .9} 0 1 0 ${-r * .8} ${r * .08} Z` }, head);
   else el('path', { fill: o.hair, d: `M ${-r - 3} ${r * .3} C ${-r - 7} ${-r * 1.4} ${r + 7} ${-r * 1.4} ${r + 3} ${r * .3} C ${r * .8} ${-r * .45} ${-r * .15} ${-r * .8} ${-r * .9} ${-r * .15} Z` }, head);
   const cheeks = [-1, 1].map(s => el('ellipse', { cx: s * r * .55, cy: r * .36, rx: r * .16, ry: r * .1, fill: '#ff8a80', opacity: .45 }, head));
   const eyes = [-1, 1].map(s => el('ellipse', { cx: s * r * .34, cy: r * .02, rx: r * .1, ry: r * .14, fill: '#2b1d16' }, head));
@@ -296,10 +305,11 @@ function drawShape(ctx, n, A) {
   else if (n.tag === 'ellipse') { const rx = Math.abs(+a.rx || 0), ry = Math.abs(+a.ry || 0); p = new Path2D(); p.ellipse(+a.cx || 0, +a.cy || 0, rx, ry, 0, 0, TAU); b = { cx: +a.cx || 0, cy: +a.cy || 0, rx, ry }; }
   else if (n.tag === 'path') { if (!a.d) return; p = P2(a.d); }
   else if (n.tag === 'line') { p = new Path2D(); p.moveTo(+a.x1 || 0, +a.y1 || 0); p.lineTo(+a.x2 || 0, +a.y2 || 0); }
+  else if (n.tag === 'image') { ctx.globalAlpha = A; drawMedia(ctx, a.img, a.src, +a.x || 0, +a.y || 0, +a.w, +a.h, 'contain'); return; }
   else if (n.tag === 'text') { ctx.globalAlpha = A; text(ctx, a.text, +a.x || 0, +a.y || 0, { size: +a.size || 40, w: +a.weight || 900, color: a.fill || '#1d2a6e', maxW: +a.maxw || 0 }); return; }
   else return;
   const fill = a.fill == null ? (n.tag === 'line' ? 'none' : '#000') : a.fill;
-  if (fill !== 'none') { ctx.globalAlpha = A; ctx.fillStyle = paint(ctx, fill, b); ctx.fill(p); }
+  if (fill !== 'none') { ctx.globalAlpha = A; ctx.fillStyle = paint(ctx, fill, b); if (a['fill-rule'] === 'evenodd') ctx.fill(p, 'evenodd'); else ctx.fill(p); }
   if (a.stroke && a.stroke !== 'none') {
     ctx.globalAlpha = A; ctx.strokeStyle = paint(ctx, a.stroke, b); ctx.lineWidth = +a['stroke-width'] || 1;
     ctx.lineCap = a['stroke-linecap'] || 'butt'; ctx.lineJoin = a['stroke-linejoin'] || 'miter';
@@ -422,6 +432,281 @@ function makeMat(parent, w, h, rows, cols) {
 function iconBubble(parent, color) { const g = el('g', {}, parent); el('circle', { r: 62, fill: color, stroke: '#fff', 'stroke-width': 9 }, g); return g; }
 const arrowIcon = (g, up) => el('path', { d: up ? 'M 0 -36 L 30 0 L 12 0 L 12 32 L -12 32 L -12 0 L -30 0 Z' : 'M 0 36 L 30 0 L 12 0 L 12 -32 L -12 -32 L -12 0 L -30 0 Z', fill: '#fff' }, g);
 
+
+// ───────────── characters from the card analysis ─────────────
+const hexOr = (v, d) => /^#[0-9a-f]{6}$/i.test(v || '') ? v : d;
+function shade(hex, k) {
+  const n = parseInt(hex.slice(1), 16), f = v => Math.max(0, Math.min(255, Math.round(k < 0 ? v * (1 + k) : v + (255 - v) * k)));
+  return '#' + [n >> 16, n >> 8 & 255, n & 255].map(f).map(v => v.toString(16).padStart(2, '0')).join('');
+}
+const HAIR_STYLES = ['kid', 'short', 'ponytail', 'long', 'bun', 'pigtails'];
+function normChar(c, role) {
+  c = c || {};
+  const age = ['child', 'teen', 'adult'].includes(c.age) ? c.age : (role === 'helper' ? 'adult' : 'child');
+  const gender = c.gender === 'female' ? 'female' : c.gender === 'male' ? 'male' : (role === 'helper' ? 'female' : 'male');
+  const def = role === 'helper' ? TEACHER : KID;
+  return { role, age, gender, hijab: !!c.hijab, hairStyle: HAIR_STYLES.includes(c.hairStyle) ? c.hairStyle : '',
+    hair: hexOr(c.hair, def.hair), scarf: hexOr(c.scarf, '#e85d9e'), skin: hexOr(c.skin, def.skin),
+    top: hexOr(c.top, def.shirt), bottom: hexOr(c.bottom, def.pants), shoes: hexOr(c.shoes, def.shoe),
+    sleeves: ['long', 'short', 'none'].includes(c.sleeves) ? c.sleeves : (age === 'child' ? 'short' : 'long') };
+}
+function personOpts(c) {
+  const child = c.age === 'child', base = Object.assign({}, child ? KID : TEACHER);
+  const hs = c.hijab ? 'hijab' : (c.hairStyle || (child ? (c.gender === 'female' ? 'pigtails' : 'kid') : (c.gender === 'female' ? 'ponytail' : 'short')));
+  return Object.assign(base, { kid: child ? 1 : 0, shirt: c.top, trim: child ? shade(c.top, .5) : c.top, pants: c.bottom, shoe: c.shoes, skin: c.skin, hair: c.hair, scarf: c.scarf, hairStyle: hs, sleeves: c.sleeves,
+    sc: child ? 1 : c.age === 'teen' ? .72 : .8 });
+}
+
+// ───────────── side-view body (floor exercises) ─────────────
+const toTheta = a => 90 - a;                           // lib ik() angles → screen angles (0 = right, 90 = down)
+const ptAt = (P, ang, len) => [P[0] + Math.cos(ang * D2R) * len, P[1] + Math.sin(ang * D2R) * len];
+function makeSide(parent, o) {
+  const kid = !!o.kid, k = kid ? .74 : 1, R = kid ? 38 : 31;
+  const L = { T: 150 * k, TH: 118 * k, SH: 112 * k, UA: 82 * k, FA: 78 * k, N: 16 * k, tw: 46 * k, lw: 30 * k, sw: 24 * k, aw: 18 * k };
+  const g = el('g', {}, parent);
+  const shadow = el('ellipse', { rx: 120, ry: 12, fill: '#000', opacity: .14 }, g);
+  const SL = o.sleeves || (kid ? 'short' : 'long');
+  const uaCol = SL === 'none' ? o.skin : o.shirt, faCol = SL === 'long' ? o.shirt : o.skin;
+  const line = (col, w) => el('line', { stroke: col, 'stroke-width': w, 'stroke-linecap': 'round' }, g);
+  const limb = dk => ({
+    th: line(shade(o.pants, dk), L.lw), sh: line(shade(o.pants, dk), L.sw), shoe: el('ellipse', { rx: L.sw * 1.05, ry: L.sw * .5, fill: shade(o.shoe, dk), stroke: 'rgba(0,0,0,.18)', 'stroke-width': 2 }, g) });
+  const arm = dk => ({ ua: line(shade(uaCol, dk), L.aw + 2), fa: line(shade(faCol, dk), L.aw), hand: el('circle', { r: L.aw * .62, fill: shade(o.skin, dk) }, g) });
+  const farArm = arm(-.22), farLeg = limb(-.25);
+  const waist = line(o.pants, L.tw * .95), torso = line(o.shirt, L.tw), neck = line(o.skin, L.aw);
+  const head = el('g', {}, g), r = R, hs = o.hairStyle || (kid ? 'kid' : 'ponytail'), hc = hs === 'hijab' ? (o.scarf || o.hair) : o.hair;
+  let pony = null;
+  if (hs === 'ponytail') pony = el('path', { fill: hc, d: `M ${-r * .45} ${-r * .8} C ${-r * 1.7} ${-r * .7} ${-r * 1.8} ${r * .7} ${-r * 1.25} ${r * 1.45} C ${-r * 1.05} ${r * .7} ${-r * .95} ${-r * .05} ${-r * .45} ${-r * .2} Z` }, head);
+  if (hs === 'long') pony = el('path', { fill: hc, d: `M ${-r * .95} ${-r * .55} C ${-r * 1.45} ${r * .4} ${-r * 1.25} ${r * 1.6} ${-r * .55} ${r * 1.85} L ${r * .05} ${r * 1.15} C ${-r * .1} ${r * .5} ${-r * .3} 0 0 ${-r * .3} Z` }, head);
+  if (hs === 'bun') el('circle', { cx: -r * .72, cy: -r * .78, r: r * .4, fill: hc }, head);
+  if (hs === 'pigtails') el('ellipse', { cx: -r * 1.02, cy: r * .2, rx: r * .32, ry: r * .5, fill: hc }, head);
+  if (hs === 'hijab') el('path', { fill: hc, d: `M ${-r * 1.25} ${-r * .1} C ${-r * 1.3} ${-r * 1.5} ${r * 1.15} ${-r * 1.55} ${r * 1.18} ${-r * .05} L ${r * .85} ${r * 1.9} L ${-r * 1.45} ${r * 1.95} Z` }, head);
+  el('circle', { r, fill: o.skin }, head);
+  el('circle', { cx: r * .98, cy: r * .14, r: r * .15, fill: o.skin }, head);
+  if (hs !== 'hijab') el('circle', { cx: -r * .12, cy: r * .06, r: r * .2, fill: shade(o.skin, -.1) }, head);
+  if (hs === 'kid') el('path', { fill: hc, d: `M ${-r * 1.03} ${r * .18} C ${-r * 1.15} ${-r * 1.25} ${r * .8} ${-r * 1.38} ${r * 1.03} ${-r * .22} L ${r * .62} ${-r * .38} L ${r * .38} ${-r * .2} L ${r * .12} ${-r * .46} L ${-r * .2} ${-r * .24} L ${-r * .45} ${-r * .42} L ${-r * .62} 0 Z` }, head);
+  else if (hs === 'short') el('path', { fill: hc, d: `M ${-r * 1.04} ${r * .22} C ${-r * 1.16} ${-r * 1.26} ${r * .85} ${-r * 1.36} ${r * 1.04} ${-r * .28} C ${r * .62} ${-r * .58} ${-r * .3} ${-r * .52} ${-r * .55} ${r * .32} Z` }, head);
+  else if (hs === 'hijab') el('path', { fill: hc, 'fill-rule': 'evenodd', d: `M ${-r * 1.2} 0 A ${r * 1.2} ${r * 1.22} 0 1 1 ${r * 1.2} 0 A ${r * 1.2} ${r * 1.22} 0 1 1 ${-r * 1.2} 0 Z M ${r * -.25} ${r * .1} A ${r * .62} ${r * .8} 0 1 0 ${r * .99} ${r * .1} A ${r * .62} ${r * .8} 0 1 0 ${r * -.25} ${r * .1} Z` }, head);
+  else el('path', { fill: hc, d: `M ${-r * 1.05} ${r * .28} C ${-r * 1.22} ${-r * 1.3} ${r * .9} ${-r * 1.42} ${r * 1.05} ${-r * .22} C ${r * .72} ${-r * .62} 0 ${-r * .8} ${-r * .5} ${-r * .12} Z` }, head);
+  el('ellipse', { cx: r * .45, cy: r * .32, rx: r * .16, ry: r * .1, fill: '#ff8a80', opacity: .45 }, head);
+  const eye = el('ellipse', { cx: r * .52, cy: -r * .05, rx: r * .1, ry: r * .14, fill: '#2b1d16' }, head);
+  el('path', { d: `M ${r * .35} ${-r * .3} Q ${r * .52} ${-r * .38} ${r * .7} ${-r * .3}`, stroke: hs === 'hijab' ? '#2b1d16' : o.hair, 'stroke-width': 3.5, fill: 'none', 'stroke-linecap': 'round' }, head);
+  const mouth = el('path', { fill: 'none', stroke: '#8a3b2b', 'stroke-width': 4, 'stroke-linecap': 'round' }, head);
+  const nearLeg = limb(0), nearArm = arm(0);
+  const ball = el('g', {}, g); el('circle', { r: 30 * k, fill: '#2f6fe0', stroke: '#1d47a8', 'stroke-width': 3 }, ball); el('path', { d: `M ${-30 * k} 0 Q 0 ${-14 * k} ${30 * k} 0`, stroke: '#fff', 'stroke-width': 3, fill: 'none', opacity: .7 }, ball);
+  const api = { g, k, L, hipW: [0, 0] };
+  api.update = (p, x0, gy, t = 0) => {
+    const S = p.scale || 1, P = ([x, y]) => [x0 + x * k * S, gy + y * k * S];
+    const H = P(p.hip), Sh = ptAt(H, p.t, L.T * S), front = ptAt([0, 0], p.t + 90, 1);
+    const seg = (a, b, w) => set(a, { x1: b[0][0], y1: b[0][1], x2: b[1][0], y2: b[1][1] });
+    const solve = (from, spec, i, L1, L2, bend) => {
+      if (spec.to) { const T2 = P(spec.to[i]); const [a1, a2] = ik(from[0], from[1], T2[0], T2[1], L1, L2, (spec.b || [1, 1])[i] * bend); return [toTheta(a1), toTheta(a1 + a2)]; }
+      return [spec.a1[i], spec.a2[i]];
+    };
+    const legs = p.feet ? { to: p.feet, b: p.kb } : { a1: p.th, a2: p.sh };
+    const arms = p.hands ? { to: p.hands, b: p.eb } : { a1: p.ua, a2: p.fa };
+    const xs = [H[0], Sh[0]];
+    [[farLeg, 1], [nearLeg, 0]].forEach(([lg, i]) => {
+      const [a, b] = solve(H, legs, i, L.TH * S, L.SH * S, 1);
+      const Kn = ptAt(H, a, L.TH * S), F = ptAt(Kn, b, L.SH * S);
+      set(lg.th, { x1: H[0], y1: H[1], x2: Kn[0], y2: Kn[1] }); set(lg.sh, { x1: Kn[0], y1: Kn[1], x2: F[0], y2: F[1] });
+      const c1 = b - 90, c2 = b + 90, fd = Math.cos((c1 - (p.t + 90)) * D2R) > Math.cos((c2 - (p.t + 90)) * D2R) ? c1 : c2;
+      const sc = ptAt(F, fd, L.sw * .45);
+      set(lg.shoe, { cx: sc[0], cy: sc[1], transform: `rotate(${fd} ${sc[0]} ${sc[1]})` }); xs.push(F[0]);
+    });
+    let handNear = null;
+    [[farArm, 1], [nearArm, 0]].forEach(([am, i]) => {
+      const [a, b] = solve(Sh, arms, i, L.UA * S, L.FA * S, -1);
+      const E1 = ptAt(Sh, a, L.UA * S), Hd = ptAt(E1, b, L.FA * S);
+      set(am.ua, { x1: Sh[0], y1: Sh[1], x2: E1[0], y2: E1[1] }); set(am.fa, { x1: E1[0], y1: E1[1], x2: Hd[0], y2: Hd[1] }); set(am.hand, { cx: Hd[0], cy: Hd[1] });
+      if (!i) handNear = Hd; xs.push(Hd[0]);
+    });
+    const W1 = ptAt(H, p.t, L.T * S * .3), T1 = ptAt(H, p.t, L.T * S * .2);
+    set(waist, { x1: H[0], y1: H[1], x2: W1[0], y2: W1[1] }); set(torso, { x1: T1[0], y1: T1[1], x2: Sh[0], y2: Sh[1] });
+    const nd = p.t + (p.nod || 0), N2 = ptAt(Sh, nd, L.N * S), Hc = ptAt(Sh, nd, (L.N + r * .85) * S);
+    set(neck, { x1: Sh[0], y1: Sh[1], x2: N2[0], y2: N2[1] });
+    head.setAttribute('transform', `translate(${Hc[0]} ${Hc[1]}) rotate(${nd + 90}) scale(${S})`);
+    if (pony) pony.setAttribute('transform', `rotate(${Math.sin(t * 4) * 4})`);
+    const blink = ((t * .29 + .5) % 1) < .025 ? .15 : 1; set(eye, { ry: r * .14 * blink });
+    const mo = p.mouth || 0;
+    set(mouth, { d: mo > .3 ? `M ${r * .4} ${r * .42} Q ${r * .62} ${r * .7} ${r * .82} ${r * .42} Z` : `M ${r * .42} ${r * .44} Q ${r * .62} ${r * .58} ${r * .82} ${r * .42}`, fill: mo > .3 ? '#8a2a2a' : 'none' });
+    const mn = Math.min(...xs), mx = Math.max(...xs);
+    set(shadow, { cx: (mn + mx) / 2, cy: gy + 4, rx: (mx - mn) / 2 + 30, ry: 12 });
+    ball.setAttribute('opacity', p.ball ? 1 : 0);
+    if (p.ball && handNear) ball.setAttribute('transform', `translate(${handNear[0] + 10 * k} ${handNear[1] - 4}) scale(${p.ballS || 1})`);
+    api.hipW = H; api.headW = Hc;
+  };
+  return api;
+}
+
+// ───────────── exercise moves (side view, facing right; units = adult, origin = mat centre on the floor) ─────────────
+// type: cycle (A→B→A), alt (alternating sides A↔B), hold (A with breathing), front (frontal body)
+const SUPINE_ARMS = [[40, -10], [30, -10]];
+const MOVES = {
+  plank: { type: 'hold', rep: 2.4, floor: 1, A: { hip: [-5, -72], t: -7, hands: [[222, -8], [214, -8]], eb: [1, 1], feet: [[-222, -4], [-208, -4]], kb: [1, 1] }, B: { hip: [-5, -77], t: -9 } },
+  leg_raise: { type: 'cycle', rep: 2.2, floor: 1, A: { hip: [60, -24], t: 180, hands: SUPINE_ARMS, eb: [1, 1], th: [-8, -6], sh: [-8, -6] }, B: { th: [-86, -84], sh: [-86, -84] } },
+  crunch: { type: 'cycle', rep: 2.0, floor: 1, A: { hip: [40, -24], t: 180, feet: [[168, -4], [178, -4]], kb: [1, 1], hands: [[-142, -52], [-136, -50]], eb: [-1, -1] }, B: { t: 214, hands: [[-112, -160], [-106, -156]], mouth: .5 } },
+  bicycle: { type: 'alt', rep: 1.6, floor: 1, A: { hip: [40, -24], t: 205, hands: [[-128, -126], [-122, -122]], eb: [-1, -1], th: [-105, -18], sh: [-10, -18] }, B: { th: [-18, -105], sh: [-18, -10] } },
+  russian_twist: { type: 'cycle', rep: 1.4, floor: 1, A: { hip: [0, -20], t: -125, th: [-45, -42], sh: [15, 18], hands: [[90, -92], [80, -90]], eb: [1, 1], ball: 1, ballS: 1.12 }, B: { hands: [[50, -128], [42, -126]], ballS: .86 } },
+  mountain_climber: { type: 'alt', rep: .9, floor: 1, A: { hip: [-20, -120], t: -18, hands: [[123, -6], [116, -6]], eb: [1, 1], th: [40, 148.6], sh: [175, 148.6] }, B: { th: [148.6, 40], sh: [148.6, 175] } },
+  push_up: { type: 'cycle', rep: 1.8, floor: 1, A: { hip: [-20, -120], t: -18, hands: [[123, -6], [116, -6]], eb: [1, 1], th: [148.6, 150], sh: [148.6, 150] }, B: { hip: [-20, -64], t: -7, th: [163.8, 164.5], sh: [163.8, 164.5] } },
+  glute_bridge: { type: 'cycle', rep: 2.0, floor: 1, A: { hip: [30, -24], t: 180, feet: [[150, -4], [160, -4]], kb: [1, 1], hands: [[-20, -8], [-30, -8]], eb: [1, 1] }, B: { hip: [30, -100], t: 153 } },
+  squat: { type: 'cycle', rep: 2.0, A: { hip: [0, -226], t: -90, feet: [[8, -4], [-6, -4]], kb: [1, 1], hands: [[10, -70], [0, -70]], eb: [1, 1] }, B: { hip: [-70, -120], t: -55, hands: [[150, -262], [140, -258]] } },
+  lunge: { type: 'cycle', rep: 2.2, A: { hip: [0, -222], t: -90, feet: [[70, -4], [-70, -4]], kb: [1, 1], hands: [[25, -226], [18, -224]], eb: [-1, -1] }, B: { hip: [0, -130], feet: [[110, -4], [-120, -4]], hands: [[25, -134], [18, -132]] } },
+  superman: { type: 'cycle', rep: 2.2, floor: 1, A: { hip: [-30, -24], t: 0, nod: -8, hands: [[260, -20], [250, -20]], eb: [1, 1], th: [180, 180], sh: [180, 180] }, B: { t: -12, nod: -18, hands: [[255, -72], [245, -70]], th: [190, 190], sh: [193, 193], mouth: .5 } },
+  flutter: { type: 'alt', rep: .8, floor: 1, A: { hip: [60, -24], t: 180, hands: SUPINE_ARMS, eb: [1, 1], th: [-18, -36], sh: [-18, -36] }, B: { th: [-36, -18], sh: [-36, -18] } },
+  jumping_jack: { type: 'front', rep: 1.0 }, high_knees: { type: 'front', rep: .8 }, stretch: { type: 'front', rep: 3.0 },
+};
+const MOVE_LIST = Object.keys(MOVES);
+const mixPose = (A, B, k) => { const o = {}; for (const key in A) { const a = A[key], b = B[key] === undefined ? a : B[key]; o[key] = Array.isArray(a) ? a.map((v, i) => Array.isArray(v) ? v.map((w, j) => lerp(w, b[i][j], k)) : lerp(v, b[i], k)) : typeof a === 'number' ? lerp(a, b, k) : a; } return o; };
+function movePose(name, tl) {             // tl = seconds since the move started
+  const m = MOVES[name] || MOVES.stretch, A = m.A, B = Object.assign({}, A, m.B);
+  const ph = Math.max(0, tl) / m.rep, k = m.type === 'hold' ? (1 - Math.cos(ph * TAU)) / 2 : (1 - Math.cos(ph * TAU)) / 2;
+  return mixPose(A, B, m.type === 'alt' ? (Math.floor(ph) % 2 ? 1 - E.io(Math.min(1, (ph % 1) * 2)) : E.io(Math.min(1, (ph % 1) * 2))) : k);
+}
+function frontPose(name, tl, x, y, s) {    // frontal moves use the standing body
+  const m = MOVES[name], ph = Math.max(0, tl) / m.rep;
+  if (name === 'jumping_jack') { const k = (1 - Math.cos(ph * TAU)) / 2; return { x, y: y - Math.sin(ph * TAU * 2) * 18 * k, s, spread: lerp(20, 70, k), la: [lerp(-12, -165, k), lerp(8, -10, k)], ra: [lerp(12, 165, k), lerp(-8, 10, k)], mouth: .3 }; }
+  if (name === 'high_knees') { const a = Math.sin(ph * Math.PI); return { x, y: y - Math.abs(a) * 10, s, lift: [Math.max(0, a) * .95, Math.max(0, -a) * .95], la: [-12 - a * 40, 60 * Math.max(0, a)], ra: [12 - a * 40, -60 * Math.max(0, -a)], mouth: .3 }; }
+  const k = Math.sin(ph * TAU);
+  return { x, y, s, lean: k * 10, la: [-170, -5], ra: [170, 5], mouth: .2 };
+}
+
+// ───────────── rooms ─────────────
+GRAD.studioWall = ctx => { const g = ctx.createLinearGradient(0, -500, 0, 570); g.addColorStop(0, '#efe4ff'); g.addColorStop(1, '#ffe3ee'); return g; };
+function buildKidsRoom(cam) {
+  el('rect', { x: -900, y: -500, width: 3720, height: 1070, fill: 'url(#wallGrad)' }, cam);
+  el('rect', { x: -900, y: 520, width: 3720, height: 26, fill: '#ff9d2e' }, cam);
+  el('rect', { x: -900, y: 546, width: 3720, height: 16, fill: '#e07a12' }, cam);
+  const bg = el('g', {}, cam), cols = [C.orange, C.blue, C.red, C.green, '#8e5bff'];
+  el('path', { d: 'M -300 70 Q 960 230 2220 70', fill: 'none', stroke: '#8c7a66', 'stroke-width': 4 }, bg);
+  for (let i = 0; i < 28; i++) { const k = i / 27, x = lerp(-300, 2220, k), y = 70 + 4 * k * (1 - k) * 160; el('path', { d: `M ${x - 30} ${y} L ${x + 30} ${y} L ${x} ${y + 60} Z`, fill: cols[i % 5] }, bg); }
+  [[200, 230], [1720, 230]].forEach(([x, y]) => { el('rect', { x: x - 130, y, width: 260, height: 190, rx: 24, fill: '#d6ecff', stroke: '#fff', 'stroke-width': 10 }, bg); el('path', { d: `M ${x} ${y} L ${x} ${y + 190} M ${x - 130} ${y + 95} L ${x + 130} ${y + 95}`, stroke: '#fff', 'stroke-width': 8 }, bg); });
+  const fl = el('g', {}, cam), HZ = 300, rows = [560];
+  for (let i = 1; i < 7; i++) rows.push(HZ + 2600 / (10 - i * 1.4));
+  const X = (j, y) => 960 + j * 130 * (y - HZ) / 260;
+  for (let r = 0; r < rows.length - 1; r++) for (let j = -22; j < 22; j++) {
+    const y0 = rows[r], y1 = rows[r + 1];
+    el('path', { d: `M ${X(j, y0)} ${y0} L ${X(j + 1, y0)} ${y0} L ${X(j + 1, y1)} ${y1} L ${X(j, y1)} ${y1} Z`, fill: (r + j) % 2 ? '#e94b6b' : '#3a6ee0', stroke: 'rgba(255,255,255,.28)', 'stroke-width': 3 }, fl);
+  }
+}
+function buildStudio(cam) {
+  el('rect', { x: -900, y: -500, width: 3720, height: 1070, fill: 'url(#studioWall)' }, cam);
+  // big windows with soft light
+  [[330, 120], [1590, 120]].forEach(([x, y]) => {
+    el('rect', { x: x - 170, y, width: 340, height: 300, rx: 18, fill: '#d9f0ff', stroke: '#fff', 'stroke-width': 12 }, cam);
+    el('path', { d: `M ${x} ${y} L ${x} ${y + 300} M ${x - 170} ${y + 150} L ${x + 170} ${y + 150}`, stroke: '#fff', 'stroke-width': 9 }, cam);
+    el('path', { d: `M ${x - 120} ${y + 30} L ${x - 60} ${y + 30} L ${x - 140} ${y + 130} L ${x - 160} ${y + 130} Z`, fill: '#fff', opacity: .5 }, cam);
+  });
+  // wall stripe + clock
+  el('rect', { x: -900, y: 470, width: 3720, height: 14, fill: '#c9a8ff', opacity: .6 }, cam);
+  el('circle', { cx: 960, cy: 150, r: 62, fill: '#fff', stroke: '#8e5bff', 'stroke-width': 8 }, cam);
+  el('path', { d: 'M 960 150 L 960 108 M 960 150 L 990 162', stroke: C.navy, 'stroke-width': 7, 'stroke-linecap': 'round' }, cam);
+  // floor: light wood in perspective
+  el('rect', { x: -900, y: 540, width: 3720, height: 900, fill: '#e9c79c' }, cam);
+  el('rect', { x: -900, y: 532, width: 3720, height: 16, fill: '#fff' }, cam);
+  const fl = el('g', { stroke: '#d4ab78', 'stroke-width': 3 }, cam);
+  for (let i = -16; i <= 16; i++) el('line', { x1: 960 + i * 110, y1: 548, x2: 960 + i * 380, y2: 1400 }, fl);
+  [610, 690, 800, 960, 1180].forEach(y => el('line', { x1: -900, y1: y, x2: 2820, y2: y, opacity: .5 }, fl));
+  // plant + dumbbell rack
+  el('path', { d: 'M 120 560 L 220 560 L 205 660 L 135 660 Z', fill: '#e07a12' }, cam);
+  [[-40, -90], [0, -130], [40, -95], [-20, -60], [25, -60]].forEach(([dx, dy], i) => el('ellipse', { cx: 170 + dx, cy: 560 + dy, rx: 26, ry: 58, fill: i % 2 ? '#2e9e5b' : '#3cb96a', transform: `rotate(${dx * .8} ${170 + dx} ${560 + dy})` }, cam));
+  el('rect', { x: 1640, y: 470, width: 220, height: 16, rx: 6, fill: '#5d6472' }, cam);
+  el('rect', { x: 1650, y: 486, width: 12, height: 130, fill: '#5d6472' }, cam); el('rect', { x: 1838, y: 486, width: 12, height: 130, fill: '#5d6472' }, cam);
+  el('rect', { x: 1640, y: 540, width: 220, height: 14, rx: 6, fill: '#5d6472' }, cam);
+  [[1680, 455, '#ff5fa2'], [1750, 455, '#2f6fe0'], [1820, 455, '#ffd21f'], [1690, 525, '#20a35a'], [1780, 525, '#ff7a1a']].forEach(([x, y, c]) => { el('rect', { x: x - 26, y: y - 10, width: 52, height: 20, rx: 6, fill: '#3d424e' }, cam); [-1, 1].forEach(sg => el('rect', { x: x + sg * 22 - 9, y: y - 18, width: 18, height: 36, rx: 6, fill: c }, cam)); });
+}
+const buildRoom = (cam, setting) => setting === 'fitness_studio' ? buildStudio(cam) : buildKidsRoom(cam);
+function makeYogaMat(parent, color = '#8e5bff') {
+  const g = el('g', {}, parent);
+  el('ellipse', { cx: 0, cy: 6, rx: 440, ry: 26, fill: '#000', opacity: .12 }, g);
+  el('path', { d: 'M -430 -18 L 430 -18 Q 452 -18 456 0 L 458 10 L -458 10 L -456 0 Q -452 -18 -430 -18 Z', fill: color }, g);
+  el('path', { d: 'M -458 10 L 458 10 L 458 20 L -458 20 Z', fill: shade(color, -.3) }, g);
+  el('path', { d: 'M -420 -12 L 420 -12', stroke: shade(color, .35), 'stroke-width': 4 }, g);
+  return { g, update(x, y, ang = 0, s = 1, op = 1) { g.setAttribute('transform', `translate(${x} ${y}) scale(${s})`); g.setAttribute('opacity', op); }, base: (x, y, ang = 0, s = 1) => [x, y - 14 * s] };
+}
+
+// ───────────── workout plan: one exercise per step ─────────────
+function planWorkout(S) {
+  const T = { S, intro: [0, 8] };
+  const nT = S.tools.length;
+  let t = 8;
+  T.cardT = S.tools.map((_, i) => t + 1.6 + i * 1.4);
+  T.helpT = S.help.ar ? t + 1.6 + nT * 1.4 + .3 : null;
+  T.tools = [8, nT || T.helpT ? t + 1.6 + nT * 1.4 + (S.help.ar ? 2.9 : .4) + 1.0 : 8];
+  if (!nT && !T.helpT) T.cardT = [];
+  const g0 = T.tools[1];
+  T.steps = []; let st0 = g0 - .35;
+  S.exercises.forEach((x, k) => {
+    const m = MOVES[x.move] || MOVES.stretch, ts = st0 + .45, a = ts + 1.35;
+    const hold = x.hold || m.type === 'hold';
+    const n = hold ? 1 : Math.max(3, Math.min(8, Math.round(6.5 / m.rep)));
+    const dur = hold ? 7 : Math.max(6.5, n * m.rep);
+    const end = a + dur + .7;
+    T.steps.push(Object.assign({}, S.steps[k], { n: k, ts, te: ts + .8, end, a, dur, reps: n, hold, move: x.move }));
+    st0 = end;
+  });
+  const cheer = st0 + .1; st0 += 1.8;
+  T.gym = [g0, st0 + .5];
+  const nB = S.benefits.length;
+  T.benT = S.benefits.map((_, i) => T.gym[1] + 1.2 + i * 3);
+  T.ben = [T.gym[1], nB ? T.gym[1] + 1.2 + nB * 3 + 1.6 : T.gym[1]];
+  T.outro = [T.ben[1], T.ben[1] + 8];
+  T.DUR = T.outro[1];
+  T.ev = { pops: [], dings: [], bursts: [cheer], stars: [], items: [], icons: [], wob: [], jumps: [], throws: [], glowItem: [], glowTarget: [] };
+  T.cheer = cheer;
+  return T;
+}
+
+
+// ───────────── card-pictures plan: works for ANY card (each step shows its own picture from the card) ─────────────
+function planCards(S) {
+  const T = { S, intro: [0, 8] };
+  const nT = S.tools.length;
+  let t = 8;
+  T.cardT = S.tools.map((_, i) => t + 1.6 + i * 1.4);
+  T.helpT = S.help.ar ? t + 1.6 + nT * 1.4 + .3 : null;
+  T.tools = [8, nT || T.helpT ? t + 1.6 + nT * 1.4 + (S.help.ar ? 2.9 : .4) + 1.0 : 8];
+  const g0 = T.tools[1];
+  T.steps = []; let st0 = g0 - .35;
+  S.steps.forEach((x, k) => {
+    const ts = st0 + .45, a = ts + 1.35, words = (x.capAr + ' ' + x.ar).split(/\s+/).length;
+    const dur = Math.max(4.6, Math.min(8.5, 3.2 + words * .32));
+    const end = a + dur + .5;
+    T.steps.push(Object.assign({}, x, { n: k, ts, te: ts + .8, end, a, dur }));
+    st0 = end;
+  });
+  const cheer = st0 + .1; st0 += 1.6;
+  T.gym = [g0, st0 + .5];
+  const nB = S.benefits.length;
+  T.benT = S.benefits.map((_, i) => T.gym[1] + 1.2 + i * 3);
+  T.ben = [T.gym[1], nB ? T.gym[1] + 1.2 + nB * 3 + 1.6 : T.gym[1]];
+  T.outro = [T.ben[1], T.ben[1] + 8];
+  T.DUR = T.outro[1];
+  T.ev = { pops: S.steps.map((_, i) => 3.6 + i * .35).filter(x => x < 7.4), dings: [], bursts: [cheer], stars: [], items: [], icons: [], wob: [], jumps: [], throws: [], glowItem: [], glowTarget: [] };
+  T.cheer = cheer;
+  return T;
+}
+// crop rectangle (pixels) of a Gemini box [ymin, xmin, ymax, xmax] on a 0–1000 scale, with a little padding
+function boxRect(box, IW, IH, pad = .02) {
+  if (!Array.isArray(box) || box.length !== 4 || box.some(v => !isFinite(+v))) return null;
+  let [y0, x0, y1, x1] = box.map(v => clamp(+v / 1000, 0, 1));
+  if (y1 - y0 < .03 || x1 - x0 < .03) return null;
+  x0 = clamp(x0 - pad); y0 = clamp(y0 - pad); x1 = clamp(x1 + pad); y1 = clamp(y1 + pad);
+  return { sx: x0 * IW, sy: y0 * IH, sw: (x1 - x0) * IW, sh: (y1 - y0) * IH };
+}
+// draw an image (or the current frame of a video) into a rect: "cover" crops, "contain" letterboxes
+function drawMedia(ctx, img, src, dx, dy, dw, dh, fit = 'cover', zoom = 1, px = 0, py = 0) {
+  const isVid = typeof HTMLVideoElement !== 'undefined' && img instanceof HTMLVideoElement;
+  const IW = isVid ? img.videoWidth : (img.naturalWidth || img.width), IH = isVid ? img.videoHeight : (img.naturalHeight || img.height);
+  if (!IW || !IH) return;
+  let { sx, sy, sw, sh } = src && !isVid ? src : { sx: 0, sy: 0, sw: IW, sh: IH };
+  const ra = dw / dh;
+  if (fit === 'cover') { if (sw / sh > ra) { const n = sh * ra; sx += (sw - n) / 2; sw = n; } else { const n = sw / ra; sy += (sh - n) / 2; sh = n; } }
+  else { const a = sw / sh; if (a > ra) { const h = dw / a; dy += (dh - h) / 2; dh = h; } else { const w = dh * a; dx += (dw - w) / 2; dw = w; } }
+  const zw = sw / zoom, zh = sh / zoom; sx += (sw - zw) * (.5 + px); sy += (sh - zh) * (.5 + py);
+  try { ctx.drawImage(img, sx, sy, zw, zh, dx, dy, dw, dh); } catch (e) {}
+}
+
 // ───────────── spec normalisation ─────────────
 const ACTIONS = ['ready', 'balance', 'squat', 'pick', 'stand', 'place', 'throw', 'repeat', 'walk', 'jump', 'oneleg'];
 const TOOL_KINDS = ['board', 'beam', 'discs', 'cone', 'tongs', 'mat', 'bags', 'hoop', 'ball', 'basket', 'table', 'helper', 'other'];
@@ -432,18 +717,30 @@ function normalize(s) {
   s = s || {};
   const su = s.setup || {};
   const steps = (Array.isArray(s.steps) ? s.steps : []).slice(0, 6).map(x => ({
-    ar: str(x.ar || x.title), en: str(x.en), capAr: str(x.capAr), capEn: str(x.capEn), action: ACTIONS.includes(x.action) ? x.action : 'balance' }));
+    ar: str(x.ar || x.title), en: str(x.en), capAr: str(x.capAr), capEn: str(x.capEn), action: ACTIONS.includes(x.action) ? x.action : 'balance', box: Array.isArray(x.box) ? x.box.map(Number) : null }));
   if (!steps.length) steps.push({ ar: 'استعد', en: 'Get ready', capAr: '', capEn: '', action: 'ready' }, { ar: 'حافظ على توازنك', en: 'Keep your balance', capAr: '', capEn: '', action: 'balance' });
   let surface = ['board', 'beam', 'floor'].includes(su.surface) ? su.surface : 'board';
   if (steps.some(x => x.action === 'walk') && surface === 'board') surface = 'beam';
   let item = ['disc', 'bag', 'ball'].includes(su.item) ? su.item : 'bag';
   let target = ['cone', 'hoop', 'basket'].includes(su.target) ? su.target : 'hoop';
   if (target === 'cone') item = 'disc';
+  const template = ['workout', 'activity', 'other'].includes(s.template) ? s.template : 'activity';
+  const chars = Array.isArray(s.characters) ? s.characters : [];
+  const mainC = normChar(chars.find(c => c && c.role === 'main') || chars[0], 'main'), helpC = normChar(chars.find(c => c && c.role === 'helper'), 'helper');
+  const exercises = (Array.isArray(s.exercises) ? s.exercises : []).slice(0, 8).map(x => ({ ar: str(x.ar), en: str(x.en), move: MOVE_LIST.includes(x.move) ? x.move : 'stretch', known: MOVE_LIST.includes(x.move), reps: pair(x.reps), target: pair(x.target), hold: !!x.hold, box: Array.isArray(x.box) ? x.box.map(Number) : null }));
+  if (template === 'workout') {
+    if (!exercises.length) exercises.push({ ar: 'تمرين', en: 'Exercise', move: 'stretch', reps: pair(''), target: pair(''), hold: false });
+    steps.length = 0;
+    exercises.forEach(x => steps.push({ ar: x.ar, en: x.en, capAr: [x.reps.ar, x.target.ar].filter(Boolean).join('  •  '), capEn: [x.reps.en, x.target.en].filter(Boolean).join('  •  '), action: 'exercise', box: x.box }));
+  }
   return {
+    template, setting: ['kids_gym', 'fitness_studio'].includes(s.setting) ? s.setting : (template === 'workout' ? 'fitness_studio' : 'kids_gym'),
+    chars: { main: mainC, helper: helpC }, exercises,
     title: pair(s.title), desc: pair(s.desc), level: pair(s.level), help: pair(s.help), credit: str(s.credit),
     surface, item, target, tongs: !!su.tongs, helper: su.helper !== false,
     steps,
-    tools: (Array.isArray(s.tools) ? s.tools : []).slice(0, 6).map(x => ({ ar: str(x.ar || x), en: str(x.en), kind: TOOL_KINDS.includes(x.kind) ? x.kind : 'other' })),
+    tools: (Array.isArray(s.tools) ? s.tools : []).slice(0, 6).map(x => ({ ar: str(x.ar || x), en: str(x.en), kind: TOOL_KINDS.includes(x.kind) ? x.kind : 'other', box: Array.isArray(x.box) ? x.box.map(Number) : null })),
+    mode: ['auto', 'cards', 'cartoon'].includes(s.mode) ? s.mode : 'auto', animatable: s.animatable !== false,
     benefits: (Array.isArray(s.benefits) ? s.benefits : []).slice(0, 5).map(x => ({ ar: str(x.ar || x), en: str(x.en), icon: BEN_ICONS.includes(x.icon) ? x.icon : 'star' })),
   };
 }
@@ -626,9 +923,14 @@ function iconG(kind, color) {
 
 // ───────────── engine ─────────────
 function create(canvas, spec) {
-  const S = normalize(spec), T = plan(S), ev = T.ev, Ch = T.C;
+  const S = normalize(spec), MEDIA = spec.media || {};
+  // card pictures when chosen, or automatically when the cartoon cannot show this card faithfully
+  const cartoonOK = S.animatable && S.template !== 'other' && (S.template !== 'workout' || S.exercises.every(x => x.known));
+  const CARDS = !!MEDIA.image && (S.mode === 'cards' || (S.mode === 'auto' && !cartoonOK));
+  const WK = !CARDS && S.template === 'workout', T = CARDS ? planCards(S) : WK ? planWorkout(S) : plan(S), ev = T.ev, Ch = T.C;
+  const MAINO = personOpts(S.chars.main), HELPO = personOpts(S.chars.helper), MS = MAINO.sc, showHelper = !WK && S.helper;
   const ctx = canvas.getContext('2d');
-  const usesItems = S.steps.some(x => ['squat', 'pick', 'place', 'throw', 'repeat'].includes(x.action));
+  const usesItems = !WK && !CARDS && S.steps.some(x => ['squat', 'pick', 'place', 'throw', 'repeat'].includes(x.action));
   const ROOT = { bg: el('g'), intro: el('g'), tools: el('g'), gym: el('g'), ben: el('g'), outro: el('g') };
 
   // background floaters
@@ -644,7 +946,7 @@ function create(canvas, spec) {
     }
   }
   const BG = { intro: ['#9fd8ff', '#eaf7ff'], tools: ['#ffe27a', '#fff8dc'], ben: ['#a8eac3', '#effcf4'], outro: ['#9fd8ff', '#fff3e0'] };
-  const makeSurface = p => S.surface === 'beam' ? makeBeam(p) : S.surface === 'floor' ? makeSpot(p) : makeWobble(p);
+  const makeSurface = p => WK ? makeYogaMat(p, S.setting === 'fitness_studio' ? '#8e5bff' : '#2f6fe0') : S.surface === 'beam' ? makeBeam(p) : S.surface === 'floor' ? makeSpot(p) : makeWobble(p);
   function makeTarget(p) {
     if (S.target === 'cone') { const c = makeTallCone(p); return { back: c.g, front: null, update: (x, y, s = 1, op = 1, rot = 0) => c.update(x, y, s, op, rot), top: [0, -250] }; }
     if (S.target === 'basket') { const b = makeBasket(p); return { back: b.back, front: b.front, update: b.update, top: [0, -125] }; }
@@ -658,7 +960,7 @@ function create(canvas, spec) {
   el('ellipse', { cx: 960, cy: 1070, rx: 1300, ry: 110, fill: '#7cc7f5', opacity: .55 }, gI);
   const iTarget = makeTarget(gI);
   const iSurf = makeSurface(gI);
-  const iKid = makePerson(gI, KID);
+  const iKid = makePerson(gI, MAINO);
   const iItems = [0, 1, 2, 3].map(i => makeItem(gI, S.item, i));
   if (iTarget.front) gI.appendChild(iTarget.front);
   const iStars = makeStars(gI, 6, 11), iBurst = makeBurst(gI, 3, 90, { power: 1100, spread: 160 });
@@ -680,7 +982,7 @@ function create(canvas, spec) {
     const cheer = P(t, 7.35, 7.55);
     if (cheer > 0) { ra = [lerp(82, 160 + Math.sin(t * 12) * 10, cheer), 10]; la = [lerp(-82, -160 - Math.sin(t * 12) * 10, cheer), -10]; }
     const crouch = 70 * sq + (t > 4.7 && t < 4.9 ? 25 * Math.sin(P(t, 4.7, 4.9) * Math.PI) : 0);
-    iKid.update({ x: kx, y: ky - jump, s: E.back(P(t, .1, .6)), lean: t > 5.4 ? bang : 0, bend: t > 5.4 ? -bang * .5 : 0, crouch, spread: t > 5.3 ? (S.surface === 'beam' ? 18 : 34) : 22, la, ra, t,
+    iKid.update({ x: kx, y: ky - jump, s: MS * E.back(P(t, .1, .6)), lean: t > 5.4 ? bang : 0, bend: t > 5.4 ? -bang * .5 : 0, crouch, spread: t > 5.3 ? (S.surface === 'beam' ? 18 : 34) : 22, la, ra, t,
       mouth: Math.max(wave ? .6 * Math.abs(Math.sin(t * 9)) * P(t, .2, .4) : 0, cheer * .9), look: t > 4.5 && t < 7.3 ? [0, .6] : [0, 0], shadow: 1 - jump / 300 });
     iStars.update(t, .5, iKid.handW[1][0], iKid.handW[1][1], 1.3);
     I_ITEM.forEach(([x, y, t0], i) => iItems[i].update(x, y - (1 - E.out(P(t, t0, t0 + .35))) * 300, (1 - P(t, t0, t0 + .35)) * 200, 1.1 * pop(t, t0, .4), usesItems ? P(t, t0, t0 + .05) : 0));
@@ -700,9 +1002,11 @@ function create(canvas, spec) {
     const art = el('g', {}, g);
     el('text', { x: 0, y: 122, size: 48, weight: 900, fill: C.navy, maxw: 300, text: tool.ar }, g);
     el('text', { x: 0, y: 172, size: 34, weight: 800, fill: C.orange, maxw: 300, text: tool.en }, g);
-    return { g, art, glow, x, anim: toolArt(art, tool.kind) };
+    return { g, art, glow, x, anim: toolArt(art, tool.kind, tool) };
   });
-  function toolArt(g, kind) {
+  function toolArt(g, kind, tool) {
+    const src = CARDS && tool && boxRect(tool.box, MEDIA.image.naturalWidth || MEDIA.image.width, MEDIA.image.naturalHeight || MEDIA.image.height, .01);
+    if (src) { const im = el('image', { img: MEDIA.image, src, x: -140, y: -200, w: 280, h: 280 }, g); return (t, t0) => im.setAttribute('transform', `scale(${E.back(P(t, t0, t0 + .5))})`); }
     switch (kind) {
       case 'board': { const b = makeWobble(g); return (t, t0) => b.update((1 - E.out(P(t, t0, t0 + .5))) * 300, -10, wob(t, t0 + .4, 10, 1.2, 1) + Math.sin(t * 2) * 2, .85, 1); }
       case 'beam': { const b = makeBeam(g); return (t, t0) => b.update((1 - E.out(P(t, t0, t0 + .5))) * 300, 10, 0, .48, 1); }
@@ -719,7 +1023,7 @@ function create(canvas, spec) {
       case 'ball': { const b = [0, 1].map(i => makeBall(g, i)); return (t, t0) => b.forEach((x, i) => { const k = P(t, t0 + .1 + i * .25, t0 + .9 + i * .25); x.update(i ? 55 : -55, -50 - Math.abs(Math.sin(k * Math.PI * 2)) * 90 * (1 - k), k * 360, 2, k > 0 ? 1 : 0); }); }
       case 'basket': { const b = makeBasket(g), bag = makeBag(g, ...BAGC[0]); g.appendChild(b.front); return (t, t0) => { b.update(0, 60, .8 * E.back(P(t, t0, t0 + .5)), 1); const k = P(t, t0 + .5, t0 + 1.1); bag.update(0, lerp(-260, -50, E.in(k)), k * 300, 1.8, k > 0 && k < 1 ? 1 : k >= 1 ? 1 : 0); }; }
       case 'table': { const tb = makeTable(g); return (t, t0) => tb.update(0, lerp(-1000, -760, E.out(P(t, t0, t0 + .5))), 1, 1); }
-      case 'helper': { const a = makePerson(g, TEACHER), k = makePerson(g, KID);
+      case 'helper': { const a = makePerson(g, HELPO), k = makePerson(g, MAINO);
         return (t, t0) => { const p = E.back(P(t, t0, t0 + .5)); a.update({ x: -40, y: 70, s: .42 * p, t, ra: { t: [30, -30], b: -1, mix: 1 }, look: [1, .4] }); k.update({ x: 50, y: 70, s: .42 * p, t, la: a.handW[1] ? { t: a.handW[1], b: 1, mix: 1 } : [-12, 8], mouth: .3 }); }; }
       default: { const ic = iconG('star', C.orange); g.appendChild(ic); return (t, t0) => ic.setAttribute('transform', `translate(0 -50) scale(${1.6 * E.back(P(t, t0, t0 + .5))}) rotate(${t * 30})`); }
     }
@@ -739,24 +1043,11 @@ function create(canvas, spec) {
   }
 
   // ── GYM ──
+  const renderGym = CARDS ? null : WK ? buildWorkoutGym() : buildActivityGym();
+  function buildActivityGym() {
   const cam = el('g', {}, ROOT.gym);
-  el('rect', { x: -900, y: -500, width: 3720, height: 1070, fill: 'url(#wallGrad)' }, cam);
-  el('rect', { x: -900, y: 520, width: 3720, height: 26, fill: '#ff9d2e' }, cam);
-  el('rect', { x: -900, y: 546, width: 3720, height: 16, fill: '#e07a12' }, cam);
-  {
-    const bg = el('g', {}, cam), cols = [C.orange, C.blue, C.red, C.green, '#8e5bff'];
-    el('path', { d: 'M -300 70 Q 960 230 2220 70', fill: 'none', stroke: '#8c7a66', 'stroke-width': 4 }, bg);
-    for (let i = 0; i < 28; i++) { const k = i / 27, x = lerp(-300, 2220, k), y = 70 + 4 * k * (1 - k) * 160; el('path', { d: `M ${x - 30} ${y} L ${x + 30} ${y} L ${x} ${y + 60} Z`, fill: cols[i % 5] }, bg); }
-    [[200, 230], [1720, 230]].forEach(([x, y]) => { el('rect', { x: x - 130, y, width: 260, height: 190, rx: 24, fill: '#d6ecff', stroke: '#fff', 'stroke-width': 10 }, bg); el('path', { d: `M ${x} ${y} L ${x} ${y + 190} M ${x - 130} ${y + 95} L ${x + 130} ${y + 95}`, stroke: '#fff', 'stroke-width': 8 }, bg); });
-    const fl = el('g', {}, cam), HZ = 300, rows = [560];
-    for (let i = 1; i < 7; i++) rows.push(HZ + 2600 / (10 - i * 1.4));
-    const X = (j, y) => 960 + j * 130 * (y - HZ) / 260;
-    for (let r = 0; r < rows.length - 1; r++) for (let j = -22; j < 22; j++) {
-      const y0 = rows[r], y1 = rows[r + 1];
-      el('path', { d: `M ${X(j, y0)} ${y0} L ${X(j + 1, y0)} ${y0} L ${X(j + 1, y1)} ${y1} L ${X(j, y1)} ${y1} Z`, fill: (r + j) % 2 ? '#e94b6b' : '#3a6ee0', stroke: 'rgba(255,255,255,.28)', 'stroke-width': 3 }, fl);
-    }
-  }
-  const gTeacher = makePerson(cam, TEACHER);
+  buildRoom(cam, S.setting);
+  const gTeacher = makePerson(cam, HELPO);
   const gSurf = makeSurface(cam);
   const gTarget = makeTarget(cam);
   const TGT = S.target === 'cone' ? G.CONE : S.target === 'basket' ? G.BASK : G.HOOP;
@@ -764,7 +1055,7 @@ function create(canvas, spec) {
   el('ellipse', { rx: 175, ry: 62, fill: 'none', stroke: '#fff', 'stroke-width': 6, 'stroke-dasharray': '40 22' }, reticle);
   const targetGlow = el('ellipse', { rx: 80, ry: 40, fill: 'url(#glow)' }, cam);
   const itemGlow = el('ellipse', { rx: 90, ry: 40, fill: 'url(#glow)' }, cam);
-  const gKid = makePerson(cam, KID);
+  const gKid = makePerson(cam, MAINO);
   const gItems = [0, 1, 2, 3].map(i => makeItem(cam, S.item, i));
   if (gTarget.front) cam.appendChild(gTarget.front);
   const gTongs = makeTongs(cam);
@@ -817,7 +1108,7 @@ function create(canvas, spec) {
     const lf = walking ? [Math.max(0, Math.sin(ph)) * .45, Math.max(0, -Math.sin(ph)) * .45] : [0, lift];
     if (walking) y -= Math.abs(Math.sin(ph)) * 6;
     const spread = !onSurf ? 22 : S.surface === 'beam' ? 18 : ev.arrows ? lerp(30, 40, E.io(P(t, ev.arrows[0], ev.arrows[0] + .6))) : 36;
-    return { x, y: y - jumpH, s: 1, lean, bend, crouch, spread, la, ra, t, lift: lf, sang, tAng, open,
+    return { x, y: y - jumpH, s: MS, lean, bend, crouch, spread, la, ra, t, lift: lf, sang, tAng, open,
       look: mix > .3 ? [1, .6] : show > 0 ? [.5, -.5] : [0, 0], mouth: Math.max(cheer * .9, show * .7, jumpH > 0 ? .6 : 0, ev.icons.some(([k, a, b]) => k === 'ok' && t > a && t < a + 1) ? .5 : 0) };
   }
   const ptCache = {};
@@ -858,7 +1149,7 @@ function create(canvas, spec) {
     gSurf.update(G.SX, G.SY, kp.sang, 1, 1);
     gTarget.update(TGT[0], TGT[1], 1, usesItems ? 1 : 0);
     gKid.update(kp);
-    gTeacher.update(teacherPose(t)); gTeacher.g.setAttribute('opacity', S.helper ? 1 : 0);
+    gTeacher.update(teacherPose(t)); gTeacher.g.setAttribute('opacity', showHelper ? 1 : 0);
     const h = gKid.handW[1], tip = S.tongs ? gTongs.tip(h[0], h[1], kp.tAng) : h;
     gTongs.update(h[0], h[1], kp.tAng, kp.open, ev.tongsT > 0 ? pop(t, ev.tongsT, .4) : 1, tongsOn(t) ? 1 : 0);
     set(tongGlow, { cx: h[0] + 40, cy: h[1], r: 80 + 10 * Math.sin(t * 9), opacity: ev.tongsT > 0 ? P(t, ev.tongsT, ev.tongsT + .2) * (1 - P(t, ev.tongsT + 1.6, ev.tongsT + 2)) : 0 });
@@ -885,8 +1176,59 @@ function create(canvas, spec) {
     ev.bursts.forEach((t0, i) => gBursts[i].update(t, t0, TGT[0], TGT[1] - 260, 2.4));
   }
 
+  return renderGym;
+  }
+  function buildWorkoutGym() {
+    const cam = el('g', {}, ROOT.gym);
+    buildRoom(cam, S.setting);
+    const mat = makeYogaMat(cam, S.setting === 'fitness_studio' ? '#8e5bff' : '#2f6fe0');
+    const X0 = 960, GY = 852;
+    const side = makeSide(cam, MAINO), front = makePerson(cam, MAINO);
+    const counter = el('g', {}, cam);
+    el('circle', { r: 66, fill: C.orange, stroke: '#fff', 'stroke-width': 8 }, counter);
+    const cNum = el('text', { x: 0, y: 6, size: 70, weight: 900, fill: '#fff', text: '' }, counter);
+    const ring = el('g', {}, cam);
+    el('circle', { r: 64, fill: '#fff', stroke: '#e6dcff', 'stroke-width': 14 }, ring);
+    const arc = el('circle', { r: 64, fill: 'none', stroke: '#8e5bff', 'stroke-width': 14, 'stroke-linecap': 'round', transform: 'rotate(-90)' }, ring);
+    el('circle', { r: 30, fill: 'none', stroke: C.navy, 'stroke-width': 7 }, ring);
+    const hand = el('line', { x1: 0, y1: 0, x2: 0, y2: -22, stroke: C.navy, 'stroke-width': 6, 'stroke-linecap': 'round' }, ring);
+    el('rect', { x: -8, y: -48, width: 16, height: 10, rx: 3, fill: C.navy }, ring);
+    const stars = T.steps.map((_, i) => makeStars(cam, 6, 40 + i));
+    const burst = makeBurst(cam, 13, 120, { power: 1200, spread: 130 });
+    return function renderWorkout(t) {
+      let cur = T.steps[0]; T.steps.forEach(s => { if (t >= s.ts) cur = s; });
+      const cheer = t >= T.cheer;
+      const m = MOVES[cur.move] || MOVES.stretch, frontal = cheer || m.type === 'front';
+      const camV = frontal || !m.floor ? [1.05, 960, 600] : [1.15, 960, 690];
+      cam.setAttribute('transform', `translate(960 540) scale(${camV[0]}) translate(${-camV[1] + Math.sin(t * .5) * 5} ${-camV[2]})`);
+      mat.update(X0, GY + 14, 0, 1, 1);
+      const tl = t - cur.a;
+      side.g.setAttribute('opacity', frontal ? 0 : 1); front.g.setAttribute('opacity', frontal ? 1 : 0);
+      if (frontal) {
+        if (cheer) { const c = E.back(P(t, T.cheer, T.cheer + .4)); front.update({ x: X0, y: GY - Math.abs(Math.sin((t - T.cheer) * 6)) * 30 * c, s: MS * 1.1, t, la: [-160 - Math.sin(t * 12) * 10, -10], ra: [160 + Math.sin(t * 12) * 10, 10], mouth: .9, spread: 34 }); }
+        else front.update(Object.assign({ t, spread: 26 }, frontPose(cur.move, tl, X0, GY, MS * 1.1)));
+      } else side.update(Object.assign({ mouth: 0 }, movePose(cur.move, tl)), X0, GY, t);
+      // rep counter / hold timer, beside the body
+      const show = !cheer && t >= cur.te + .3 && tl > -.4 && t < cur.end - .3;
+      const pos = [X0 + 430, GY - 330];
+      if (show && !cur.hold) {
+        const n = Math.min(cur.reps, Math.max(1, Math.floor(Math.max(0, tl) / m.rep) + 1)), f = (Math.max(0, tl) / m.rep) % 1;
+        const bump = tl < 0 ? E.back(P(tl, -.4, 0)) : (n < cur.reps || f < .5 ? 1 + .18 * Math.max(0, 1 - f * 4) : 1);
+        cNum.setAttribute('text', ['١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩', '١٠'][n - 1] || String(n));
+        counter.setAttribute('transform', `translate(${pos[0]} ${pos[1]}) scale(${bump})`); counter.setAttribute('opacity', 1);
+      } else counter.setAttribute('opacity', 0);
+      if (show && cur.hold) {
+        const p = clamp(tl / cur.dur), c = 2 * Math.PI * 64;
+        set(arc, { 'stroke-dasharray': `${c * p} ${c}` }); hand.setAttribute('transform', `rotate(${p * 360 * 3})`);
+        ring.setAttribute('transform', `translate(${pos[0]} ${pos[1]}) scale(${E.back(P(tl, -.4, 0))})`); ring.setAttribute('opacity', 1);
+      } else ring.setAttribute('opacity', 0);
+      T.steps.forEach((s, i) => stars[i].update(t, s.a + s.dur - .2, pos[0], pos[1], 1.2));
+      burst.update(t, T.cheer, X0, GY - 420, 2.4);
+    };
+  }
+
   // ── BENEFITS (kid; tiles are drawn as overlays) ──
-  const bKid = makePerson(ROOT.ben, KID), bStars = makeStars(ROOT.ben, 7, 23);
+  const bKid = makePerson(ROOT.ben, MAINO), bStars = makeStars(ROOT.ben, 7, 23);
   const nB = S.benefits.length, tileH = Math.min(168, (760 - (nB - 1) * 24) / Math.max(1, nB));
   const BCOL = [C.orange, C.blue, '#f2b600', C.red, C.green], BTXT = [C.orange, C.blue, '#c98a00', C.red, C.green];
   const tileY = i => 195 + i * (tileH + 24);
@@ -897,7 +1239,7 @@ function create(canvas, spec) {
     if (act >= 0) ra = { t: [480, tileY(act) + tileH / 2 + 40], b: 1, mix: E.io(P(t, T.benT[act] - .1, T.benT[act] + .3)) };
     const ch = P(t, T.ben[1] - 1.1, T.ben[1] - .8);
     if (ch > 0) { ra = [lerp(40, 160, ch), 10]; la = [lerp(-12, -160, ch), -10]; }
-    bKid.update({ x: 210, y: 1030 - Math.abs(Math.sin(t * 3)) * 8, s: .9 * E.back(P(t, T.ben[0] + .3, T.ben[0] + .8)), la, ra, t, look: act >= 0 ? [1, -.6] : [0, 0], mouth: ch * .8 });
+    bKid.update({ x: 210, y: 1030 - Math.abs(Math.sin(t * 3)) * 8, s: .9 * MS * E.back(P(t, T.ben[0] + .3, T.ben[0] + .8)), la, ra, t, look: act >= 0 ? [1, -.6] : [0, 0], mouth: ch * .8 });
     bStars.update(t, T.ben[1] - 1.05, 210, 600, 1.2);
   }
 
@@ -907,12 +1249,12 @@ function create(canvas, spec) {
   const oTarget = makeTarget(gO);
   const oItems = [0, 1, 2, 3].map(i => makeItem(gO, S.item, i));
   if (oTarget.front) gO.appendChild(oTarget.front);
-  const oTeacher = makePerson(gO, TEACHER), oKid = makePerson(gO, KID);
+  const oTeacher = makePerson(gO, HELPO), oKid = makePerson(gO, MAINO);
   const oHeart = el('path', { d: 'M 0 40 C -70 -6 -46 -66 0 -30 C 46 -66 70 -6 0 40 Z', fill: C.red, stroke: '#fff', 'stroke-width': 8 }, gO);
   const oStars = makeStars(gO, 8, 31), oBurst = makeBurst(gO, 41, 160, { power: 1300, spread: 170, w: 600 }), oRain = makeBurst(gO, 43, 120, { dir: 90, power: 200, spread: 40, w: 1900 });
   function renderOutro(t) {
     const o = T.outro[0], HI5 = o + 2, enter = E.out(P(t, o + .2, o + 1));
-    const tx = lerp(-200, 760, enter), kx = lerp(2100, 1160, enter), ts = 1.1 * pop(t, o + .4, .5);
+    const tx = lerp(-200, 760, enter), kx = lerp(2100, showHelper ? 1160 : (usesItems ? 1220 : 960), enter), ts = 1.1 * pop(t, o + .4, .5);
     oTarget.update(960, 1040, ts, usesItems ? P(t, o + .4, o + .45) : 0);
     oItems.forEach((d, i) => {
       const t0 = o + .7 + i * .15, k = E.out(P(t, t0, t0 + .3));
@@ -920,9 +1262,9 @@ function create(canvas, spec) {
       d.update(960 + sp[0] * 1.1, 1040 + sp[1] * 1.1 - (1 - k) * 400, 0, 1.1, usesItems ? P(t, t0, t0 + .05) : 0, S.target === 'cone');
     });
     const jump = Math.max(0, Math.sin(P(t, HI5 - .35, HI5 + .35) * Math.PI)) * 100 + Math.max(0, Math.sin(P(t, o + 4, o + 4.6) * Math.PI)) * 90;
-    const reach = E.io(P(t, HI5 - .5, HI5 - .05)) * (1 - E.io(P(t, HI5 + .5, HI5 + .9)));
-    oKid.update({ x: kx, y: 1040 - jump, s: 1.15, t, la: reach > 0 ? { t: [995, 610], b: 1, mix: reach } : t > o + 4 ? [-160, -10] : [-12, 8], ra: t > o + 4 ? [160, 10] : [12, -8], mouth: Math.max(reach * .8, P(t, o + 4, o + 4.2) * .9, .1), look: [-1, -.4], shadow: 1 - jump / 300 });
-    oTeacher.update({ x: tx, y: 1040, s: 1.1, t, la: t > o + 4 ? [-150, -10] : [-14, 6], ra: reach > 0 ? { t: [995, 610], b: -1, mix: reach } : [14, -6], look: [1, -.3], tilt: 4, pony: Math.sin(t * 2.4) * 5, mouth: Math.max(reach * .6, P(t, o + 4, o + 4.2) * .6) });
+    const reach = showHelper ? E.io(P(t, HI5 - .5, HI5 - .05)) * (1 - E.io(P(t, HI5 + .5, HI5 + .9))) : 0;
+    oKid.update({ x: kx, y: 1040 - jump, s: 1.15 * MS, t, la: reach > 0 ? { t: [995, 610], b: 1, mix: reach } : t > o + 4 ? [-160, -10] : [-12, 8], ra: t > o + 4 ? [160, 10] : [12, -8], mouth: Math.max(reach * .8, P(t, o + 4, o + 4.2) * .9, .1), look: [-1, -.4], shadow: 1 - jump / 300 });
+    oTeacher.g.setAttribute('opacity', showHelper ? 1 : 0); if (showHelper) oTeacher.update({ x: tx, y: 1040, s: 1.1, t, la: t > o + 4 ? [-150, -10] : [-14, 6], ra: reach > 0 ? { t: [995, 610], b: -1, mix: reach } : [14, -6], look: [1, -.3], tilt: 4, pony: Math.sin(t * 2.4) * 5, mouth: Math.max(reach * .6, P(t, o + 4, o + 4.2) * .6) });
     oHeart.setAttribute('transform', `translate(980 ${470 - 30 * P(t, HI5, HI5 + 1.4)}) scale(${pop(t, HI5, .5) * (1 + .08 * Math.sin(t * 9)) * 1.3})`);
     oHeart.setAttribute('opacity', 1 - P(t, HI5 + 1.2, HI5 + 1.5));
     oStars.update(t, HI5, 995, 610, 1.3); oBurst.update(t, o + 3.6, 960, 420, 2.4); oRain.update(t, o + 3.8, 960, -60, 3.5);
@@ -1099,6 +1441,90 @@ function create(canvas, spec) {
     });
   }
 
+
+  // ── CARD-PICTURES mode: the card's own pictures move (any kind of card) ──
+  function buildCards() {
+    const img = MEDIA.image, IW = img.naturalWidth || img.width, IH = img.naturalHeight || img.height;
+    const full = { sx: 0, sy: 0, sw: IW, sh: IH };
+    const crops = S.steps.map(x => boxRect(x.box, IW, IH));
+    const fx = el('g'), burst = makeBurst(fx, 41, 160, { power: 1300, spread: 170, w: 600 }), rain = makeBurst(fx, 43, 120, { dir: 90, power: 200, spread: 40, w: 1900 });
+    const stepBurst = makeBurst(fx, 13, 120, { power: 1200, spread: 130 }), sparks = T.steps.map((_, i) => makeStars(fx, 6, 60 + i));
+    const TINT = ['#ffe3c9', '#d9e8ff', '#fff2b8', '#ffd9d9', '#d6f5e3', '#eadcff', '#ffe0f0', '#dff6ff'];
+    // a picture in a white rounded frame; returns its size
+    function frame(src, media, cx, cy, maxW, maxH, k, rot = 0, zoom = 1, px = 0, py = 0) {
+      if (k <= 0) return null;
+      const a = src.sw / src.sh; let w = maxW, h = w / a; if (h > maxH) { h = maxH; w = h * a; }
+      ctx.save(); ctx.translate(cx, cy); ctx.rotate(rot * D2R); ctx.scale(k, k);
+      box(ctx, -w / 2 - 14, -h / 2 - 14, w + 28, h + 28, 34, '#fff', null, 0, 16);
+      ctx.save(); ctx.clip(rrPath(new Path2D(), -w / 2, -h / 2, w, h, 22));
+      ctx.fillStyle = '#fff'; ctx.fillRect(-w / 2, -h / 2, w, h);
+      if (media && media.readyState >= 2) drawMedia(ctx, media, null, -w / 2, -h / 2, w, h, 'cover');
+      else drawMedia(ctx, img, src, -w / 2, -h / 2, w, h, 'cover', zoom, px, py);
+      ctx.restore(); ctx.restore();
+      return { w, h };
+    }
+    function rays(t, x, y, col, op) {
+      if (op <= 0) return;
+      ctx.save(); ctx.translate(x, y); ctx.rotate(t * .12); ctx.globalAlpha = op; ctx.fillStyle = col;
+      for (let i = 0; i < 14; i++) { ctx.rotate(TAU / 14); ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(-90, -1300); ctx.lineTo(90, -1300); ctx.fill(); }
+      ctx.restore(); ctx.globalAlpha = 1;
+    }
+    function badge(n, x, y, col, k) {
+      if (k <= 0) return; ctx.save(); ctx.translate(x, y); ctx.scale(k, k); ctx.rotate(-8 * D2R);
+      ctx.beginPath(); ctx.arc(0, 0, 58, 0, TAU); ctx.fillStyle = col; ctx.fill(); ctx.lineWidth = 8; ctx.strokeStyle = '#fff'; ctx.stroke();
+      text(ctx, ['١', '٢', '٣', '٤', '٥', '٦', '٧', '٨'][n] || String(n + 1), 0, 6, { size: 70, color: '#fff' }); ctx.restore();
+    }
+    const SC = [C.orange, C.blue, '#e8a400', C.red, C.green, '#8e5bff', '#ff5fa2', '#00a6c8'];
+    function intro(t) {
+      rays(t, 960, 700, '#ffffff', .35 * P(t, .3, 1));
+      const k1 = E.back(P(t, .25, .8)) * (1 - E.in(P(t, 2.7, 3.1)));
+      frame(full, null, 960, 715, 1100, 600, k1, Math.sin(t * .8) * 1.5 - 2, 1 + .04 * P(t, .3, 3));
+      // preview row of the step pictures
+      const n = crops.filter(Boolean).length; let j = 0;
+      const cw = Math.min(330, (1700 - (n - 1) * 26) / Math.max(1, n));
+      S.steps.forEach((x, i) => {
+        const c = crops[i]; if (!c) return;
+        const t0 = 3.6 + j * .35, k = E.back(P(t, t0, t0 + .45)) * (1 - E.in(P(t, 7.4, 7.8)));
+        const cx = 960 + ((n - 1) / 2 - j) * (cw + 26);
+        frame(c, MEDIA.clips && MEDIA.clips[i], cx, 820 + Math.sin(t * 2 + j) * 8, cw - 14, 300, k, (j % 2 ? 3 : -3));
+        badge(i, cx + cw / 2 - 30, 680, SC[i % 8], k * .7); j++;
+      });
+    }
+    function steps(t) {
+      let cur = T.steps[0]; T.steps.forEach(s => { if (t >= s.ts) cur = s; });
+      const i = cur.n, col = SC[i % 8], tl = t - cur.a;
+      const g = ctx.createLinearGradient(0, 0, 0, 1080); g.addColorStop(0, TINT[i % 8]); g.addColorStop(1, '#ffffff'); ctx.fillStyle = g; ctx.fillRect(0, 0, 1920, 1080);
+      floaters.forEach(f => { const x = ((f.x + f.vx * t) % 2100 + 2100) % 2100 - 90, y = ((f.y + f.vy * t + Math.sin(t + f.ph) * 20) % 1250 + 1250) % 1250 - 85; f.g.setAttribute('transform', `translate(${x} ${y}) rotate(${f.vr * t})`); });
+      drawNode(ctx, ROOT.bg, 1);
+      rays(t, 960, 520, '#ffffff', .5);
+      const k = E.back(P(t, cur.te + .3, cur.te + .8)), src = crops[i] || full, p = clamp(tl / cur.dur);
+      const dir = i % 2 ? -1 : 1;
+      const f = frame(src, MEDIA.clips && MEDIA.clips[i], 960, 525, 1180, 640, k, Math.sin(t * .7) * 1.2, 1 + .12 * E.io(p), dir * .25 * E.io(p) - dir * .12, .1 * E.io(p) - .05);
+      if (f) {
+        badge(i, 960 + f.w / 2 + 6, 525 - f.h / 2 + 6, col, E.back(P(t, cur.te + .5, cur.te + 1)));
+        // pointing hand that taps the picture
+        const hx = 960 - f.w / 2 + 40, hy = 525 + f.h / 2 - 10 - Math.abs(Math.sin(t * 4)) * 26, hk = E.back(P(t, cur.a + .4, cur.a + .9)) * (1 - P(t, cur.end - .6, cur.end - .3));
+        if (hk > 0) { ctx.save(); ctx.translate(hx, hy); ctx.scale(hk, hk); ctx.rotate(-25 * D2R); text(ctx, '👆', 0, 0, { size: 96 }); ctx.restore(); }
+        sparks[i].update(t, cur.a + .2, 960 + f.w / 2 - 40, 525 - f.h / 2 + 40, 1.4);
+      }
+      // keep any Veo clip roughly in step with the timeline
+      const v = MEDIA.clips && MEDIA.clips[i];
+      if (v && v.readyState >= 1) { const want = Math.max(0, tl) % Math.max(.1, v.duration || 8); if (Math.abs(v.currentTime - want) > .3) { try { v.currentTime = want; } catch (e) {} } }
+      stepBurst.update(t, T.cheer, 960, 420, 2.4);
+      drawNode(ctx, fx, 1);
+    }
+    function outro(t) {
+      const o = T.outro[0];
+      rays(t, 960, 700, '#ffffff', .4);
+      frame(full, null, 960, 700, 1000, 560, E.back(P(t, o + .3, o + .9)), Math.sin(t * .8) * 1.5, 1);
+      burst.update(t, o + 3.6, 960, 420, 2.4); rain.update(t, o + 3.8, 960, -60, 3.5);
+      drawNode(ctx, fx, 1);
+    }
+    return { intro, steps, outro, toolCrop: tool => boxRect(tool.box, IW, IH, .01) };
+  }
+
+  const CR = CARDS ? buildCards() : null;
+  T.items = usesItems;
   // ── main ──
   function sceneAt(t) { return t < T.tools[0] ? 'intro' : t < T.gym[0] ? 'tools' : t < T.gym[1] ? 'gym' : t < T.ben[1] ? 'ben' : 'outro'; }
   function render(t) {
@@ -1107,19 +1533,21 @@ function create(canvas, spec) {
     ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1; ctx.clearRect(0, 0, W, Hh);
     ctx.setTransform(W / 1920, 0, 0, Hh / 1080, 0, 0);
     const sc = sceneAt(t);
-    if (sc === 'gym') renderGym(t);
+    const own = CARDS && sc !== 'tools';
+    if (sc === 'gym') { if (CARDS) CR.steps(t); else renderGym(t); }
     else {
       const [a, b] = BG[sc], gr = ctx.createLinearGradient(0, 0, 0, 1080); gr.addColorStop(0, a); gr.addColorStop(1, b);
       ctx.fillStyle = gr; ctx.fillRect(0, 0, 1920, 1080);
       floaters.forEach(f => { const x = ((f.x + f.vx * t) % 2100 + 2100) % 2100 - 90, y = ((f.y + f.vy * t + Math.sin(t + f.ph) * 20) % 1250 + 1250) % 1250 - 85; f.g.setAttribute('transform', `translate(${x} ${y}) rotate(${f.vr * t})`); });
       drawNode(ctx, ROOT.bg, 1);
-      ({ intro: renderIntro, tools: renderTools, ben: renderBen, outro: renderOutro })[sc](t);
+      if (own) { if (sc === 'intro') CR.intro(t); else if (sc === 'outro') CR.outro(t); }
+      else ({ intro: renderIntro, tools: renderTools, ben: renderBen, outro: renderOutro })[sc](t);
     }
-    drawNode(ctx, ROOT[sc], 1);
+    if (!own) drawNode(ctx, ROOT[sc], 1);
     if (sc !== 'gym') { const v = ctx.createRadialGradient(960, 540, 600, 960, 540, 1150); v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, 'rgba(0,0,0,.2)'); ctx.fillStyle = v; ctx.fillRect(0, 0, 1920, 1080); }
     renderOverlays(t);
   }
-  return { DUR: T.DUR, T, S, render, music: () => synthMusic(T) };
+  return { DUR: T.DUR, T, S, render, mode: CARDS ? 'cards' : WK ? 'workout' : 'activity', music: () => synthMusic(T) };
 }
 
 // ───────────── original background music (120 BPM, C–G–Am–F) + sound effects ─────────────
@@ -1182,7 +1610,7 @@ function synthMusic(T, SR = 32000) {
   ['C5', 'E5', 'G5', 'C6'].forEach((n, i) => { marimba(END + i * .06, NOTE(n), .18, (i - 1.5) * .3); bell(END + i * .06, NOTE(n) * 2, .07, (1.5 - i) * .3); });
   pad(END, ['C4', 'E4', 'G4', 'C5'].map(NOTE), DUR - END, .05);
   // effects synced to the picture
-  const ev = T.ev, usesItems = T.S.steps.some(x => ['squat', 'pick', 'place', 'throw', 'repeat'].includes(x.action));
+  const ev = T.ev, usesItems = T.items !== undefined ? T.items : T.S.steps.some(x => ['squat', 'pick', 'place', 'throw', 'repeat'].includes(x.action));
   [T.tools[0], T.gym[1], ...(T.S.benefits.length ? [T.ben[1]] : []), ...T.steps.map(s => s.ts)].forEach(t => whoosh(t));
   [...(usesItems ? [5.2, 5.4, 5.6, 5.8, 6.1] : []), ...T.cardT, ...(T.helpT ? [T.helpT] : []), ...ev.pops, ...T.benT].forEach(t => popS(t));
   ev.dings.forEach(ding);
@@ -1193,5 +1621,5 @@ function synthMusic(T, SR = 32000) {
   return { sr: SR, L, R };
 }
 
-global.VideoEngine = { create, normalize, ACTIONS, TOOL_KINDS, BEN_ICONS };
+global.VideoEngine = { create, normalize, ACTIONS, TOOL_KINDS, BEN_ICONS, MOVES };
 })(typeof window !== 'undefined' ? window : globalThis);

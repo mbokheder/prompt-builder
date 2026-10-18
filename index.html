@@ -106,6 +106,10 @@
   .hBody b{font-size:16px;line-height:1.4}
   .hBody small{color:var(--muted);font-size:12.5px}
   .hBtns{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto;padding-top:6px}
+  .colors{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
+  .colors label{margin:0;font-weight:400;font-size:13px;display:flex;flex-direction:column;align-items:center;gap:2px}
+  .colors input[type=color]{width:46px;height:34px;border:2px solid var(--line);border-radius:10px;padding:0;background:none;cursor:pointer}
+  .modeNow{display:inline-block;font-size:13px;border-radius:10px;padding:2px 10px;background:rgba(47,111,224,.12);margin-inline-start:6px}
   .visits{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);border:1px solid var(--line);border-radius:12px;padding:4px 12px;margin-top:6px}
 </style>
 </head>
@@ -384,7 +388,7 @@
     </section>
 
     <section class="card vSticky" aria-labelledby="vPrevTitle">
-      <h2 id="vPrevTitle"><span class="dot" style="background:var(--green)"></span>٣. المعاينة والتحميل</h2>
+      <h2 id="vPrevTitle"><span class="dot" style="background:var(--green)"></span>٣. المعاينة والتحميل <span id="vModeNow" class="modeNow hidden"></span></h2>
       <div class="vStage"><canvas id="vCanvas" width="1280" height="720" dir="rtl"></canvas><div id="vEmpty" class="vEmpty">ارفع البطاقة واضغط «اقرأ البطاقة»<br>أو جرّب المثال</div></div>
       <div class="vCtrl">
         <button type="button" class="primary small" id="vPlay" style="min-width:96px">▶ تشغيل</button>
@@ -395,6 +399,12 @@
         <div><label for="vQual" style="margin-top:4px">الجودة</label>
           <select id="vQual"><option value="1080">عالية 1080p (بروجكتر)</option><option value="720">أسرع 720p (للجوال)</option></select></div>
         <div style="display:flex;align-items:flex-end"><button type="button" class="primary" id="vRec" style="width:100%">⬇️ نزّل الفيديو</button></div>
+      </div>
+      <div id="veoBox" class="ana hidden" style="margin-top:14px;border:2px dashed var(--line);border-radius:16px;padding:10px 14px">
+        <b>🎥 تحريك صور الخطوات بالذكاء الاصطناعي (Veo)</b>
+        <p class="where" style="margin:4px 0 8px">اختياري: Google تحرّك صورة كل خطوة فعليًا. <b>مدفوع من رصيد مفتاح Gemini</b>، ويأخذ دقايق لكل خطوة، وأحيانًا ترفض صور الأطفال.</p>
+        <div class="btns" style="margin:0"><button type="button" class="ghost small" id="vVeo">🎥 حرّك الصور</button><button type="button" class="ghost small hidden" id="vVeoDel">🗑️ احذف المقاطع</button></div>
+        <div id="veoMsg"></div>
       </div>
       <div id="vProg" class="vProg hidden"><div id="vBar"></div></div>
       <div id="vRecMsg"></div>
@@ -943,24 +953,37 @@ showTab(store.get('pb-tab') || 'quick');
 // ── video tab: wordless video made in the browser (video-engine.js) ──
 (function () {
   const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
-  const ACT = { ready: 'استعد / اصعد', balance: 'حافظ على التوازن', squat: 'انزل (قرفصاء)', pick: 'التقط', stand: 'قف', place: 'ضع / رتّب', throw: 'ارمِ', repeat: 'كرّر', walk: 'امشِ', jump: 'اقفز', oneleg: 'قف على قدم واحدة' };
+  const ACT = { other: 'حركة ثانية (صور البطاقة)', ready: 'استعد / اصعد', balance: 'حافظ على التوازن', squat: 'انزل (قرفصاء)', pick: 'التقط', stand: 'قف', place: 'ضع / رتّب', throw: 'ارمِ', repeat: 'كرّر', walk: 'امشِ', jump: 'اقفز', oneleg: 'قف على قدم واحدة' };
   const KIND = { board: 'لوح توازن', beam: 'عارضة توازن', discs: 'أقماع قرصية', cone: 'قمع طويل', tongs: 'ملقط', mat: 'بساط', bags: 'أكياس حبوب', hoop: 'حلقة', ball: 'كرة', basket: 'سلة', table: 'طاولة', helper: 'مساعدة بالغ', other: 'أخرى' };
   const ICON = { balance: 'توازن', weight: 'نقل الوزن', eye: 'العين واليد', focus: 'تركيز', heart: 'قلب', brain: 'تفكير', hand: 'اليد', star: 'نجمة' };
+  const MODE = { auto: 'تلقائي (ينصح به)', cards: '🖼️ صور البطاقة تتحرك', cartoon: '🎨 شخصيات كرتونية' };
+  const TPL = { activity: 'نشاط حركي للأطفال', workout: 'تمارين رياضية', other: 'عام (أي موضوع)' };
+  const SETTING = { kids_gym: 'صالة أطفال ملونة', fitness_studio: 'ستوديو رياضة' };
+  const MOVE = { plank: 'بلانك', leg_raise: 'رفع الأرجل', crunch: 'كرنش', bicycle: 'الدراجة', russian_twist: 'رشن تويست', mountain_climber: 'ماونتن كلايمبرز', push_up: 'ضغط', glute_bridge: 'جسر الأرداف', squat: 'سكوات', lunge: 'لانج (طعن)', superman: 'سوبرمان', flutter: 'رفرفة الأرجل', jumping_jack: 'جمبنق جاك', high_knees: 'رفع الركب', stretch: 'إطالة', other: 'حركة ثانية (صور البطاقة)' };
+  const AGE = { child: 'طفل/ة', teen: 'مراهق/ة', adult: 'بالغ/ة' }, GENDER = { male: 'ذكر', female: 'أنثى' };
+  const LOOK = { auto: 'تسريحة تلقائية', short: 'شعر قصير', ponytail: 'ذيل حصان', long: 'شعر طويل', bun: 'كعكة', pigtails: 'ضفيرتين', hijab: 'حجاب' };
+  const SLEEVES = { long: 'أكمام طويلة', short: 'أكمام قصيرة', none: 'بدون أكمام' };
   const SURF = { board: 'لوح توازن دائري', beam: 'عارضة توازن', floor: 'الأرض' }, ITEM = { disc: 'أقماع قرصية', bag: 'أكياس حبوب', ball: 'كرات' }, TGT = { cone: 'قمع طويل (ترتيب)', hoop: 'حلقة على الأرض', basket: 'سلة' };
-  const VIDEO_PROMPT = `Read the attached children's activity card image. Reply with ONLY a JSON object (no code fences, no extra text) in exactly this shape:
-{"title":{"ar":"","en":""},"desc":{"ar":"","en":""},"level":{"ar":"","en":""},"help":{"ar":"","en":""},
-"setup":{"surface":"","item":"","target":"","tongs":false,"helper":true},
-"steps":[{"ar":"","en":"","capAr":"","capEn":"","action":""}],
-"tools":[{"ar":"","en":"","kind":""}],
+  const VIDEO_PROMPT = `Read the attached card image. It may be a children's activity card, an exercise / workout card, or any other instructional card (cooking, hygiene, science, crafts, safety…). Reply with ONLY a JSON object (no code fences, no extra text) in exactly this shape:
+{"template":"","animatable":true,"setting":"","title":{"ar":"","en":""},"desc":{"ar":"","en":""},"level":{"ar":"","en":""},"help":{"ar":"","en":""},
+"characters":[{"role":"main","age":"","gender":"","hairStyle":"","hijab":false,"hair":"#000000","scarf":"#000000","skin":"#000000","top":"#000000","bottom":"#000000","shoes":"#000000","sleeves":""}],
+"setup":{"surface":"","item":"","target":"","tongs":false,"helper":false},
+"steps":[{"ar":"","en":"","capAr":"","capEn":"","action":"","box":[0,0,0,0]}],
+"exercises":[{"ar":"","en":"","move":"","reps":{"ar":"","en":""},"target":{"ar":"","en":""},"hold":false,"box":[0,0,0,0]}],
+"tools":[{"ar":"","en":"","kind":"","box":[0,0,0,0]}],
 "benefits":[{"ar":"","en":"","icon":""}]}
 Rules:
-- Copy the Arabic text exactly as written on the card: title, description (desc), level, each step title (ar) and its sentence (capAr), tools, benefits, and any safety / adult-help note (help).
-- Add short, simple English translations for young children in every "en" and "capEn".
-- steps: in the card's order. "action" is the ONE word that best matches what the child's body does in that step: ready (get into position / stand on the equipment), balance (hold the balance), squat (bend the knees / reach down), pick (grab or pick up an object), stand (stand back up), place (put / stack / arrange an object), throw (throw or toss), repeat (do it again), walk (walk or step along), jump (jump or hop), oneleg (stand on one leg).
-- setup.surface: what the child stands on: "board" (round balance / wobble board), "beam" (balance beam) or "floor". setup.item: the small object handled: "disc" (flat disc cones), "bag" (bean bags) or "ball". setup.target: where the object goes: "cone" (stacked on a tall cone), "hoop" (floor hoop or ring) or "basket" (basket or box). setup.tongs: true if tongs are used. setup.helper: true if an adult appears.
-- tools[].kind: one of board, beam, discs, cone, tongs, mat, bags, hoop, ball, basket, table, helper, other.
-- benefits[].icon: one of balance, weight, eye, focus, heart, brain, hand, star.
-- Use "" for anything that is not on the card.`;
+- template: "activity" = a children's motor / balance activity with equipment; "workout" = a list of exercises with reps, sets or time; "other" = any other subject.
+- Copy the Arabic text exactly as written on the card (title, desc, level, step titles "ar" and their sentences "capAr", exercise names, reps, targets, tools, benefits, and any safety / adult-help note as "help"). Add short, simple English translations in every "en" and "capEn".
+- box = where the PICTURE (illustration or photo) of that step / exercise / tool is on the card, as [ymin, xmin, ymax, xmax] on a 0–1000 scale. Only the picture, not its text or arrows. Use [] if it has no picture.
+- characters: the people in the pictures. "main" = the one doing it; add a second item with "role":"helper" if an adult helps. age: child | teen | adult. gender: male | female. hairStyle: short | ponytail | long | bun | pigtails. hijab: true if wearing a headscarf (then "scarf" is its colour). Colours are hex codes taken from the pictures. sleeves: long | short | none.
+- setting: "kids_gym" for children's activities, "fitness_studio" for workouts and adults.
+- template "activity": fill "steps" (action = ready, balance, squat, pick, stand, place, throw, repeat, walk, jump, oneleg, or other) and "setup" (surface: board | beam | floor; item: disc | bag | ball; target: cone | hoop | basket; tongs; helper).
+- template "workout": fill "exercises" in order (move = plank, leg_raise, crunch, bicycle, russian_twist, mountain_climber, push_up, glute_bridge, squat, lunge, superman, flutter, jumping_jack, high_knees, stretch, or other; reps = the reps / sets / time text; target = the muscle or benefit text; hold = true for positions held for time) and leave "steps" [].
+- template "other": fill "steps" (action "other") with their pictures' boxes, and leave "exercises" [].
+- animatable: true only if EVERY step / exercise uses one of the listed actions or moves (none is "other"), otherwise false.
+- tools[].kind: board, beam, discs, cone, tongs, mat, bags, hoop, ball, basket, table, helper, other. benefits[].icon: balance, weight, eye, focus, heart, brain, hand, star.
+- Use "" or [] for anything that is not on the card.`;
   const EXAMPLE = {
     title: { ar: 'توازن والتقط ورتّب', en: 'Balance, Pick & Stack' },
     desc: { ar: 'انزل بوضعية القرفصاء، ثم قف ورتّب الأقماع مع الحفاظ على توازنك', en: 'Squat down, then stand up and stack the cones while keeping your balance' },
@@ -977,6 +1000,27 @@ Rules:
       { ar: 'تعزيز التآزر البصري الحركي والتحكم في القبضة', en: 'Eye–hand coordination and grip control', icon: 'eye' }, { ar: 'زيادة التركيز والتخطيط الحركي', en: 'Focus and motor planning', icon: 'focus' }],
   };
   let VS = null, VIMG = null, eng = null, music = null, musicKey = '', playing = null, recording = false;
+  // card pictures and Veo clips are kept in IndexedDB (too big for localStorage)
+  const IDB = (() => {
+    let dbp = null;
+    const open = () => dbp || (dbp = new Promise((res, rej) => { const r = indexedDB.open('motion-helper', 1); r.onupgradeneeded = () => r.result.createObjectStore('files'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }));
+    const run = async (mode, fn) => { const d = await open(); return new Promise((res, rej) => { const t = d.transaction('files', mode), rq = fn(t.objectStore('files')); t.oncomplete = () => res(rq && rq.result); t.onerror = () => rej(t.error); }); };
+    const safe = p => p.catch(() => null);
+    return { get: k => safe(run('readonly', st => st.get(k))), set: (k, v) => safe(run('readwrite', st => st.put(v, k))), del: k => safe(run('readwrite', st => st.delete(k))) };
+  })();
+  const MEDIA = { image: null, clips: {}, clipBlobs: {} };
+  async function setMediaImage(blob) {
+    MEDIA.image = null; if (!blob) return;
+    const im = new Image(); im.src = URL.createObjectURL(blob);
+    try { await im.decode(); MEDIA.image = im; } catch (e) {}
+  }
+  function setClip(i, blob) {
+    if (MEDIA.clips[i]) { try { MEDIA.clips[i].pause(); URL.revokeObjectURL(MEDIA.clips[i].src); } catch (e) {} }
+    delete MEDIA.clips[i]; delete MEDIA.clipBlobs[i]; if (!blob) return;
+    const v = document.createElement('video'); v.muted = true; v.loop = true; v.playsInline = true; v.src = URL.createObjectURL(blob); v.play().catch(() => {});
+    MEDIA.clips[i] = v; MEDIA.clipBlobs[i] = blob;
+  }
+  const clearClips = () => { for (let i = 0; i < 8; i++) { setClip(i, null); IDB.del('clip:current:' + i); } };
   const cv = $('vCanvas');
 
   // ── image ──
@@ -986,6 +1030,8 @@ Rules:
     VIMG = { file: f, url: URL.createObjectURL(f) };
     $('vImgPrev').src = VIMG.url; $('vImgName').textContent = f.name || 'صورة';
     $('vDropEmpty').classList.add('hidden'); $('vDropFull').classList.remove('hidden');
+    if (!arguments[1]) { IDB.set('img:current', f); clearClips(); }
+    setMediaImage(f).then(rebuild);
   }
   const vd = $('vDrop');
   vd.addEventListener('click', e => { if (e.target.id !== 'vImgDel') $('vImg').click(); });
@@ -994,7 +1040,7 @@ Rules:
   ['dragenter', 'dragover'].forEach(ev => vd.addEventListener(ev, e => { e.preventDefault(); vd.classList.add('over'); }));
   ['dragleave', 'drop'].forEach(ev => vd.addEventListener(ev, e => { e.preventDefault(); vd.classList.remove('over'); }));
   vd.addEventListener('drop', e => vSetImg(e.dataTransfer.files[0]));
-  $('vImgDel').onclick = e => { e.stopPropagation(); if (VIMG) URL.revokeObjectURL(VIMG.url); VIMG = null; $('vImg').value = ''; $('vDropEmpty').classList.remove('hidden'); $('vDropFull').classList.add('hidden'); };
+  $('vImgDel').onclick = e => { e.stopPropagation(); if (VIMG) URL.revokeObjectURL(VIMG.url); VIMG = null; $('vImg').value = ''; $('vDropEmpty').classList.remove('hidden'); $('vDropFull').classList.add('hidden'); MEDIA.image = null; IDB.del('img:current'); clearClips(); rebuild(); };
   document.addEventListener('paste', e => { if ($('tabVideo').classList.contains('hidden')) return; const f = [...((e.clipboardData && e.clipboardData.files) || [])].find(f => f.type.startsWith('image/')); if (f) vSetImg(f); });
 
   // ── key (shared with the full tab) ──
@@ -1025,10 +1071,22 @@ Rules:
   function useJSON(raw) {
     const a = raw.indexOf('{'), b = raw.lastIndexOf('}');
     const j = JSON.parse(raw.slice(a, b + 1));
-    VS = VideoEngine.normalize(j); VS.setup = { surface: VS.surface, item: VS.item, target: VS.target, tongs: VS.tongs, helper: VS.helper };
-    ['surface', 'item', 'target', 'tongs', 'helper'].forEach(k => delete VS[k]);
+    VS = editable(j);
     if (!VS.credit) VS.credit = store.get('pb-credit') || '';
     saveVS(); renderForm(); rebuild();
+  }
+  // engine-normalised, editable copy of a spec (also upgrades older saved activities)
+  function editable(j) {
+    const n = VideoEngine.normalize(j), raw = Array.isArray(j.exercises) ? j.exercises : [];
+    return {
+      template: n.template, mode: n.mode, animatable: n.animatable, setting: n.setting,
+      title: n.title, desc: n.desc, level: n.level, help: n.help, credit: n.credit,
+      characters: [n.chars.main, n.chars.helper],
+      setup: { surface: n.surface, item: n.item, target: n.target, tongs: n.tongs, helper: n.helper },
+      steps: n.template === 'workout' ? [] : n.steps.map((x, i) => ({ ar: x.ar, en: x.en, capAr: x.capAr, capEn: x.capEn, action: (j.steps && j.steps[i] && j.steps[i].action === 'other') ? 'other' : x.action, box: x.box })),
+      exercises: n.exercises.map((x, i) => ({ ar: x.ar, en: x.en, move: x.known ? x.move : 'other', reps: x.reps, target: x.target, hold: x.hold, box: x.box })),
+      tools: n.tools, benefits: n.benefits,
+    };
   }
   $('vRead').onclick = e => {
     if (!VIMG) return msg('vMsg', '⚠️ ارفع صورة البطاقة أولًا.', 'warn');
@@ -1044,7 +1102,7 @@ Rules:
   function clearAll() {
     stopPlay();
     VS = null; store.set('pb-video', 'null');
-    if (VIMG) URL.revokeObjectURL(VIMG.url); VIMG = null; $('vImg').value = '';
+    if (VIMG) URL.revokeObjectURL(VIMG.url); VIMG = null; $('vImg').value = ''; MEDIA.image = null; IDB.del('img:current'); clearClips();
     $('vDropEmpty').classList.remove('hidden'); $('vDropFull').classList.add('hidden');
     $('vPaste').value = ''; msg('vRecMsg', ''); eng = null; musicKey = '';
     $('vSeek').value = 0; $('vTime').textContent = '0:00 / 0:00';
@@ -1054,7 +1112,7 @@ Rules:
     $('tabVideo').scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
   $('vClear').onclick = () => { if (!VS && !VIMG) return clearAll(); if (confirm('تمسح النشاط الحالي وتبدأ فيديو جديد؟')) clearAll(); };
-  $('vExample').onclick = () => { VS = JSON.parse(JSON.stringify(EXAMPLE)); VS.credit = store.get('pb-credit') || ''; saveVS(); renderForm(); rebuild(); msg('vMsg', ''); };
+  $('vExample').onclick = () => { VS = editable(EXAMPLE); VS.credit = store.get('pb-credit') || ''; saveVS(); renderForm(); rebuild(); msg('vMsg', ''); };
 
   // ── editable form ──
   const opts = (map, v) => Object.entries(map).map(([k, l]) => `<option value="${k}"${k === v ? ' selected' : ''}>${l}</option>`).join('');
@@ -1062,23 +1120,46 @@ Rules:
   const pairRow = (label, key) => `<label>${label}</label><div class="row">${inp(key + '.ar', VS[key].ar, 'عربي')}${inp(key + '.en', VS[key].en, 'English', 1)}</div>`;
   function renderForm() {
     if (!VS) { $('vForm').innerHTML = '<div class="empty" style="padding:20px">تظهر الحقول هنا بعد قراءة البطاقة.</div>'; return; }
-    const su = VS.setup;
-    let h = pairRow('العنوان', 'title') + pairRow('الوصف', 'desc') + pairRow('المستوى', 'level') + pairRow('ملاحظة السلامة <small>(اختياري)</small>', 'help');
+    const su = VS.setup, wk = VS.template === 'workout', act = VS.template === 'activity';
+    let h = `<div class="row"><div><label>🎬 نمط الفيديو</label><select data-p="mode">${opts(MODE, VS.mode || 'auto')}</select></div><div><label>نوع البطاقة</label><select data-p="template">${opts(TPL, VS.template)}</select></div></div>
+      <p class="where" style="margin:4px 0 0">«تلقائي»: إذا كل الحركات معروفة تطلع شخصيات كرتونية، وإذا لا تتحرك صور البطاقة نفسها.</p>`;
+    h += pairRow('العنوان', 'title') + pairRow('الوصف', 'desc') + pairRow('المستوى', 'level') + pairRow('ملاحظة السلامة <small>(اختياري)</small>', 'help');
     h += `<label for="vCredit">✍️ بصمة العمل <small>(اختياري — تظهر في نهاية الفيديو، واتركها فاضية إذا ما تبي)</small></label><div class="vrow" style="display:flex;align-items:center;gap:10px;margin:0"><span style="font-weight:700;white-space:nowrap">هذا العمل من تنسيق</span><input type="text" id="vCredit" data-p="credit" value="${esc(VS.credit || '')}" placeholder="اكتب الاسم"></div>`;
-    h += `<h3 class="qsec" style="margin-top:20px">🎬 المشهد</h3><div class="row">
+    h += `<h3 class="qsec" style="margin-top:20px">🧑 الشخصيات <small>(للكرتون)</small></h3><div><label>المكان</label><select data-p="setting">${opts(SETTING, VS.setting)}</select></div>`;
+    (VS.characters || []).forEach((c, i) => {
+      if (i && !(act && su.helper)) return;
+      const look = c.hijab ? 'hijab' : (c.hairStyle || 'auto'), P = 'characters.' + i + '.';
+      const col = (k, l) => `<label>${l}<input type="color" data-p="${P}${k}" value="${esc(c[k])}"></label>`;
+      h += `<div class="vrow"><div class="vrowHead"><b>${i ? 'المساعد/ة' : 'الشخصية الرئيسية'}</b></div>
+        <div class="row"><select data-p="${P}age">${opts(AGE, c.age)}</select><select data-p="${P}gender">${opts(GENDER, c.gender)}</select></div>
+        <div class="row"><select data-p="${P}look">${opts(LOOK, look)}</select><select data-p="${P}sleeves">${opts(SLEEVES, c.sleeves)}</select></div>
+        <div class="colors">${col('top', 'البلوزة')}${col('bottom', 'البنطلون')}${c.hijab ? col('scarf', 'الحجاب') : col('hair', 'الشعر')}${col('skin', 'البشرة')}${col('shoes', 'الحذاء')}</div></div>`;
+    });
+    if (act) h += `<h3 class="qsec" style="margin-top:20px">🎬 المشهد</h3><div class="row">
       <div><label>يقف على</label><select data-p="setup.surface">${opts(SURF, su.surface)}</select></div>
       <div><label>الأداة الصغيرة</label><select data-p="setup.item">${opts(ITEM, su.item)}</select></div></div>
       <div class="row"><div><label>توضع في</label><select data-p="setup.target">${opts(TGT, su.target)}</select></div>
       <div style="display:flex;flex-direction:column;justify-content:flex-end;gap:4px;padding-bottom:4px">
         <label style="margin:0;font-weight:400;display:flex;gap:8px;align-items:center"><input type="checkbox" data-p="setup.tongs"${su.tongs ? ' checked' : ''}> يستخدم ملقط</label>
         <label style="margin:0;font-weight:400;display:flex;gap:8px;align-items:center"><input type="checkbox" data-p="setup.helper"${su.helper ? ' checked' : ''}> تظهر المعلمة</label></div></div>`;
-    h += `<h3 class="qsec" style="margin-top:20px">👣 الخطوات <small>(${VS.steps.length} من ٦)</small></h3>`;
-    VS.steps.forEach((s, i) => {
+    if (wk) {
+      h += `<h3 class="qsec" style="margin-top:20px">🏋️ التمارين <small>(${VS.exercises.length} من ٨)</small></h3>`;
+      VS.exercises.forEach((s, i) => {
+        h += `<div class="vrow"><div class="vrowHead"><span class="badge">${i + 1}</span><select data-p="exercises.${i}.move">${opts(MOVE, s.move)}</select><button type="button" class="ghost small" data-del="exercises.${i}" aria-label="احذف">✕</button></div>
+          <div class="row">${inp(`exercises.${i}.ar`, s.ar, 'اسم التمرين')}${inp(`exercises.${i}.en`, s.en, 'Exercise', 1)}</div>
+          <div class="row">${inp(`exercises.${i}.reps.ar`, s.reps.ar, 'التكرار / الوقت')}${inp(`exercises.${i}.reps.en`, s.reps.en, 'Reps / time', 1)}</div>
+          <div class="row">${inp(`exercises.${i}.target.ar`, s.target.ar, 'يستهدف')}${inp(`exercises.${i}.target.en`, s.target.en, 'Target', 1)}</div>
+          <label style="margin:0;font-weight:400;display:flex;gap:8px;align-items:center"><input type="checkbox" data-p="exercises.${i}.hold"${s.hold ? ' checked' : ''}> ثبات بالوقت (مثل البلانك)</label></div>`;
+      });
+      if (VS.exercises.length < 8) h += `<button type="button" class="ghost small" data-add="exercises">＋ تمرين</button>`;
+    }
+    if (!wk) h += `<h3 class="qsec" style="margin-top:20px">👣 الخطوات <small>(${VS.steps.length} من ٦)</small></h3>`;
+    if (!wk) VS.steps.forEach((s, i) => {
       h += `<div class="vrow"><div class="vrowHead"><span class="badge">${i + 1}</span><select data-p="steps.${i}.action">${opts(ACT, s.action)}</select><button type="button" class="ghost small" data-del="steps.${i}" aria-label="احذف">✕</button></div>
         <div class="row">${inp(`steps.${i}.ar`, s.ar, 'اسم الخطوة')}${inp(`steps.${i}.en`, s.en, 'Step name', 1)}</div>
         ${inp(`steps.${i}.capAr`, s.capAr, 'الجملة تحت الشاشة')}<div style="height:6px"></div>${inp(`steps.${i}.capEn`, s.capEn, 'Caption', 1)}</div>`;
     });
-    if (VS.steps.length < 6) h += `<button type="button" class="ghost small" data-add="steps">＋ خطوة</button>`;
+    if (!wk && VS.steps.length < 6) h += `<button type="button" class="ghost small" data-add="steps">＋ خطوة</button>`;
     h += `<h3 class="qsec" style="margin-top:20px">🧰 الأدوات</h3>`;
     VS.tools.forEach((s, i) => { h += `<div class="vrow"><div class="vrowHead"><select data-p="tools.${i}.kind">${opts(KIND, s.kind)}</select><button type="button" class="ghost small" data-del="tools.${i}" aria-label="احذف">✕</button></div><div class="row">${inp(`tools.${i}.ar`, s.ar, 'اسم الأداة')}${inp(`tools.${i}.en`, s.en, 'Tool', 1)}</div></div>`; });
     if (VS.tools.length < 6) h += `<button type="button" class="ghost small" data-add="tools">＋ أداة</button>`;
@@ -1087,13 +1168,18 @@ Rules:
     if (VS.benefits.length < 5) h += `<button type="button" class="ghost small" data-add="benefits">＋ فائدة</button>`;
     $('vForm').innerHTML = h;
   }
-  function setPath(path, v) { const ks = path.split('.'); let o = VS; ks.slice(0, -1).forEach(k => { o = o[k]; }); o[ks[ks.length - 1]] = v; }
+  function setPath(path, v) {
+    const ks = path.split('.'); let o = VS; ks.slice(0, -1).forEach(k => { o = o[k]; });
+    const last = ks[ks.length - 1];
+    if (last === 'look') { o.hijab = v === 'hijab'; o.hairStyle = v === 'hijab' || v === 'auto' ? '' : v; return; }
+    o[last] = v;
+  }
   $('vForm').addEventListener('input', e => { const p = e.target.dataset.p; if (!p) return; if (p === 'credit') store.set('pb-credit', e.target.value.trim()); setPath(p, e.target.type === 'checkbox' ? e.target.checked : e.target.value); saveVS(); rebuildSoon(); });
-  $('vForm').addEventListener('change', e => { if (e.target.tagName === 'SELECT' || e.target.type === 'checkbox') { saveVS(); rebuild(); } });
+  $('vForm').addEventListener('change', e => { if (e.target.tagName === 'SELECT' || e.target.type === 'checkbox') { const p = e.target.dataset.p || ''; saveVS(); if (/^(template|setup\.helper)$|\.look$/.test(p)) renderForm(); rebuild(); } });
   $('vForm').addEventListener('click', e => {
     const d = e.target.dataset;
     if (d.del) { const [k, i] = d.del.split('.'); VS[k].splice(+i, 1); }
-    else if (d.add) VS[d.add].push(d.add === 'steps' ? { ar: '', en: '', capAr: '', capEn: '', action: 'balance' } : d.add === 'tools' ? { ar: '', en: '', kind: 'other' } : { ar: '', en: '', icon: 'star' });
+    else if (d.add) VS[d.add].push(d.add === 'steps' ? { ar: '', en: '', capAr: '', capEn: '', action: 'other' } : d.add === 'exercises' ? { ar: '', en: '', move: 'other', reps: { ar: '', en: '' }, target: { ar: '', en: '' }, hold: false } : d.add === 'tools' ? { ar: '', en: '', kind: 'other' } : { ar: '', en: '', icon: 'star' });
     else return;
     saveVS(); renderForm(); rebuild();
   });
@@ -1114,7 +1200,7 @@ Rules:
   function hThumb(sp) {
     try {
       const c = document.createElement('canvas'); c.width = 384; c.height = 216;
-      const e = VideoEngine.create(c, sp); e.render(e.T.gym[0] + (e.T.steps[1] ? e.T.steps[1].ts + 2.5 - e.T.gym[0] : 4));
+      const e = VideoEngine.create(c, Object.assign({}, sp, { media: MEDIA })); e.render(e.T.gym[0] + (e.T.steps[1] ? e.T.steps[1].ts + 2.5 - e.T.gym[0] : 4));
       return c.toDataURL('image/jpeg', .72);
     } catch (e) { return ''; }
   }
@@ -1125,6 +1211,8 @@ Rules:
     const old = list.find(x => x.id === id), item = { id, title: hName(sp), created: old ? old.created : Date.now(), updated: Date.now(), videos: (old ? old.videos || 0 : 0) + (auto ? 1 : 0), spec: sp, thumb: hThumb(sp) };
     const rest = list.filter(x => x.id !== id); rest.unshift(item); if (rest.length > 80) rest.length = 80;
     VS._hid = id; saveVS();
+    if (VIMG) IDB.set('img:' + id, VIMG.file);
+    for (let i = 0; i < 8; i++) { if (MEDIA.clipBlobs[i]) IDB.set('clip:' + id + ':' + i, MEDIA.clipBlobs[i]); else IDB.del('clip:' + id + ':' + i); }
     const ok = hStore(rest); hRender();
     msg('hMsg', ok ? (auto ? '📚 انحفظ الفيديو في السجل.' : '✓ انحفظ النشاط في السجل.') : '⚠️ ذاكرة المتصفح ممتلئة. صدّر السجل واحذف القديم.', ok ? 'info' : 'warn');
   }
@@ -1141,12 +1229,15 @@ Rules:
   $('hList').addEventListener('click', e => {
     const b = e.target.closest('button'); if (!b) return;
     const list = hLoad(), d = b.dataset;
-    if (d.hOpen) { const x = list.find(i => i.id === d.hOpen); if (!x) return; VS = JSON.parse(JSON.stringify(x.spec)); VS._hid = x.id; saveVS(); renderForm(); rebuild(); hRender(); msg('vMsg', `✓ فتحت «${esc(x.title)}». عدّل اللي تبيه ونزّل فيديو جديد.`); $('tabVideo').scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+    if (d.hOpen) { const x = list.find(i => i.id === d.hOpen); if (!x) return; VS = editable(x.spec); VS._hid = x.id; saveVS(); renderForm(); hRender();
+      (async () => { const im = await IDB.get('img:' + x.id); clearClips(); if (im) { vSetImg(im); IDB.set('img:current', im); } else { if (VIMG) $('vImgDel').click(); rebuild(); }
+        for (let i = 0; i < 8; i++) { const c = await IDB.get('clip:' + x.id + ':' + i); if (c) { setClip(i, c); IDB.set('clip:current:' + i, c); } } rebuild(); })(); msg('vMsg', `✓ فتحت «${esc(x.title)}». عدّل اللي تبيه ونزّل فيديو جديد.`); $('tabVideo').scrollIntoView({ behavior: 'smooth', block: 'start' }); }
     if (d.hFile) { const x = list.find(i => i.id === d.hFile); if (x) dlJSON({ app: 'motion-helper', items: [{ ...x, thumb: '' }] }, safeName(x.title) + '.json'); }
-    if (d.hDel) { const x = list.find(i => i.id === d.hDel); if (x && confirm(`تحذف «${x.title}» من السجل؟`)) { hStore(list.filter(i => i.id !== d.hDel)); if (VS && VS._hid === d.hDel) { delete VS._hid; saveVS(); } hRender(); } }
+    if (d.hDel) { const x = list.find(i => i.id === d.hDel); if (x && confirm(`تحذف «${x.title}» من السجل؟`)) { hStore(list.filter(i => i.id !== d.hDel)); IDB.del('img:' + x.id); for (let i = 0; i < 8; i++) IDB.del('clip:' + x.id + ':' + i); if (VS && VS._hid === d.hDel) { delete VS._hid; saveVS(); } hRender(); } }
   });
   $('hSave').onclick = () => hSaveCurrent(false);
-  $('hExport').onclick = () => { const list = hLoad(); if (!list.length) return msg('hMsg', 'السجل فاضي.', 'warn'); dlJSON({ app: 'motion-helper', items: list.map(x => ({ ...x, thumb: '' })) }, 'سجل الفيديوهات.json'); };
+  const blobURL = b => new Promise(r => { if (!b) return r(''); const f = new FileReader(); f.onload = () => r(f.result); f.onerror = () => r(''); f.readAsDataURL(b); });
+  $('hExport').onclick = async () => { const list = hLoad(); if (!list.length) return msg('hMsg', 'السجل فاضي.', 'warn'); const items = []; for (const x of list) items.push({ ...x, thumb: '', image: await blobURL(await IDB.get('img:' + x.id)) }); dlJSON({ app: 'motion-helper', items }, 'سجل الفيديوهات.json'); };
   $('hImportBtn').onclick = () => $('hImport').click();
   $('hImport').addEventListener('change', async e => {
     const f = e.target.files[0]; e.target.value = ''; if (!f) return;
@@ -1154,6 +1245,7 @@ Rules:
       const j = JSON.parse(await f.text()), items = Array.isArray(j.items) ? j.items : (j.title ? [{ spec: j }] : []);
       if (!items.length) throw new Error();
       const list = hLoad(); let n = 0;
+      for (const x of items) { if (x && x.spec && x.image && x.id) { try { IDB.set('img:' + x.id, await (await fetch(x.image)).blob()); } catch (e) {} } }
       items.forEach(x => { if (!x || !x.spec) return; const id = x.id || ('v' + Date.now().toString(36) + n); const it = { id, title: x.title || hName(x.spec), created: x.created || Date.now(), updated: x.updated || Date.now(), videos: x.videos || 0, spec: x.spec, thumb: hThumb(x.spec) }; const i = list.findIndex(y => y.id === id); if (i >= 0) list[i] = it; else list.push(it); n++; });
       list.sort((a, b) => (b.updated || 0) - (a.updated || 0)); hStore(list); hRender(); msg('hMsg', `✓ استوردت ${n} نشاط.`);
     } catch (err) { msg('hMsg', '⚠️ الملف مو ملف سجل صحيح.', 'warn'); }
@@ -1167,14 +1259,17 @@ Rules:
     stopPlay();
     $('vEmpty').classList.toggle('hidden', !!VS);
     if (!VS) return;
-    const spec = Object.assign({}, VS);
+    const spec = Object.assign({}, VS, { media: MEDIA });
     eng = VideoEngine.create(cv, spec);
+    $('vModeNow').classList.remove('hidden'); $('vModeNow').textContent = eng.mode === 'cards' ? '🖼️ صور البطاقة' : '🎨 كرتون متحرك';
+    $('veoBox').classList.toggle('hidden', eng.mode !== 'cards'); $('vVeoDel').classList.toggle('hidden', !Object.keys(MEDIA.clips).length);
+    Object.values(MEDIA.clips).forEach(v => v.play().catch(() => {}));
     $('vSeek').max = eng.DUR; const t = Math.min(+$('vSeek').value || 0, eng.DUR);
     draw(t || 3);
   }
   function draw(t) { if (!eng) return; eng.render(t); $('vSeek').value = t; $('vTime').textContent = `${fmt(t)} / ${fmt(eng.DUR)}`; }
   const fontsReady = Promise.all(['900 40px Cairo', '800 40px Cairo', '700 40px Cairo'].map(f => document.fonts.load(f, 'ابت abc'))).catch(() => {});
-  function getMusic() { const k = JSON.stringify(VS); if (k !== musicKey) { music = eng.music(); musicKey = k; } return music; }
+  function getMusic() { const k = JSON.stringify(VS) + eng.mode + eng.DUR; if (k !== musicKey) { music = eng.music(); musicKey = k; } return music; }
   function audioBuffer(ac, m) { const b = ac.createBuffer(2, m.L.length, m.sr); b.copyToChannel(m.L, 0); b.copyToChannel(m.R, 1); return b; }
   function stopPlay() { if (!playing) return; try { playing.src.stop(); } catch (e) {} playing.ac.close(); playing = null; $('vPlay').textContent = '▶ تشغيل'; }
   $('vPlay').onclick = async () => {
@@ -1193,6 +1288,63 @@ Rules:
     loop();
   };
   $('vSeek').addEventListener('input', () => { stopPlay(); draw(+$('vSeek').value); });
+
+  // ── Veo: animate each step picture (optional, paid) ──
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+  const G_API = 'https://generativelanguage.googleapis.com/v1beta/';
+  async function veoModel(key) {
+    const r = await fetch(G_API + 'models?pageSize=200', { headers: { 'x-goog-api-key': key } }), j = await r.json();
+    if (!r.ok) throw new Error((j.error && j.error.message) || r.status);
+    const ms = (j.models || []).filter(m => /veo/i.test(m.name) && (m.supportedGenerationMethods || []).some(x => /predictLongRunning/i.test(x))).map(m => m.name.replace(/^models\//, ''));
+    if (!ms.length) throw new Error('حسابك ما فيه موديل Veo متاح');
+    const ver = n => { const m = /veo-(\d+(?:\.\d+)?)/.exec(n); return m ? +m[1] : 0; };
+    return ms.sort((a, b) => ver(b) - ver(a) || (/fast/.test(b) - /fast/.test(a)))[0];
+  }
+  function stepPNG(box) {
+    const im = MEDIA.image, IW = im.naturalWidth, IH = im.naturalHeight, c = document.createElement('canvas'); c.width = 1280; c.height = 720;
+    const g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, 1280, 720);
+    let [y0, x0, y1, x1] = box.map(v => Math.min(1, Math.max(0, v / 1000)));
+    const sw = (x1 - x0) * IW, sh = (y1 - y0) * IH, k = Math.min(1280 / sw, 720 / sh);
+    g.drawImage(im, x0 * IW, y0 * IH, sw, sh, (1280 - sw * k) / 2, (720 - sh * k) / 2, sw * k, sh * k);
+    return c.toDataURL('image/png').split(',')[1];
+  }
+  async function veoClip(key, model, prompt, b64, onTick) {
+    const r = await fetch(G_API + 'models/' + model + ':predictLongRunning', { method: 'POST', headers: { 'content-type': 'application/json', 'x-goog-api-key': key },
+      body: JSON.stringify({ instances: [{ prompt, image: { bytesBase64Encoded: b64, mimeType: 'image/png' } }], parameters: { aspectRatio: '16:9' } }) });
+    let op = await r.json(); if (!r.ok) throw new Error((op.error && op.error.message) || r.status);
+    for (let i = 0; i < 100 && !op.done; i++) { await sleep(8000); onTick(i); const q = await fetch(G_API + op.name, { headers: { 'x-goog-api-key': key } }); op = await q.json(); if (!q.ok) throw new Error((op.error && op.error.message) || q.status); }
+    if (!op.done) throw new Error('طال الانتظار'); if (op.error) throw new Error(op.error.message);
+    const resp = op.response || {}, gv = resp.generateVideoResponse || resp, smp = gv.generatedSamples || gv.generatedVideos || [];
+    const uri = smp[0] && ((smp[0].video && smp[0].video.uri) || smp[0].uri);
+    if (!uri) throw new Error(gv.raiMediaFilteredReasons ? 'Google رفضت الصورة: ' + gv.raiMediaFilteredReasons : 'ما رجع فيديو');
+    let d = await fetch(uri, { headers: { 'x-goog-api-key': key } }).catch(() => null);
+    if (!d || !d.ok) d = await fetch(uri + (uri.includes('?') ? '&' : '?') + 'key=' + encodeURIComponent(key));
+    if (!d.ok) throw new Error('تعذّر تنزيل المقطع');
+    return d.blob();
+  }
+  $('vVeo').onclick = async e => {
+    if (!eng || eng.mode !== 'cards' || !MEDIA.image) return;
+    if (!provider(apiKey())) { msg('veoMsg', '⚠️ يحتاج مفتاح Gemini.', 'warn'); return askForKey(); }
+    const steps = eng.S.steps.map((x, i) => ({ i, x })).filter(o => Array.isArray(o.x.box) && o.x.box.length === 4);
+    if (!steps.length) return msg('veoMsg', '⚠️ ما لقيت صور للخطوات في البطاقة.', 'warn');
+    if (!confirm(`بيتم إنشاء ${steps.length} مقاطع بالذكاء الاصطناعي، وهذا مدفوع من رصيد مفتاح Gemini. تكمل؟`)) return;
+    const btn = e.currentTarget, key = apiKey();
+    await busy(btn, 'Veo يشتغل…', async () => {
+      try {
+        const model = await veoModel(key); let ok = 0;
+        for (const { i, x } of steps) {
+          msg('veoMsg', `⏳ الخطوة ${i + 1} من ${eng.S.steps.length}… (${model})`);
+          try {
+            const prompt = `Animate this picture with gentle, natural motion showing: ${x.capEn || x.en || x.capAr || x.ar}. Keep exactly the same people, clothes, style, colours and background. No text, no new objects, steady camera.`;
+            const blob = await veoClip(key, model, prompt, stepPNG(x.box), n => msg('veoMsg', `⏳ الخطوة ${i + 1}: Google تجهّز المقطع${'.'.repeat(n % 4 + 1)}`));
+            setClip(i, blob); IDB.set('clip:current:' + i, blob); ok++; rebuild();
+          } catch (err) { msg('veoMsg', `⚠️ الخطوة ${i + 1}: ${esc(err.message)}`, 'warn'); await sleep(2500); }
+        }
+        msg('veoMsg', ok ? `✓ تحركت ${ok} خطوة. شغّل المعاينة.` : '⚠️ ما تم تحريك أي خطوة.', ok ? 'info' : 'warn');
+      } catch (err) { msg('veoMsg', `⚠️ ${esc(err.message)}`, 'warn'); }
+    });
+  };
+  $('vVeoDel').onclick = () => { clearClips(); rebuild(); msg('veoMsg', 'انحذفت المقاطع، ورجعت الصور ثابتة.'); };
 
   // ── record & download ──
   $('vRec').onclick = async () => {
@@ -1232,9 +1384,14 @@ Rules:
     }
   };
 
-  try { VS = JSON.parse(store.get('pb-video') || 'null'); } catch (e) { VS = null; }
+  try { VS = JSON.parse(store.get('pb-video') || 'null'); if (VS) { const hid = VS._hid; VS = editable(VS); if (hid) VS._hid = hid; } } catch (e) { VS = null; }
   hRender();
-  renderForm(); fontsReady.then(rebuild);
+  renderForm();
+  fontsReady.then(async () => {
+    const im = await IDB.get('img:current'); if (im) vSetImg(im, true);
+    for (let i = 0; i < 8; i++) { const c = await IDB.get('clip:current:' + i); if (c) setClip(i, c); }
+    rebuild();
+  });
 })();
 </script>
 </body>
