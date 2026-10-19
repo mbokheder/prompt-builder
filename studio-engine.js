@@ -615,7 +615,33 @@ function buildStudio(cam) {
   el('rect', { x: 1640, y: 540, width: 220, height: 14, rx: 6, fill: '#5d6472' }, cam);
   [[1680, 455, '#ff5fa2'], [1750, 455, '#2f6fe0'], [1820, 455, '#ffd21f'], [1690, 525, '#20a35a'], [1780, 525, '#ff7a1a']].forEach(([x, y, c]) => { el('rect', { x: x - 26, y: y - 10, width: 52, height: 20, rx: 6, fill: '#3d424e' }, cam); [-1, 1].forEach(sg => el('rect', { x: x + sg * 22 - 9, y: y - 18, width: 18, height: 36, rx: 6, fill: c }, cam)); });
 }
-const buildRoom = (cam, setting) => setting === 'fitness_studio' ? buildStudio(cam) : buildKidsRoom(cam);
+function buildPark(cam) {
+  const sky = el('g', {}, cam);
+  el('rect', { x: -900, y: -500, width: 3720, height: 1080, fill: '#8fd3ff' }, sky);
+  el('rect', { x: -900, y: 200, width: 3720, height: 380, fill: '#bfe8ff' }, sky);
+  el('circle', { cx: 1650, cy: 140, r: 90, fill: '#ffe066' }, sky); el('circle', { cx: 1650, cy: 140, r: 130, fill: '#ffe066', opacity: .25 }, sky);
+  [[260, 120], [700, 70], [1200, 150]].forEach(([x, y]) => { const c = el('g', { opacity: .95 }, sky); [[-60, 10, 50], [0, -10, 64], [60, 10, 48]].forEach(([dx, dy, r]) => el('circle', { cx: x + dx, cy: y + dy, r, fill: '#fff' }, c)); });
+  [-200, 160, 520, 1450, 1800, 2150].forEach((x, i) => { el('rect', { x: x - 16, y: 380, width: 32, height: 190, fill: '#8a5a33' }, cam); el('circle', { cx: x, cy: 360, r: 110 + (i % 2) * 20, fill: i % 2 ? '#3cb96a' : '#2e9e5b' }, cam); el('circle', { cx: x - 50, cy: 400, r: 70, fill: '#46c776' }, cam); });
+  for (let x = -900; x < 2820; x += 46) el('rect', { x, y: 470, width: 14, height: 100, rx: 5, fill: '#fff6e0', stroke: '#e6d3a8', 'stroke-width': 2 }, cam);
+  el('rect', { x: -900, y: 500, width: 3720, height: 12, fill: '#e6d3a8' }, cam);
+  el('rect', { x: -900, y: 560, width: 3720, height: 900, fill: '#7ccf5b' }, cam);
+  const st = el('g', { opacity: .35 }, cam); for (let i = -16; i <= 16; i++) el('path', { d: `M ${960 + i * 110} 560 L ${960 + i * 110 + 55} 560 L ${960 + i * 380 + 190} 1500 L ${960 + i * 380} 1500 Z`, fill: '#69bd4a' }, st);
+  [[300, 640], [1500, 700], [700, 980], [1750, 1000]].forEach(([x, y]) => [0, 1, 2, 3, 4].forEach(k => el('circle', { cx: x + Math.cos(k * 1.26) * 12, cy: y + Math.sin(k * 1.26) * 12, r: 9, fill: ['#ff5fa2', '#ffd21f', '#fff'][k % 3] }, cam)));
+}
+function buildClassroom(cam) {
+  el('rect', { x: -900, y: -500, width: 3720, height: 1070, fill: '#fdf1d8' }, cam);
+  el('rect', { x: -900, y: 420, width: 3720, height: 140, fill: '#f6dfb0' }, cam);
+  el('rect', { x: 640, y: 110, width: 640, height: 290, rx: 14, fill: '#2f6b4f', stroke: '#8a5a33', 'stroke-width': 16 }, cam);
+  [['M 700 180 Q 760 150 820 180', '#fff'], ['M 700 240 L 900 240', '#ffd21f'], ['M 980 170 L 1040 260 L 1100 170 Z', '#ff9db5'], ['M 1140 300 a 40 40 0 1 0 1 0', '#9fe3ff']].forEach(([d, c]) => el('path', { d, stroke: c, 'stroke-width': 6, fill: 'none', 'stroke-linecap': 'round' }, cam));
+  const ab = 'أبتثجحخدذر'; for (let i = 0; i < 10; i++) { const x = 1220 - i * 52; el('rect', { x: x - 22, y: 40, width: 44, height: 50, rx: 8, fill: [C.orange, C.blue, C.yellow, C.red, C.green][i % 5] }, cam); el('text', { x, y: 68, size: 30, weight: 900, fill: '#fff', text: ab[i] }, cam); }
+  [[1600, 150], [260, 200]].forEach(([x, y]) => { el('rect', { x: x - 140, y, width: 280, height: 210, rx: 18, fill: '#cfeeff', stroke: '#fff', 'stroke-width': 10 }, cam); el('path', { d: `M ${x} ${y} L ${x} ${y + 210} M ${x - 140} ${y + 105} L ${x + 140} ${y + 105}`, stroke: '#fff', 'stroke-width': 8 }, cam); });
+  el('rect', { x: -900, y: 540, width: 3720, height: 900, fill: '#d9b48a' }, cam);
+  el('rect', { x: -900, y: 532, width: 3720, height: 14, fill: '#a87b4f' }, cam);
+  const fl = el('g', { stroke: '#c49c70', 'stroke-width': 3 }, cam); for (let i = -16; i <= 16; i++) el('line', { x1: 960 + i * 110, y1: 546, x2: 960 + i * 380, y2: 1400 }, fl);
+  el('rect', { x: 1420, y: 470, width: 240, height: 22, rx: 6, fill: '#ff9d2e' }, cam); el('rect', { x: 1440, y: 492, width: 14, height: 70, fill: '#8a5a33' }, cam); el('rect', { x: 1626, y: 492, width: 14, height: 70, fill: '#8a5a33' }, cam);
+  el('rect', { x: 1470, y: 430, width: 60, height: 40, rx: 6, fill: C.blue }, cam); el('rect', { x: 1545, y: 440, width: 70, height: 30, rx: 6, fill: C.red }, cam);
+}
+const buildRoom = (cam, setting) => setting === 'fitness_studio' ? buildStudio(cam) : setting === 'park' ? buildPark(cam) : setting === 'classroom' ? buildClassroom(cam) : buildKidsRoom(cam);
 function makeYogaMat(parent, color = '#8e5bff') {
   const g = el('g', {}, parent);
   el('ellipse', { cx: 0, cy: 6, rx: 440, ry: 26, fill: '#000', opacity: .12 }, g);
@@ -734,7 +760,7 @@ function normalize(s) {
     exercises.forEach(x => steps.push({ ar: x.ar, en: x.en, capAr: [x.reps.ar, x.target.ar].filter(Boolean).join('  •  '), capEn: [x.reps.en, x.target.en].filter(Boolean).join('  •  '), action: 'exercise', box: x.box }));
   }
   return {
-    template, setting: ['kids_gym', 'fitness_studio'].includes(s.setting) ? s.setting : (template === 'workout' ? 'fitness_studio' : 'kids_gym'),
+    template, setting: ['kids_gym', 'fitness_studio', 'park', 'classroom'].includes(s.setting) ? s.setting : (template === 'workout' ? 'fitness_studio' : 'kids_gym'),
     chars: { main: mainC, helper: helpC }, exercises,
     title: pair(s.title), desc: pair(s.desc), level: pair(s.level), help: pair(s.help), credit: str(s.credit),
     surface, item, target, tongs: !!su.tongs, helper: su.helper !== false,
@@ -936,7 +962,7 @@ function normExplainer(s) {
   if (textMode === 'ar') scenes.forEach(x => { x.headingEn = ''; x.textEn = ''; x.items.forEach(i => { i.en = ''; }); });
   if (!scenes.length) scenes.push({ type: 'title', emoji: '✨', heading: str(s.title && s.title.ar) || 'عنوان', headingEn: '', text: '', textEn: '', number: '', say: '', items: [] });
   const presenter = s.presenter ? normChar(Object.assign({ age: 'adult', sleeves: 'long' }, s.presenter), 'helper') : null;
-  return { kind: 'explainer', presenter, music: s.music || {}, title: pair(s.title), credit: str(s.credit), scenes, textMode, voice: s.voice && isFinite(s.voice.duration) ? s.voice : null };
+  return { kind: 'explainer', presenter, cinematic: !!s.cinematic, look: s.look || {}, music: s.music || {}, title: pair(s.title), credit: str(s.credit), scenes, textMode, voice: s.voice && isFinite(s.voice.duration) ? s.voice : null };
 }
 // scene timing: by reading length, or snapped to the pauses of the recorded voice
 function planExplainer(X) {
@@ -989,7 +1015,20 @@ function fitWrap(ctx, s, maxW, maxLines, size, min, w = 900) {
 }
 function createExplainer(canvas, spec) {
   const X = normExplainer(spec), T = planExplainer(X), ctx = canvas.getContext('2d');
-  const PAL = [['#ff7a1a', '#fff1e3'], ['#2f6fe0', '#e7f0ff'], ['#e8a400', '#fff8d6'], ['#e53935', '#ffe9e8'], ['#20a35a', '#e4f8ec'], ['#8e5bff', '#f1eaff'], ['#ff5fa2', '#ffeaf3'], ['#00a6c8', '#e2f8fd']];
+  const lr = rng(((X.look.seed || 1) >>> 0) || 1);
+  const PALSETS = [
+    [['#ff7a1a', '#fff1e3'], ['#2f6fe0', '#e7f0ff'], ['#e8a400', '#fff8d6'], ['#e53935', '#ffe9e8'], ['#20a35a', '#e4f8ec'], ['#8e5bff', '#f1eaff'], ['#ff5fa2', '#ffeaf3'], ['#00a6c8', '#e2f8fd']],
+    [['#7c6cf0', '#f3f0ff'], ['#3fb6a8', '#e6f7f5'], ['#f08a7e', '#fff0ee'], ['#e2a93b', '#fff6e3'], ['#5b9bd5', '#eaf3fc'], ['#c06fd3', '#f8ecfb']],
+    [['#ff6b35', '#fff0e8'], ['#d7263d', '#ffe9ec'], ['#f4a259', '#fff5ea'], ['#8e3b8f', '#f7ebf7'], ['#ffb100', '#fff8e0'], ['#3a506b', '#e9eef4']],
+    [['#0077b6', '#e3f3fb'], ['#00b4d8', '#e2f8fc'], ['#2a9d8f', '#e4f5f3'], ['#264653', '#e6ecef'], ['#48cae4', '#e8f9fc'], ['#f4a261', '#fff3e8']],
+  ];
+  const PAL = PALSETS[X.look.seed ? Math.floor(lr() * PALSETS.length) : 0];
+  const BGS = ['shapes', 'stripes', 'dots', 'bokeh', 'waves', 'rays', 'blobs'];
+  if (X.look.seed) for (let i = BGS.length - 1; i > 0; i--) { const j = Math.floor(lr() * (i + 1)); [BGS[i], BGS[j]] = [BGS[j], BGS[i]]; }
+  const BOKEH = Array.from({ length: 14 }, () => ({ x: lr() * 1920, y: lr() * 1080, r: 60 + lr() * 160, ph: lr() * 6 }));
+  const BLOBS = Array.from({ length: 5 }, () => ({ x: 200 + lr() * 1520, y: 150 + lr() * 780, r: 140 + lr() * 180, ph: lr() * 6 }));
+  // film grain for the cinematic style
+  const GRAIN = typeof document !== 'undefined' ? (() => { const c = document.createElement('canvas'); c.width = c.height = 256; const g = c.getContext('2d'), d = g.createImageData(256, 256); for (let i = 0; i < d.data.length; i += 4) { const v = Math.random() * 255; d.data[i] = d.data[i + 1] = d.data[i + 2] = v; d.data[i + 3] = 255; } g.putImageData(d, 0, 0); return c; })() : null;
   const shapes = el('g'), fl = []; {
     const R = rng(11);
     for (let i = 0; i < 22; i++) { const g = el('g', { opacity: .12 + R() * .1 }, shapes), k = R(); if (k < .35) el('circle', { r: 26 + R() * 46 }, g); else if (k < .6) el('rect', { x: -36, y: -36, width: 72, height: 72, rx: 16 }, g); else if (k < .85) star(g, 34 + R() * 26, '#000'); else el('circle', { r: 36 + R() * 24, fill: 'none', 'stroke-width': 12 }, g);
@@ -998,6 +1037,52 @@ function createExplainer(canvas, spec) {
   const burst = makeBurst(shapes, 41, 160, { power: 1300, spread: 170, w: 600 }), rain = makeBurst(shapes, 43, 120, { dir: 90, power: 200, spread: 40, w: 1900 });
   const AR_N = ['١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
   const toArabicDigits = s => String(s).replace(/\d/g, d => AR_N[+d - 1] || '٠');
+  function bgDraw(kind, col, tint, t) {
+    const g = ctx.createLinearGradient(0, 0, 1920, 1080); g.addColorStop(0, tint); g.addColorStop(1, '#ffffff'); ctx.fillStyle = g; ctx.fillRect(0, 0, 1920, 1080);
+    ctx.save(); ctx.fillStyle = col; ctx.strokeStyle = col;
+    if (kind === 'shapes') {
+      fl.forEach(f => { const x = ((f.x + f.vx * t) % 2100 + 2100) % 2100 - 90, y = ((f.y + f.vy * t + Math.sin(t + f.ph) * 20) % 1250 + 1250) % 1250 - 85; f.g.setAttribute('transform', `translate(${x} ${y}) rotate(${f.vr * t})`); const n0 = f.g.children[0]; n0.setAttribute(n0.getAttribute('fill') === 'none' ? 'stroke' : 'fill', col); });
+      drawNode(ctx, shapes, 1);
+    } else if (kind === 'stripes') {
+      ctx.globalAlpha = .09; ctx.translate(960, 540); ctx.rotate(-28 * D2R); const off = (t * 26) % 180;
+      for (let i = -14; i < 14; i++) ctx.fillRect(i * 180 + off, -1400, 80, 2800);
+    } else if (kind === 'dots') {
+      for (let y = 30; y < 1080; y += 64) for (let x = 30 + (y / 64 % 2) * 32; x < 1920; x += 64) { const r = 4 + 3 * Math.sin(t * 1.4 + (x + y) * .012); ctx.globalAlpha = .16; ctx.beginPath(); ctx.arc(x, y, Math.max(1, r), 0, TAU); ctx.fill(); }
+    } else if (kind === 'bokeh') {
+      BOKEH.forEach(b => { const x = b.x + Math.sin(t * .3 + b.ph) * 40, y = b.y + Math.cos(t * .25 + b.ph) * 30, rg = ctx.createRadialGradient(x, y, 0, x, y, b.r); rg.addColorStop(0, col + '40'); rg.addColorStop(1, col + '00'); ctx.fillStyle = rg; ctx.globalAlpha = 1; ctx.fillRect(x - b.r, y - b.r, b.r * 2, b.r * 2); });
+    } else if (kind === 'waves') {
+      for (let k = 0; k < 4; k++) { ctx.globalAlpha = .07 + k * .035; ctx.beginPath(); ctx.moveTo(0, 1080); for (let x = 0; x <= 1920; x += 40) ctx.lineTo(x, 700 + k * 80 + Math.sin(x * .004 + t * (.6 + k * .2) + k) * 40); ctx.lineTo(1920, 1080); ctx.fill(); }
+    } else if (kind === 'rays') {
+      ctx.translate(1650, -80); ctx.rotate(t * .05); ctx.globalAlpha = .07;
+      for (let i = 0; i < 18; i++) { ctx.rotate(TAU / 18); ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(-120, 2600); ctx.lineTo(120, 2600); ctx.fill(); }
+    } else if (kind === 'blobs') {
+      ctx.globalAlpha = .1;
+      BLOBS.forEach(b => { ctx.beginPath(); for (let i = 0; i <= 8; i++) { const a = i / 8 * TAU, rr = b.r * (1 + .16 * Math.sin(t * .8 + b.ph + i * 1.7)), x = b.x + Math.cos(a) * rr, y = b.y + Math.sin(a) * rr; if (!i) ctx.moveTo(x, y); else ctx.lineTo(x, y); } ctx.closePath(); ctx.fill(); });
+    }
+    ctx.restore();
+  }
+  // ── cinematic picture scene: slow dolly, cross-dissolve, light leak, vignette, grain, letterbox, subtitles ──
+  function cinematic(s, t) {
+    const d = s.b - s.a, lt = t - s.a, prev = T.scenes[s.n - 1];
+    ctx.fillStyle = '#000'; ctx.fillRect(0, 0, 1920, 1080);
+    const shot = (sc, alpha, l) => { const p = clamp(l / Math.max(1, sc.b - sc.a)), dir = sc.n % 2 ? -1 : 1; ctx.save(); ctx.globalAlpha = alpha; ctx.translate(960, 540); ctx.rotate(dir * (.8 * p - .4) * D2R); ctx.translate(-960, -540); drawMedia(ctx, sc.img, null, 0, 0, 1920, 1080, 'cover', 1.06 + .18 * E.io(p), dir * (.14 * p - .07), .06 * p - .03); ctx.restore(); };
+    const fade = clamp(lt / 1.0);
+    if (prev && prev.img && fade < 1) shot(prev, 1, t - prev.a);
+    shot(s, s.n === 0 ? clamp(lt / 1.4) : E.io(fade), lt);
+    const lk = P(lt, 0, 1.4) * (1 - P(lt, 1.4, 2.6));
+    if (lk > 0) { const gx = lerp(-300, 2200, P(lt, 0, 2.6)), lg = ctx.createRadialGradient(gx, 280, 0, gx, 280, 760); lg.addColorStop(0, `rgba(255,176,90,${.32 * lk})`); lg.addColorStop(1, 'rgba(255,176,90,0)'); ctx.save(); ctx.globalCompositeOperation = 'screen'; ctx.fillStyle = lg; ctx.fillRect(0, 0, 1920, 1080); ctx.restore(); }
+    const vg = ctx.createRadialGradient(960, 540, 480, 960, 540, 1150); vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,.55)'); ctx.fillStyle = vg; ctx.fillRect(0, 0, 1920, 1080);
+    if (GRAIN) { ctx.save(); ctx.globalAlpha = .055; ctx.globalCompositeOperation = 'overlay'; const ox = Math.floor((t * 977) % 256), oy = Math.floor((t * 571) % 256); for (let y = -oy; y < 1080; y += 256) for (let x = -ox; x < 1920; x += 256) ctx.drawImage(GRAIN, x, y); ctx.restore(); }
+    const bar = 118 * E.out(clamp(t / 1.2));
+    ctx.fillStyle = '#000'; ctx.fillRect(0, 0, 1920, bar); ctx.fillRect(0, 1080 - bar, 1920, bar);
+    if (s.n === 0) {
+      const k = P(lt, .7, 1.7) * (1 - P(lt, d - .9, d - .3));
+      if (k > 0) { ctx.save(); ctx.globalAlpha = k; ctx.shadowColor = 'rgba(0,0,0,.85)'; ctx.shadowBlur = 24; const f = fitWrap(ctx, X.title.ar || s.heading, 1500, 2, 128, 60); lines(f.lines, 960, 500 - (f.lines.length - 1) * f.size * .55, f.size, '#ffffff', 'center', 1.15); if (X.title.en) text(ctx, X.title.en, 960, 520 + f.lines.length * f.size * .62, { size: 48, w: 700, color: '#ffd9a0', maxW: 1500 }); ctx.restore(); }
+    } else if (X.textMode !== 'none' && (s.heading || s.text)) {
+      const k = P(lt, .5, 1.0) * (1 - P(t, s.b - .45, s.b - .05)), en = s.heading ? s.headingEn : s.textEn;
+      if (k > 0) { ctx.save(); ctx.globalAlpha = k; ctx.shadowColor = 'rgba(0,0,0,.9)'; ctx.shadowBlur = 14; text(ctx, s.heading || s.text, 960, 1080 - bar / 2 - (en ? 16 : 0), { size: 44, w: 800, color: '#ffffff', maxW: 1700 }); if (en) text(ctx, en, 960, 1080 - bar / 2 + 28, { size: 28, w: 700, color: '#ffd9a0', maxW: 1700 }); ctx.restore(); }
+    }
+  }
   // talking presenter: mouth follows the voice loudness, points at the content when a scene starts
   const PRES = X.presenter ? (() => { const g = el('g'), o = personOpts(X.presenter); return { g, o, p: makePerson(g, o) }; })() : null;
   const env = X.voice && Array.isArray(X.voice.env) ? X.voice.env : null;
@@ -1040,9 +1125,8 @@ function createExplainer(canvas, spec) {
   }
   function scene(s, t) {
     const [col, tint] = PAL[s.n % PAL.length], d = s.b - s.a, lt = t - s.a, inK = E.back(P(lt, 0, .55)), out = 1 - E.in(P(t, s.b - .3, s.b));
-    const g = ctx.createLinearGradient(0, 0, 1920, 1080); g.addColorStop(0, tint); g.addColorStop(1, '#ffffff'); ctx.fillStyle = g; ctx.fillRect(0, 0, 1920, 1080);
-    fl.forEach(f => { const x = ((f.x + f.vx * t) % 2100 + 2100) % 2100 - 90, y = ((f.y + f.vy * t + Math.sin(t + f.ph) * 20) % 1250 + 1250) % 1250 - 85; f.g.setAttribute('transform', `translate(${x} ${y}) rotate(${f.vr * t})`); const n0 = f.g.children[0]; n0.setAttribute(n0.getAttribute('fill') === 'none' ? 'stroke' : 'fill', col); });
-    drawNode(ctx, shapes, 1);
+    if (X.cinematic && s.img) return cinematic(s, t);
+    bgDraw(BGS[s.n % BGS.length], col, tint, t);
     ctx.save(); ctx.globalAlpha = out; ctx.translate(960, 540); ctx.scale(.96 + .04 * out, .96 + .04 * out); ctx.translate(-960, -540);
     if (PRES && !s.img) { ctx.translate(1160, 540); ctx.scale(.79, .79); ctx.translate(-960, -540); }
     const rev = j => P(lt, .5 + j * Math.min(1.2, d * .55 / Math.max(1, s.items.length)), .5 + j * Math.min(1.2, d * .55 / Math.max(1, s.items.length)) + .45);
@@ -1132,6 +1216,13 @@ function createExplainer(canvas, spec) {
   }
   function outro(t) {
     const o = T.outro[0], lt = t - o;
+    if (X.cinematic) {
+      ctx.fillStyle = '#000'; ctx.fillRect(0, 0, 1920, 1080);
+      const last = [...T.scenes].reverse().find(x => x.img); if (last) { ctx.save(); ctx.globalAlpha = .35 * (1 - P(lt, 0, 3)); drawMedia(ctx, last.img, null, 0, 0, 1920, 1080, 'cover', 1.24); ctx.restore(); }
+      const k = P(lt, .5, 1.6); ctx.save(); ctx.globalAlpha = k; const f = fitWrap(ctx, X.title.ar || X.scenes[0].heading, 1500, 2, 110, 56); lines(f.lines, 960, 470 - (f.lines.length - 1) * f.size * .55, f.size, '#ffffff', 'center', 1.15); if (X.title.en) text(ctx, X.title.en, 960, 490 + f.lines.length * f.size * .62, { size: 46, w: 700, color: '#ffd9a0', maxW: 1500 });
+      if (X.credit) text(ctx, 'هذا العمل من تنسيق ' + X.credit, 960, 820, { size: 38, w: 700, color: 'rgba(255,255,255,.85)', maxW: 1500 }); ctx.restore();
+      return;
+    }
     const g = ctx.createLinearGradient(0, 0, 0, 1080); g.addColorStop(0, '#9fd8ff'); g.addColorStop(1, '#fff3e0'); ctx.fillStyle = g; ctx.fillRect(0, 0, 1920, 1080);
     fl.forEach(f => { const x = ((f.x + f.vx * t) % 2100 + 2100) % 2100 - 90, y = ((f.y + f.vy * t + Math.sin(t + f.ph) * 20) % 1250 + 1250) % 1250 - 85; f.g.setAttribute('transform', `translate(${x} ${y}) rotate(${f.vr * t})`); });
     burst.update(t, o + .2, 960, 420, 2.4); rain.update(t, o + .4, 960, -60, 3.5); drawNode(ctx, shapes, 1);
@@ -1156,7 +1247,7 @@ function createExplainer(canvas, spec) {
     if (t >= T.outro[0]) outro(t);
     else { let cur = T.scenes[0]; T.scenes.forEach(s => { if (t >= s.a) cur = s; }); scene(cur, t); }
     // colour sweep between scenes
-    [...T.scenes.slice(1).map(s => s.a), T.outro[0]].forEach((b, j) => {
+    if (!X.cinematic) [...T.scenes.slice(1).map(s => s.a), T.outro[0]].forEach((b, j) => {
       if (Math.abs(t - b) >= .35) return; const k = P(t, b - .35, b + .35), c = PAL[(j + 1) % PAL.length][0];
       ctx.save(); ctx.globalAlpha = 1 - Math.abs(k - .5) * 2; ctx.fillStyle = c; ctx.beginPath(); ctx.arc(1920 - 1920 * E.io(k) + 960 * 0, 540, 2200 * Math.sin(k * Math.PI) * .6, 0, TAU); ctx.fill(); ctx.restore();
     });
