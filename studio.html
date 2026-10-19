@@ -68,6 +68,16 @@
   .scene b{display:block}
   .spin{display:inline-block;animation:sp 1s linear infinite}@keyframes sp{to{transform:rotate(360deg)}}
   @media (min-width:901px){.sticky{position:sticky;top:12px}}
+  .themeBtn{margin-inline-start:auto;font-size:20px;padding:8px 14px}
+  header .by{margin:0;font-weight:800;color:var(--orange);font-size:16px}
+  .hGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;margin-top:12px}
+  .hItem{border:2px solid var(--line);border-radius:16px;overflow:hidden;background:var(--field);display:flex;flex-direction:column}
+  .hItem.cur{border-color:var(--orange)}
+  .hItem img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;background:#0d1530}
+  .hBody{padding:8px 12px 12px;display:flex;flex-direction:column;gap:4px;flex:1}
+  .hBody b{font-size:16px;line-height:1.4}
+  .hBody small{color:var(--muted);font-size:12.5px}
+  .hBtns{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto;padding-top:6px}
 </style>
 </head>
 <body>
@@ -76,8 +86,10 @@
     <div class="logo">🎬</div>
     <div>
       <h1>الاستوديو الآلي</h1>
-      <p>اكتب فكرتك واضغط زر واحد: السيناريو والصوت والصور والفيديو تلقائيًا · من <b>دكتور حلول</b></p>
+      <p class="by">من دكتور حلول</p>
+      <p>اكتب فكرتك واضغط زر واحد: السيناريو والصوت والصور والفيديو تلقائيًا</p>
     </div>
+    <button type="button" class="ghost themeBtn" id="themeBtn" aria-label="الوضع الليلي أو النهاري">🌓</button>
     
   </header>
 
@@ -102,12 +114,13 @@
       </div>
       <div class="row">
         <div><label for="sText">النص على الشاشة</label><select id="sText"><option value="ar">عربي</option><option value="bi">عربي + إنجليزي صغير</option><option value="none">بدون نص (صور وصوت فقط)</option></select></div>
-        <div><label for="sMusic">الموسيقى</label><select id="sMusic"><option value="on">🎶 مع موسيقى</option><option value="off">🔇 بدون موسيقى</option></select></div>
+        <div><label for="sMusic">الموسيقى</label><select id="sMusic"><option value="auto">🎶 تلقائي حسب الجمهور</option><option value="cheerful">😄 مرحة</option><option value="calm">😌 هادئة</option><option value="energetic">⚡ حماسية</option><option value="inspiring">🌟 ملهمة</option><option value="modern">💼 عصرية</option><option value="off">🔇 بدون موسيقى</option></select></div>
       </div>
       <label for="sCredit">✍️ بصمة العمل <small>(اختياري — «هذا العمل من تنسيق …» في النهاية)</small></label>
       <input type="text" id="sCredit" placeholder="اكتب الاسم">
       <label style="font-weight:400;display:flex;gap:8px;align-items:center"><input type="checkbox" id="sAuto" checked> بعد ما يجهز، سجّل الفيديو ونزّله تلقائيًا</label>
       <button type="button" class="go" id="sGo">🎬 اصنع الفيديو</button>
+      <div class="btns" style="margin-top:10px"><button type="button" class="ghost" id="sClear">🧹 فكرة جديدة</button></div>
       <div id="sMsg"></div>
 
       <details id="kBox">
@@ -132,7 +145,7 @@
       <div class="vCtrl"><button type="button" class="primary small" id="sPlay" style="min-width:96px">▶ تشغيل</button><input type="range" id="sSeek" min="0" max="10" step="0.05" value="0"><span id="sTime" class="where" style="margin:0;direction:ltr">0:00 / 0:00</span></div>
       <div class="row" style="margin-top:6px">
         <div><label for="sQual" style="margin-top:4px">الجودة</label><select id="sQual"><option value="1080">عالية 1080p</option><option value="720">أسرع 720p</option></select></div>
-        <div style="display:flex;align-items:flex-end;gap:8px"><button type="button" class="primary" id="sRec" style="flex:1">⬇️ نزّل الفيديو</button><button type="button" class="ghost hidden" id="sWav" title="نزّل الصوت">🎙️</button></div>
+        <div style="display:flex;align-items:flex-end;gap:8px"><button type="button" class="primary" id="sRec" style="flex:1">⬇️ نزّل الفيديو</button><button type="button" class="ghost hidden" id="sWav" title="نزّل الصوت">🎙️</button><button type="button" class="ghost hidden" id="sReMusic" title="موسيقى ثانية">🔀🎵</button></div>
       </div>
       <div id="sProg" class="prog hidden"><div id="sBar"></div></div>
       <div id="sRecMsg"></div>
@@ -140,6 +153,12 @@
       <div class="note info" style="font-size:13px">🎵 الموسيقى مؤلَّفة داخل الصفحة بدون حقوق. التسجيل يأخذ نفس طول الفيديو، فخلّ الصفحة مفتوحة قدّامك.</div>
     </section>
   </div>
+  <section class="card" style="margin-top:20px" aria-labelledby="hTitle">
+    <h2 id="hTitle" style="margin:0"><span class="dot" style="background:var(--navy)"></span>📚 سجل الأعمال <small id="hCount" style="font-weight:400;color:var(--muted)"></small></h2>
+    <p class="where" style="margin-top:6px">كل فيديو تصنعه ينحفظ هنا بكل شي: السيناريو والصوت والصور. افتحه، وغيّر الموسيقى أو نزّله من جديد بدون ما يُصرف رصيد مرة ثانية. السجل محفوظ في هذا المتصفح.</p>
+    <div id="hMsg"></div>
+    <div id="hList" class="hGrid"></div>
+  </section>
 </div>
 
 <script src="studio-engine.js"></script>
@@ -151,6 +170,11 @@
   const msg = (el, html, cls = 'info') => { $(el).innerHTML = html ? `<div class="note ${cls}">${html}</div>` : ''; };
   const sleep = ms => new Promise(r => setTimeout(r, ms));
   const fmt = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+
+  // ── light / dark ──
+  const applyTheme = th => { if (th) document.documentElement.setAttribute('data-theme', th); else document.documentElement.removeAttribute('data-theme'); };
+  applyTheme(store.get('studio-theme'));
+  $('themeBtn').onclick = () => { const dark = document.documentElement.getAttribute('data-theme') ? document.documentElement.getAttribute('data-theme') === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches; const th = dark ? 'light' : 'dark'; applyTheme(th); store.set('studio-theme', th); };
 
   // ── key (shared with the main page) ──
   const KEY = () => (store.get('pb-key') || '').trim();
@@ -168,6 +192,7 @@
   const FIELDS = ['sIdea', 'sAud', 'sLang', 'sGender', 'sVoice', 'sLen', 'sStyle', 'sText', 'sMusic'];
   function save() { const o = {}; FIELDS.forEach(f => o[f] = $(f).value); o.sAuto = $('sAuto').checked; store.set('studio-form', JSON.stringify(o)); }
   try { const o = JSON.parse(store.get('studio-form') || '{}'); FIELDS.forEach(f => { if (o[f] != null && f !== 'sVoice') $(f).value = o[f]; }); voiceUI(); if (o.sVoice) $('sVoice').value = o.sVoice; if (o.sAuto === false) $('sAuto').checked = false; } catch (e) {}
+  if (!$('sMusic').value) $('sMusic').value = 'auto';
   $('sCredit').value = store.get('pb-credit') || '';
   $('sCredit').addEventListener('input', () => store.set('pb-credit', $('sCredit').value.trim()));
   FIELDS.forEach(f => $(f).addEventListener('change', save)); $('sIdea').addEventListener('input', save); $('sAuto').addEventListener('change', save);
@@ -247,8 +272,20 @@ Rules:
     const d = partData(j); if (!d) throw new Error('ما رجعت صورة');
     const blob = await (await fetch(`data:${d.mimeType || d.mime_type || 'image/png'};base64,${d.data}`)).blob();
     const im = new Image(); im.src = URL.createObjectURL(blob); await im.decode();
-    return { im, ref: { mime: d.mimeType || d.mime_type || 'image/png', b64: d.data } };
+    return { im, blob, ref: { mime: d.mimeType || d.mime_type || 'image/png', b64: d.data } };
   }
+
+  const MOOD_BY_AUD = { kids: 'cheerful', teachers: 'inspiring', marketing: 'energetic', product: 'modern', general: 'inspiring' };
+  const musicChoice = () => { const v = $('sMusic').value; return v === 'off' ? null : { mood: v === 'auto' ? MOOD_BY_AUD[$('sAud').value] : v, seed: (Date.now() ^ Math.floor(Math.random() * 1e9)) >>> 0 }; };
+
+  // ── storage for the history (separate from the main page) ──
+  const IDB = (() => {
+    let dbp = null;
+    const open = () => dbp || (dbp = new Promise((res, rej) => { const r = indexedDB.open('studio', 1); r.onupgradeneeded = () => r.result.createObjectStore('files'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }));
+    const run = async (mode, fn) => { const d = await open(); return new Promise((res, rej) => { const t = d.transaction('files', mode), rq = fn(t.objectStore('files')); t.oncomplete = () => res(rq && rq.result); t.onerror = () => rej(t.error); }); };
+    const safe = p => p.catch(() => null);
+    return { get: k => safe(run('readonly', st => st.get(k))), set: (k, v) => safe(run('readwrite', st => st.put(v, k))), del: k => safe(run('readwrite', st => st.delete(k))) };
+  })();
 
   // ── progress list ──
   function step(k, state, note) { const li = document.querySelector(`#sSteps li[data-k="${k}"]`); li.classList.remove('doing', 'done', 'fail'); if (state) li.classList.add(state); li.querySelector('.ic').textContent = state === 'doing' ? '⏳' : state === 'done' ? '✅' : state === 'fail' ? '⚠️' : ({ plan: '📝', voice: '🎙️', pics: '🎨', video: '🎬', rec: '⬇️' })[k]; li.querySelector('small').textContent = note || ''; }
@@ -256,12 +293,13 @@ Rules:
   // ── state + preview ──
   const cv = $('sCanvas');
   let eng = null, music = null, VOICE = null, playing = null, recording = false, PLAN = null, AC = null;
+  let PROJ = null, PICS = [], PICBLOBS = [];
   const fontsReady = Promise.all(['900 40px Cairo', '800 40px Cairo', '700 40px Cairo'].map(f => document.fonts.load(f, 'ابت abc'))).catch(() => {});
   function draw(t) { if (!eng) return; eng.render(t); $('sSeek').value = t; $('sTime').textContent = `${fmt(t)} / ${fmt(eng.DUR)}`; }
   const audioBuffer = (ac, m) => { const b = ac.createBuffer(2, m.L.length, m.sr); b.copyToChannel(m.L, 0); b.copyToChannel(m.R, 1); return b; };
   function startAudio(ac, out, t0, off) {
     const srcs = [];
-    if ($('sMusic').value === 'on' && music) { const ms = ac.createBufferSource(), g = ac.createGain(); ms.buffer = audioBuffer(ac, music); g.gain.value = VOICE ? .18 : 1; ms.connect(g); g.connect(out); ms.start(t0, off); srcs.push(ms); }
+    if (music) { const ms = ac.createBufferSource(), g = ac.createGain(); ms.buffer = audioBuffer(ac, music); g.gain.value = VOICE ? .18 : 1; ms.connect(g); g.connect(out); ms.start(t0, off); srcs.push(ms); }
     if (VOICE && off < VOICE.buf.duration) { const vs = ac.createBufferSource(); vs.buffer = VOICE.buf; vs.connect(out); vs.start(t0, off); srcs.push(vs); }
     return srcs;
   }
@@ -302,6 +340,71 @@ Rules:
   $('sRec').onclick = () => record(null);
   $('sWav').onclick = () => { if (!VOICE) return; const a = document.createElement('a'); a.href = URL.createObjectURL(VOICE.wav); a.download = ((PLAN && PLAN.title && PLAN.title.ar) || 'صوت') + '.wav'; document.body.appendChild(a); a.click(); a.remove(); };
 
+  function formValues() { const o = {}; FIELDS.forEach(f => o[f] = $(f).value); return o; }
+  function buildVideo() {
+    const spec = { kind: 'explainer', title: PROJ.title, credit: PROJ.credit, textMode: PROJ.textMode, music: PROJ.music || {},
+      scenes: PROJ.plan.scenes.map((s, i) => Object.assign({}, s, { say: s.narration || '', img: PICS[i] || null })), voice: VOICE ? VOICE.info : null };
+    eng = VideoEngine.create(cv, spec); music = PROJ.music ? eng.music() : null;
+    $('sSeek').max = eng.DUR; $('sEmpty').classList.add('hidden'); draw(Math.min(3, eng.DUR));
+    $('sReMusic').classList.toggle('hidden', !PROJ.music); $('sWav').classList.toggle('hidden', !VOICE);
+    $('sScript').classList.remove('hidden');
+    $('sScenes').innerHTML = PROJ.plan.scenes.map((x, i) => `<div class="scene"><b>${i + 1}. ${esc(x.emoji || '')} ${esc(x.heading || x.text || '')}</b>${esc(x.narration || '')}</div>`).join('');
+  }
+  // another piece of music for the same video (no API needed)
+  $('sReMusic').onclick = () => { if (!PROJ || !PROJ.music) return; stopPlay(); PROJ.music = Object.assign({}, PROJ.music, { seed: (Date.now() ^ Math.floor(Math.random() * 1e9)) >>> 0 }); const t = +$('sSeek').value; buildVideo(); draw(t); updateProject(); msg('sRecMsg', '🎵 تغيّرت الموسيقى. شغّل المعاينة أو نزّل الفيديو.'); };
+
+  // ── history ──
+  const HKEY = 'studio-history';
+  const hLoad = () => { try { const a = JSON.parse(store.get(HKEY) || '[]'); return Array.isArray(a) ? a : []; } catch (e) { return []; } };
+  function hStore(list) { for (let i = list.length - 1; i >= -1; i--) { try { localStorage.setItem(HKEY, JSON.stringify(list)); return true; } catch (e) { if (i >= 0) list[i].thumb = ''; } } return false; }
+  const hDate = ms => new Date(ms).toLocaleDateString('ar-u-ca-gregory-nu-arab', { day: 'numeric', month: 'long', year: 'numeric' });
+  function thumb() { try { const c = document.createElement('canvas'); c.width = 384; c.height = 216; const e = VideoEngine.create(c, eng.S && Object.assign({}, { kind: 'explainer', title: PROJ.title, textMode: PROJ.textMode, scenes: PROJ.plan.scenes.map((s, i) => Object.assign({}, s, { img: PICS[i] || null })), voice: VOICE ? VOICE.info : null })); const sc = e.T.scenes[Math.min(1, e.T.scenes.length - 1)]; e.render(sc.a + Math.min(2, (sc.b - sc.a) / 2)); return c.toDataURL('image/jpeg', .72); } catch (e) { return ''; } }
+  const meta = () => ({ id: PROJ.id, created: PROJ.created, updated: Date.now(), title: PROJ.title, plan: PROJ.plan, textMode: PROJ.textMode, credit: PROJ.credit, music: PROJ.music, voiceInfo: PROJ.voiceInfo, settings: PROJ.settings, nPics: PICBLOBS.filter(Boolean).length });
+  async function saveProject() {
+    if (!PROJ) return;
+    if (VOICE) await IDB.set('voice:' + PROJ.id, VOICE.wav);
+    for (let i = 0; i < PICBLOBS.length; i++) if (PICBLOBS[i]) await IDB.set('pic:' + PROJ.id + ':' + i, PICBLOBS[i]);
+    if (IMG) await IDB.set('input:' + PROJ.id, IMG);
+    const list = hLoad().filter(x => x.id !== PROJ.id); list.unshift(Object.assign(meta(), { thumb: thumb() })); if (list.length > 60) list.length = 60;
+    msg('hMsg', hStore(list) ? '' : '⚠️ ذاكرة المتصفح ممتلئة. احذف أعمال قديمة من السجل.', 'warn'); hRender();
+  }
+  function updateProject() { const list = hLoad(), i = list.findIndex(x => x.id === (PROJ && PROJ.id)); if (i < 0) return; list[i] = Object.assign(list[i], meta()); hStore(list); }
+  function hRender() {
+    const list = hLoad(); $('hCount').textContent = list.length ? `(${list.length})` : '';
+    $('hList').innerHTML = list.length ? list.map(x => `<div class="hItem${PROJ && x.id === PROJ.id ? ' cur' : ''}">${x.thumb ? `<img src="${x.thumb}" alt="">` : '<img alt="">'}
+      <div class="hBody"><b>${esc((x.title && x.title.ar) || 'بدون عنوان')}</b><small>${hDate(x.updated || x.created)} · ${x.plan.scenes.length} مشاهد${x.voiceInfo ? ' · بصوت' : ''}${x.nPics ? ' · صور' : ''}</small>
+      <div class="hBtns"><button type="button" class="primary small" data-open="${x.id}">🎬 افتح</button><button type="button" class="ghost small" data-del="${x.id}" title="احذف">🗑️</button></div></div></div>`).join('')
+      : '<div class="where" style="padding:16px;text-align:center">السجل فاضي. أول فيديو تصنعه بيظهر هنا.</div>';
+  }
+  async function openProject(id) {
+    const x = hLoad().find(i => i.id === id); if (!x) return;
+    stopPlay(); clearPreview();
+    PROJ = { id: x.id, created: x.created, title: x.title, plan: x.plan, textMode: x.textMode, credit: x.credit, music: x.music, voiceInfo: x.voiceInfo, settings: x.settings };
+    if (x.settings) { FIELDS.forEach(f => { if (x.settings[f] != null && f !== 'sVoice') $(f).value = x.settings[f]; }); voiceUI(); if (x.settings.sVoice) $('sVoice').value = x.settings.sVoice; }
+    PLAN = x.plan; PICS = []; PICBLOBS = []; VOICE = null;
+    for (let i = 0; i < x.plan.scenes.length; i++) { const b = await IDB.get('pic:' + x.id + ':' + i); if (b) { const im = new Image(); im.src = URL.createObjectURL(b); try { await im.decode(); PICS[i] = im; PICBLOBS[i] = b; } catch (e) {} } }
+    const w = await IDB.get('voice:' + x.id);
+    if (w && x.voiceInfo) { try { const ac = new (window.AudioContext || window.webkitAudioContext)(); const buf = await ac.decodeAudioData(await w.arrayBuffer()); ac.close(); VOICE = { buf, wav: w, info: x.voiceInfo }; } catch (e) {} }
+    const inp = await IDB.get('input:' + x.id); if (inp) setImg(inp);
+    await fontsReady; buildVideo();
+    ['plan', 'voice', 'pics', 'video'].forEach(k => step(k, 'done', k === 'plan' ? 'من السجل' : '')); step('rec', '', 'اضغط «نزّل الفيديو»');
+    hRender(); msg('sMsg', `✓ فتحت «${esc((x.title && x.title.ar) || '')}» من السجل.`); window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  $('hList').addEventListener('click', async e => {
+    const b = e.target.closest('button'); if (!b) return;
+    if (b.dataset.open) return openProject(b.dataset.open);
+    if (b.dataset.del) { const x = hLoad().find(i => i.id === b.dataset.del); if (!x || !confirm(`تحذف «${(x.title && x.title.ar) || ''}» من السجل؟`)) return;
+      hStore(hLoad().filter(i => i.id !== x.id)); IDB.del('voice:' + x.id); IDB.del('input:' + x.id); for (let i = 0; i < 8; i++) IDB.del('pic:' + x.id + ':' + i); hRender(); }
+  });
+  // ── new idea: clear everything except the settings and the key ──
+  function clearPreview() { eng = null; music = null; cv.getContext('2d').clearRect(0, 0, cv.width, cv.height); $('sEmpty').classList.remove('hidden'); $('sTime').textContent = '0:00 / 0:00'; $('sSeek').value = 0; $('sScript').classList.add('hidden'); $('sWav').classList.add('hidden'); $('sReMusic').classList.add('hidden'); msg('sRecMsg', ''); ['plan', 'voice', 'pics', 'video', 'rec'].forEach(k => step(k, '')); }
+  $('sClear').onclick = () => {
+    if (($('sIdea').value.trim() || PROJ) && !confirm('تبدأ فكرة جديدة؟ (الفيديو الحالي محفوظ في السجل)')) return;
+    stopPlay(); clearPreview(); PROJ = null; PLAN = null; VOICE = null; PICS = []; PICBLOBS = [];
+    $('sIdea').value = ''; if (IMG) $('sImgDel').click(); save(); msg('sMsg', '✓ جاهز لفكرة جديدة.'); hRender(); $('sIdea').focus();
+  };
+  hRender();
+
   // ── the one button ──
   $('sGo').onclick = async () => {
     const idea = $('sIdea').value.trim();
@@ -309,7 +412,7 @@ Rules:
     if (!validKey(KEY())) { $('kBox').open = true; keyUI(true); return msg('sMsg', '⚠️ تحتاج مفتاح Gemini أول مرة. الصقه في المربع اللي انفتح تحت.', 'warn'); }
     stopPlay(); AC = new (window.AudioContext || window.webkitAudioContext)(); AC.resume();   // created on the click, reused for auto-recording
     const go = $('sGo'), oldTxt = go.innerHTML; go.disabled = true; go.innerHTML = '<span class="spin">⏳</span> يشتغل…';
-    ['plan', 'voice', 'pics', 'video', 'rec'].forEach(k => step(k, '')); msg('sMsg', ''); msg('sRecMsg', ''); $('sWav').classList.add('hidden');
+    ['plan', 'voice', 'pics', 'video', 'rec'].forEach(k => step(k, '')); msg('sMsg', ''); msg('sRecMsg', ''); $('sWav').classList.add('hidden'); PICBLOBS = [];
     const o = { idea: idea || 'Explain what is shown in the attached picture.', aud: $('sAud').value, lang: $('sLang').value, len: +$('sLen').value, textMode: $('sText').value, img: !!IMG };
     const gender = $('sGender').value, voiceName = $('sVoice').value, style = $('sStyle').value;
     try {
@@ -349,7 +452,7 @@ Rules:
           step('pics', 'doing', `${i + 1} / ${PLAN.scenes.length}`);
           const s = PLAN.scenes[i];
           const prompt = `${s.image || s.heading || o.idea}. Style: ${LOOK[o.aud]}.${PLAN.character ? ' Main character, identical in every picture: ' + PLAN.character + '.' : ''}${imgRef ? ' Keep the product / items from the reference picture exactly as they look.' : ''} Wide 16:9 composition, no text, no letters, no numbers, no watermark.`;
-          try { const r = await drawScene(im, prompt, refs.slice(0, 2)); out[i] = r.im; if (refs.length < 2) refs.push(r.ref); } catch (e) { out[i] = null; }
+          try { const r = await drawScene(im, prompt, refs.slice(0, 2)); out[i] = r.im; PICBLOBS[i] = r.blob; if (refs.length < 2) refs.push(r.ref); } catch (e) { out[i] = null; }
         }
         const n = out.filter(Boolean).length; step('pics', n ? 'done' : 'fail', `${n} / ${PLAN.scenes.length}`);
         return out;
@@ -359,11 +462,12 @@ Rules:
       // 4. edit
       step('video', 'doing');
       await fontsReady;
-      const spec = { kind: 'explainer', title: PLAN.title || { ar: '', en: '' }, credit: $('sCredit').value.trim(), textMode: o.textMode,
-        scenes: PLAN.scenes.map((s, i) => Object.assign({}, s, { say: s.narration || '', img: pics[i] || null })), voice: VOICE ? VOICE.info : null };
-      eng = VideoEngine.create(cv, spec); music = $('sMusic').value === 'on' ? eng.music() : null;
-      $('sSeek').max = eng.DUR; $('sEmpty').classList.add('hidden'); draw(Math.min(3, eng.DUR));
+      PICS = pics;
+      PROJ = { id: 's' + Date.now().toString(36), created: Date.now(), title: PLAN.title || { ar: '', en: '' }, plan: PLAN, textMode: o.textMode, credit: $('sCredit').value.trim(),
+        music: musicChoice(), voiceInfo: VOICE ? VOICE.info : null, settings: Object.assign(formValues(), { idea: $('sIdea').value }) };
+      buildVideo();
       step('video', 'done', fmt(eng.DUR));
+      await saveProject();
       if ($('sAuto').checked) await record(AC); else { step('rec', '', 'اضغط «نزّل الفيديو»'); try { AC.close(); } catch (e) {} }
     } catch (err) {
       msg('sMsg', `⚠️ ${esc(err.message)}`, 'warn'); ['plan', 'voice', 'pics', 'video'].forEach(k => { const li = document.querySelector(`#sSteps li[data-k="${k}"]`); if (li.classList.contains('doing')) step(k, 'fail'); });

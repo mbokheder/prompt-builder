@@ -934,7 +934,7 @@ function normExplainer(s) {
   const textMode = ['ar', 'bi', 'none'].includes(s.textMode) ? s.textMode : 'bi';
   if (textMode === 'ar') scenes.forEach(x => { x.headingEn = ''; x.textEn = ''; x.items.forEach(i => { i.en = ''; }); });
   if (!scenes.length) scenes.push({ type: 'title', emoji: '✨', heading: str(s.title && s.title.ar) || 'عنوان', headingEn: '', text: '', textEn: '', number: '', say: '', items: [] });
-  return { kind: 'explainer', title: pair(s.title), credit: str(s.credit), scenes, textMode, voice: s.voice && isFinite(s.voice.duration) ? s.voice : null };
+  return { kind: 'explainer', music: s.music || {}, title: pair(s.title), credit: str(s.credit), scenes, textMode, voice: s.voice && isFinite(s.voice.duration) ? s.voice : null };
 }
 // scene timing: by reading length, or snapped to the pauses of the recorded voice
 function planExplainer(X) {
@@ -1141,7 +1141,7 @@ function createExplainer(canvas, spec) {
       ctx.save(); ctx.globalAlpha = 1 - Math.abs(k - .5) * 2; ctx.fillStyle = c; ctx.beginPath(); ctx.arc(1920 - 1920 * E.io(k) + 960 * 0, 540, 2200 * Math.sin(k * Math.PI) * .6, 0, TAU); ctx.fill(); ctx.restore();
     });
   }
-  return { DUR: T.DUR, T, S: X, render, mode: 'explainer', music: () => synthMusic(T) };
+  return { DUR: T.DUR, T, S: X, render, mode: 'explainer', music: () => synthMusic(T, 32000, X.music) };
 }
 
 // ───────────── engine ─────────────
@@ -1775,11 +1775,10 @@ function create(canvas, spec) {
 }
 
 // ───────────── original background music (120 BPM, C–G–Am–F) + sound effects ─────────────
-function synthMusic(T, SR = 32000) {
+function synthMusic(T, SR = 32000, mo = {}) {
   const TN = 8192, TB = new Float32Array(TN); for (let i = 0; i < TN; i++) TB[i] = Math.sin(i / TN * TAU);
   const SN = c => TB[((c * TN) | 0) & (TN - 1)];   // sin(TAU * c) by table lookup (fast on phones)
   const DUR = T.DUR, N = Math.ceil(SR * DUR), L = new Float32Array(N), R = new Float32Array(N);
-  const BEAT = .5, BAR = 2;
   const NOTE = n => { const m = /^([A-G])(#?)(\d)$/.exec(n); const k = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 }[m[1]] + (m[2] ? 1 : 0); return 440 * Math.pow(2, (k + (+m[3] + 1) * 12 - 69) / 12); };
   let seed = 7; const rnd = () => { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed / 0x7fffffff * 2 - 1; };
   function add(t0, dur, amp, pan, fn) {
@@ -1801,38 +1800,64 @@ function synthMusic(T, SR = 32000) {
   const ding = t0 => { bell(t0, NOTE('C7'), .1, .3); bell(t0 + .09, NOTE('G7'), .07, -.3); };
   const chime = t0 => [0, .08, .16].forEach((d, i) => bell(t0 + d, NOTE(['E6', 'G6', 'C7'][i]), .07, (i - 1) * .4));
 
-  const CH = [['C3', ['C4', 'E4', 'G4']], ['G2', ['B3', 'D4', 'G4']], ['A2', ['C4', 'E4', 'A4']], ['F2', ['C4', 'F4', 'A4']]];
-  const A = [[[0, 'E5', .5], [.5, 'G5', .5], [1, 'C6', 1], [2, 'G5', .5], [2.5, 'E5', .5], [3, 'G5', 1]],
-    [[0, 'D5', .5], [.5, 'G5', .5], [1, 'B5', 1], [2, 'A5', .5], [2.5, 'G5', .5], [3, 'D5', 1]],
-    [[0, 'E5', .5], [.5, 'A5', .5], [1, 'C6', 1], [2, 'B5', .5], [2.5, 'A5', .5], [3, 'E5', 1]],
-    [[0, 'F5', .5], [.5, 'A5', .5], [1, 'C6', .5], [1.5, 'A5', .5], [2, 'G5', 2]]];
-  const B = [[[0, 'C6', 1.5], [1.5, 'G5', .5], [2, 'E5', 2]], [[0, 'D5', .5], [.5, 'E5', .5], [1, 'G5', 1], [2, 'B5', 2]],
-    [[0, 'C6', 1], [1, 'B5', .5], [1.5, 'A5', .5], [2, 'E5', 2]], [[0, 'F5', 1], [1, 'A5', 1], [2, 'G5', 2]]];
+  const pluck = (t0, f, amp, len) => add(t0, Math.min(1.2, len + .4), amp, -.1, t => env(t, .003, .18) * (SN(f * t) + .5 * SN(f * 2 * t) * Math.exp(-t * 10) + .3 * SN(f * 3 * t) * Math.exp(-t * 16)));
+  const piano = (t0, f, amp) => add(t0, 2.2, amp, -.1, t => env(t, .004, .9) * (SN(f * t) + .4 * SN(f * 2 * t) * Math.exp(-t * 2.5) + .15 * SN(f * 3 * t) * Math.exp(-t * 4)));
+  // ── composition: a mood + a seed → different music for every video ──
+  let ms = ((mo.seed || 7) >>> 0) || 7; const rr = () => { ms = (Math.imul(ms, 1664525) + 1013904223) >>> 0; return ms / 4294967296; };
+  const MOODS = {
+    cheerful: { bpm: 120, prog: [[0, 1], [7, 1], [9, 0], [5, 1]], lead: 'marimba', drums: 2, bass: 1, pad: 1, bells: 1 },
+    calm: { bpm: 84, prog: [[0, 1], [9, 0], [5, 1], [7, 1]], lead: 'bell', drums: 0, bass: .6, pad: 1.4, bells: 0 },
+    energetic: { bpm: 128, prog: [[9, 0], [5, 1], [0, 1], [7, 1]], lead: 'pluck', drums: 3, bass: 1.15, pad: .8, bells: 0 },
+    inspiring: { bpm: 100, prog: [[0, 1], [7, 1], [9, 0], [5, 1]], lead: 'piano', drums: 1, bass: .8, pad: 1.3, bells: 1 },
+    modern: { bpm: 110, prog: [[2, 0], [7, 1], [0, 1], [9, 0]], lead: 'pluck', drums: 2, bass: .9, pad: .9, bells: 0 },
+  };
+  const M = MOODS[mo.mood] || MOODS.cheerful;
+  const KEY = mo.key != null ? mo.key : [0, 2, -3, 5, -2, 3][Math.floor(rr() * 6)];
+  const prog = M.prog.slice(); if (rr() < .5) { prog.push(prog.shift()); prog.push(prog.shift()); }
+  const BEAT = 60 / M.bpm, BAR = BEAT * 4;
+  const hz = m => 440 * Math.pow(2, (m - 69) / 12);
+  const chordOf = ([r, maj]) => [r, r + (maj ? 4 : 3), r + 7].map(x => 60 + KEY + x);
+  const SCALE = [0, 2, 4, 7, 9], scaleNote = i => 72 + KEY + SCALE[((i % 5) + 5) % 5] + 12 * Math.floor(i / 5);
+  const RHY = [[1, .5, .5, 1, 1], [.5, .5, 1, .5, .5, 1], [1.5, .5, 1, 1], [1, 1, .5, .5, 1], [.5, .5, .5, .5, 2], [2, 1, 1]];
+  function phrase() {                           // 4 bars of melody: [beat offset, midi note, length in beats]
+    const out = []; let idx = 2 + Math.floor(rr() * 5);
+    for (let b = 0; b < 4; b++) {
+      const r = b === 3 ? [1, 1, 2] : RHY[Math.floor(rr() * RHY.length)], bar = []; let o = 0;
+      r.forEach((d, j) => { idx = Math.max(0, Math.min(9, idx + Math.floor(rr() * 5) - 2)); if (b === 3 && j === r.length - 1) idx = 5; bar.push([o, scaleNote(idx), d]); o += d; });
+      out.push(bar);
+    }
+    return out;
+  }
+  const A = phrase(), B = phrase();
+  const lead = (t0, f, amp, len) => M.lead === 'bell' ? bell(t0, f, amp * .55, .1) : M.lead === 'pluck' ? pluck(t0, f, amp * .8, len) : M.lead === 'piano' ? piano(t0, f, amp) : marimba(t0, f, amp, -.15);
   const END = Math.min(DUR - 2, Math.ceil((T.outro[0] + 3.4) / BAR) * BAR);
   const secs = [
     { to: 4, pad: .05, bass: 0, drums: 0, mel: 'B', melAmp: .16, bell: .05 },
     { to: T.tools[0], pad: .045, bass: .22, drums: 1, drumAmp: .7, mel: 'A', melAmp: .18, bell: .04 },
-    { to: T.gym[0], pad: .04, bass: .24, drums: 2, drumAmp: 1, mel: 'A', melAmp: .18 },
+    { to: T.gym[0], pad: .04, bass: .24, drums: 1, drumAmp: 1, mel: 'A', melAmp: .18 },
     { to: T.gym[1], pad: .045, bass: .2, drums: 1, drumAmp: .6, mel: 'AB', melAmp: .13 },
-    { to: T.ben[1], pad: .04, bass: .24, drums: 2, drumAmp: .9, mel: 'B', melAmp: .17, bell: .03 },
-    { to: 1e9, pad: .045, bass: .26, drums: 2, drumAmp: 1, mel: 'A', melAmp: .2, bell: .05 },
+    { to: T.ben[1], pad: .04, bass: .24, drums: 1, drumAmp: .9, mel: 'B', melAmp: .17, bell: .03 },
+    { to: 1e9, pad: .045, bass: .26, drums: 1, drumAmp: 1, mel: 'A', melAmp: .2, bell: .05 },
   ];
   for (let b = 0; b * BAR < END; b++) {
-    const t0 = b * BAR, [root, chord] = CH[b % 4], sec = secs.find(s => t0 < s.to);
-    pad(t0, chord.map(NOTE), BAR + .3, sec.pad);
-    if (sec.bass) for (let k = 0; k < 4; k++) bass(t0 + k * BEAT, NOTE(root) * (k === 2 ? 1.5 : 1), BEAT * .9, sec.bass);
-    if (sec.drums) for (let k = 0; k < 8; k++) {
+    const t0 = b * BAR, notes = chordOf(prog[b % 4]), sec = secs.find(x => t0 < x.to);
+    pad(t0, notes.map(hz), BAR + .3, sec.pad * M.pad);
+    if (sec.bass && M.bass) for (let k = 0; k < 4; k++) bass(t0 + k * BEAT, hz(notes[0] - 24) * (k === 2 && M.drums ? 1.5 : 1), BEAT * .9, sec.bass * M.bass);
+    const dl = sec.drums * M.drums;
+    if (dl) for (let k = 0; k < 8; k++) {
       const tt = t0 + k * BEAT / 2;
-      if (k % 4 === 0 || (sec.drums > 1 && k === 7)) kick(tt, .5 * sec.drumAmp);
-      if (k === 2 || k === 6) snare(tt, .13 * sec.drumAmp);
+      if (dl >= 3 ? k % 2 === 0 : (k % 4 === 0 || (dl > 1 && k === 7))) kick(tt, .5 * sec.drumAmp);
+      if (dl >= 2 && (k === 2 || k === 6)) snare(tt, .13 * sec.drumAmp);
       hat(tt, (k % 2 ? .035 : .05) * sec.drumAmp, k % 2 ? .35 : -.2);
-    }
+      if (dl >= 3) hat(tt + BEAT / 4, .025 * sec.drumAmp, .3);
+    } else if (sec.drums && b % 2 === 0) bell(t0, hz(notes[2] + 12), .03, .3);
     const ph = sec.mel === 'A' ? A : sec.mel === 'B' ? B : (Math.floor(b / 4) % 2 ? B : A);
-    ph[b % 4].forEach(([o, n]) => { marimba(t0 + o * BEAT, NOTE(n), sec.melAmp, -.15); if (sec.bell) bell(t0 + o * BEAT, NOTE(n) * 2, sec.bell, .2); });
+    ph[b % 4].forEach(([o, m, d]) => { lead(t0 + o * BEAT, hz(m), sec.melAmp, d * BEAT); if (sec.bell && M.bells) bell(t0 + o * BEAT, hz(m) * 2, sec.bell, .2); });
   }
-  kick(END, .6); noise(END, 2.5, .08, 0, .6, .9); bass(END, NOTE('C3'), 3.5, .3);
-  ['C5', 'E5', 'G5', 'C6'].forEach((n, i) => { marimba(END + i * .06, NOTE(n), .18, (i - 1.5) * .3); bell(END + i * .06, NOTE(n) * 2, .07, (1.5 - i) * .3); });
-  pad(END, ['C4', 'E4', 'G4', 'C5'].map(NOTE), DUR - END, .05);
+  const fin = chordOf(prog[0]);
+  kick(END, M.drums ? .6 : .25); noise(END, 2.5, .08, 0, .6, .9); bass(END, hz(fin[0] - 24), 3.5, .3);
+  [...fin, fin[0] + 12].forEach((m, i) => { lead(END + i * .06, hz(m + 12), .18, 2); bell(END + i * .06, hz(m + 24), .07, (1.5 - i) * .3); });
+  pad(END, [...fin, fin[0] + 12].map(hz), DUR - END, .05);
   // effects synced to the picture
   const ev = T.ev, usesItems = T.items !== undefined ? T.items : T.S.steps.some(x => ['squat', 'pick', 'place', 'throw', 'repeat'].includes(x.action));
   [T.tools[0], T.gym[1], ...(T.S.benefits.length ? [T.ben[1]] : []), ...T.steps.map(s => s.ts)].forEach(t => whoosh(t));
