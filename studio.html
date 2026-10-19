@@ -113,6 +113,10 @@
         <div><label for="sStyle">الأسلوب</label><select id="sStyle"><option value="pictures">🎨 صور مرسومة بالذكاء الاصطناعي</option><option value="motion">✨ موشن جرافيك (إيموجي ونصوص)</option></select></div>
       </div>
       <div class="row">
+        <div><label for="sScenes">عدد المشاهد</label><select id="sScenes"><option value="0">تلقائي حسب المدة</option><option value="3">٣ مشاهد</option><option value="4">٤ مشاهد</option><option value="5">٥ مشاهد</option><option value="6">٦ مشاهد</option><option value="7">٧ مشاهد</option><option value="8">٨ مشاهد</option><option value="9">٩ مشاهد</option><option value="10">١٠ مشاهد</option></select></div>
+        <div></div>
+      </div>
+      <div class="row">
         <div><label for="sText">النص على الشاشة</label><select id="sText"><option value="ar">عربي</option><option value="bi">عربي + إنجليزي صغير</option><option value="none">بدون نص (صور وصوت فقط)</option></select></div>
         <div><label for="sMusic">الموسيقى</label><select id="sMusic"><option value="auto">🎶 تلقائي حسب الجمهور</option><option value="cheerful">😄 مرحة</option><option value="calm">😌 هادئة</option><option value="energetic">⚡ حماسية</option><option value="inspiring">🌟 ملهمة</option><option value="modern">💼 عصرية</option><option value="off">🔇 بدون موسيقى</option></select></div>
       </div>
@@ -189,7 +193,7 @@
   function voiceUI() { const g = $('sGender').value; $('sVoice').disabled = g === 'none'; $('sVoice').innerHTML = g === 'none' ? '<option>—</option>' : VOICES[g].map(([v, l]) => `<option value="${v}">${l}</option>`).join(''); }
   $('sGender').addEventListener('change', () => { voiceUI(); save(); }); voiceUI();
   // remember the choices
-  const FIELDS = ['sIdea', 'sAud', 'sLang', 'sGender', 'sVoice', 'sLen', 'sStyle', 'sText', 'sMusic'];
+  const FIELDS = ['sIdea', 'sAud', 'sLang', 'sGender', 'sVoice', 'sLen', 'sScenes', 'sStyle', 'sText', 'sMusic'];
   function save() { const o = {}; FIELDS.forEach(f => o[f] = $(f).value); o.sAuto = $('sAuto').checked; store.set('studio-form', JSON.stringify(o)); }
   try { const o = JSON.parse(store.get('studio-form') || '{}'); FIELDS.forEach(f => { if (o[f] != null && f !== 'sVoice') $(f).value = o[f]; }); voiceUI(); if (o.sVoice) $('sVoice').value = o.sVoice; if (o.sAuto === false) $('sAuto').checked = false; } catch (e) {}
   if (!$('sMusic').value) $('sMusic').value = 'auto';
@@ -237,9 +241,9 @@ Topic / idea from the client: """${o.idea}"""${o.img ? '\nThe attached picture b
 Narration language: ${o.lang}. Reply with ONLY a JSON object, no code fences, in exactly this shape:
 {"title":{"ar":"","en":""},"voiceStyle":"","character":"","scenes":[{"type":"","emoji":"","heading":"","headingEn":"","text":"","textEn":"","number":"","items":[{"emoji":"","text":"","en":"","side":"good"}],"narration":"","image":""}]}
 Rules:
-- 4 to 8 scenes; the first one introduces the topic (type "title"); the last one wraps up${o.aud === 'marketing' || o.aud === 'product' ? ' with a call to action' : ''}.
-- narration: what the voice says in that scene, natural ${o.lang}, about ${words} words in total for all scenes. Written for text-to-speech: short sentences, numbers written as words, add Arabic diacritics on words that could be misread. It must contain ONLY the exact words to be spoken: no tone or delivery instructions, no stage directions, nothing in brackets or parentheses, no speaker labels such as "الراوي:".
-- On-screen text summarises the narration and is SHORT: heading at most 6 words, text at most 14 words, items at most 5 words. Write it in ${/English/.test(o.lang) ? 'English' : 'Arabic'}.
+- ${o.scenes ? 'EXACTLY ' + o.scenes + ' scenes' : '4 to 8 scenes'}; the first one introduces the topic (type "title"); the last one wraps up${o.aud === 'marketing' || o.aud === 'product' ? ' with a call to action' : ''}.
+- narration: what the voice says in that scene, natural ${o.lang}, about ${words} words in total for all scenes. Written for text-to-speech: short sentences, numbers written as words, add Arabic diacritics on words that could be misread. It must contain ONLY the exact words to be spoken: no tone or delivery instructions, no stage directions, nothing in brackets or parentheses, no speaker labels such as "الراوي:".${/English/.test(o.lang) ? '' : ' Use Arabic letters only (no Latin letters): write English or foreign words, brands, apps and technical terms the way Arabic speakers pronounce them, for example ويندوز، واي فاي، رام.'}
+- On-screen text summarises the narration and is SHORT: heading at most 6 words, text at most 14 words, items at most 5 words. Write it in ${/English/.test(o.lang) ? 'English' : 'Arabic (foreign terms in Arabic letters too)'}.
 - type: "title", "icon_text" (one idea + one emoji), "list" (2–4 items), "steps" (2–4 ordered steps), "number" (a key number in "number"), "compare" (do vs don't, items with side "good"/"bad"), "quote" (advice or conclusion). Pick what explains each scene best; vary them.
 - emoji: one fitting emoji per scene and per item.
 - character: ONE English description of the main character(s) to keep identical in every picture (age, gender, skin, hair, clothes colours; modest clothing and hijab for adult women when the audience is Arabic), or "" when no people are needed (for example a product).
@@ -255,6 +259,9 @@ Rules:
     return String(t || '')
       .replace(/<[^>]*>/g, ' ').replace(/\[[^\]]*\]/g, ' ').replace(/\([^)]*\)/g, ' ').replace(/（[^）]*）/g, ' ')
       .replace(/^\s*(الراوي|الراوية|المعلق|المعلقة|المعلمة|المعلم|المذيع|المذيعة|الصوت|صوت|narrator|voice|speaker)\s*[:：]\s*/i, '')
+      .replace(/(^|[.!؟?]\s*)(بنبرة|بصوت|بأسلوب|بحماس|بهدوء|بلطف|بابتسامة|بفرح|بجدية|بنغمة|بطريقة)[^:：،,.!؟?\n]{0,40}[:：]\s*/g, '$1')
+      .replace(/(^|[.!؟?]\s*)(بنبرة|بنغمة|بأسلوب|بصوت)\s[^:：،,.!؟?\n]{0,30}[،,]\s*/g, '$1')
+      .replace(/(^|[.!؟?]\s*)[A-Za-z ,'-]{2,40}(tone|voice|style|cheerful|warm|excited|calm|friendly|pause)[A-Za-z ,'-]{0,20}[:：]\s*/gi, '$1')
       .replace(/\*+/g, '').replace(/\s+/g, ' ').trim();
   }
   async function sayScene(model, text, voice, style, ac) {
@@ -420,7 +427,7 @@ Rules:
     stopPlay(); AC = new (window.AudioContext || window.webkitAudioContext)(); AC.resume();   // created on the click, reused for auto-recording
     const go = $('sGo'), oldTxt = go.innerHTML; go.disabled = true; go.innerHTML = '<span class="spin">⏳</span> يشتغل…';
     ['plan', 'voice', 'pics', 'video', 'rec'].forEach(k => step(k, '')); msg('sMsg', ''); msg('sRecMsg', ''); $('sWav').classList.add('hidden'); PICBLOBS = [];
-    const o = { idea: idea || 'Explain what is shown in the attached picture.', aud: $('sAud').value, lang: $('sLang').value, len: +$('sLen').value, textMode: $('sText').value, img: !!IMG };
+    const o = { idea: idea || 'Explain what is shown in the attached picture.', aud: $('sAud').value, lang: $('sLang').value, len: +$('sLen').value, scenes: +$('sScenes').value, textMode: $('sText').value, img: !!IMG };
     const gender = $('sGender').value, voiceName = $('sVoice').value, style = $('sStyle').value;
     try {
       // 1. script + scenes
@@ -431,7 +438,18 @@ Rules:
       let j; try { j = await gapi(`models/${tm}:generateContent`, { contents: [{ parts }], generationConfig: { responseMimeType: 'application/json' } }); } catch (e) { if (e.status !== 400) throw e; j = await gapi(`models/${tm}:generateContent`, { contents: [{ parts }] }); }
       const raw = partText(j), a = raw.indexOf('{'), b = raw.lastIndexOf('}');
       PLAN = JSON.parse(raw.slice(a, b + 1)); if (!Array.isArray(PLAN.scenes) || !PLAN.scenes.length) throw new Error('السيناريو رجع فاضي');
-      PLAN.scenes = PLAN.scenes.slice(0, 8);
+      PLAN.scenes = PLAN.scenes.slice(0, o.scenes || 8);
+      if (!/English/.test(o.lang)) {
+        step('plan', 'doing', 'أراجع النص المنطوق…');
+        try {
+          const items = PLAN.scenes.map(x => x.narration || '');
+          const cp = `You prepare narration for an Arabic text-to-speech voice (${o.lang}). For every item in the list: keep ONLY the words that will be spoken. Remove any description of tone, emotion, voice, pace or delivery in any language, any stage direction, bracketed note or speaker label. Write every English or foreign word, brand, app or technical term in Arabic letters the way Arabic speakers say it (Windows → ويندوز, Wi-Fi → واي فاي, RAM → رام). Write numbers as Arabic words. No Latin letters at all. Keep the meaning, the dialect and about the same length. Reply with ONLY a JSON array of strings, same order, same count.
+Items: ${JSON.stringify(items)}`;
+          let cj; try { cj = await gapi(`models/${tm}:generateContent`, { contents: [{ parts: [{ text: cp }] }], generationConfig: { responseMimeType: 'application/json' } }); } catch (e) { if (e.status !== 400) throw e; cj = await gapi(`models/${tm}:generateContent`, { contents: [{ parts: [{ text: cp }] }] }); }
+          const ct = partText(cj), ca = ct.indexOf('['), cb = ct.lastIndexOf(']'), arr = JSON.parse(ct.slice(ca, cb + 1));
+          if (Array.isArray(arr) && arr.length === items.length) arr.forEach((v, i) => { if (typeof v === 'string' && v.trim()) PLAN.scenes[i].narration = v.trim(); });
+        } catch (e) { /* keep the original narration; spokenOnly() still cleans it */ }
+      }
       step('plan', 'done', `${PLAN.scenes.length} مشاهد`);
       $('sScript').classList.remove('hidden');
       $('sScenes').innerHTML = PLAN.scenes.map((s, i) => `<div class="scene"><b>${i + 1}. ${esc(s.emoji || '')} ${esc(s.heading || s.text || '')}</b>${esc(s.narration || '')}</div>`).join('');
