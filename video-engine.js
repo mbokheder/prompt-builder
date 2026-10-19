@@ -929,21 +929,15 @@ function normExplainer(s) {
     type: XTYPES.includes(x.type) ? x.type : 'icon_text', emoji: str(x.emoji).slice(0, 8),
     heading: str(x.heading), headingEn: str(x.headingEn), text: str(x.text), textEn: str(x.textEn), number: str(x.number), say: str(x.say),
     items: (Array.isArray(x.items) ? x.items : []).slice(0, 6).map(i => ({ emoji: str(i.emoji).slice(0, 8), text: str(i.text), en: str(i.en), side: i.side === 'bad' ? 'bad' : 'good' })),
-    img: x.img || null,
   }));
-  const textMode = ['ar', 'bi', 'none'].includes(s.textMode) ? s.textMode : 'bi';
-  if (textMode === 'ar') scenes.forEach(x => { x.headingEn = ''; x.textEn = ''; x.items.forEach(i => { i.en = ''; }); });
   if (!scenes.length) scenes.push({ type: 'title', emoji: '✨', heading: str(s.title && s.title.ar) || 'عنوان', headingEn: '', text: '', textEn: '', number: '', say: '', items: [] });
-  return { kind: 'explainer', title: pair(s.title), credit: str(s.credit), scenes, textMode, voice: s.voice && isFinite(s.voice.duration) ? s.voice : null };
+  return { kind: 'explainer', title: pair(s.title), credit: str(s.credit), scenes, voice: s.voice && isFinite(s.voice.duration) ? s.voice : null };
 }
 // scene timing: by reading length, or snapped to the pauses of the recorded voice
 function planExplainer(X) {
   const wts = X.scenes.map(x => Math.max(8, (x.say || [x.heading, x.text, ...x.items.map(i => i.text)].join(' ')).length));
   const T = { X, scenes: [] };
-  if (X.voice && Array.isArray(X.voice.marks) && X.voice.marks.length === X.scenes.length) {
-    X.scenes.forEach((x, i) => { const [a, b] = X.voice.marks[i]; T.scenes.push(Object.assign({}, x, { n: i, a: i ? a : 0, b })); });
-    const last = T.scenes[T.scenes.length - 1].b; T.outro = [last, Math.max(last + 4.5, X.voice.duration + 1)];
-  } else if (X.voice) {
+  if (X.voice) {
     const v = X.voice, s0 = Math.max(0, v.s0 || 0), s1 = Math.max(s0 + 1, v.s1 || v.duration), tot = wts.reduce((a, b) => a + b, 0);
     let acc = 0, prev = 0;
     X.scenes.forEach((x, i) => {
@@ -1029,28 +1023,6 @@ function createExplainer(canvas, spec) {
     ctx.save(); ctx.globalAlpha = out; ctx.translate(960, 540); ctx.scale(.96 + .04 * out, .96 + .04 * out); ctx.translate(-960, -540);
     const rev = j => P(lt, .5 + j * Math.min(1.2, d * .55 / Math.max(1, s.items.length)), .5 + j * Math.min(1.2, d * .55 / Math.max(1, s.items.length)) + .45);
     const bob = Math.sin(t * 2.2) * 8;
-    if (s.img) {
-      ctx.restore(); ctx.save();
-      ctx.fillStyle = '#0d1530'; ctx.fillRect(0, 0, 1920, 1080);
-      const p = E.io(clamp(lt / Math.max(1, d))), dir = s.n % 2 ? -1 : 1;
-      ctx.globalAlpha = P(lt, 0, .45); drawMedia(ctx, s.img, null, 0, 0, 1920, 1080, 'cover', 1.04 + .1 * p, dir * (.1 * p - .05), .04 * p - .02); ctx.globalAlpha = 1;
-      if (X.textMode !== 'none' && (s.heading || s.text)) {
-        const gr = ctx.createLinearGradient(0, 640, 0, 1080); gr.addColorStop(0, 'rgba(13,21,48,0)'); gr.addColorStop(1, 'rgba(13,21,48,.75)'); ctx.fillStyle = gr; ctx.fillRect(0, 640, 1920, 440);
-        const k = E.back(P(lt, .3, .8)), hd = s.heading || s.text, sub = s.heading ? s.text : '';
-        const f = fitWrap(ctx, hd, 1500, 2, 64, 36), g2 = sub ? fitWrap(ctx, sub, 1500, 2, 40, 26, 700) : { lines: [], size: 0 };
-        const en = s.heading ? s.headingEn : s.textEn, h = f.lines.length * f.size * 1.2 + g2.lines.length * g2.size * 1.3 + (en ? 48 : 0) + 40;
-        ctx.save(); ctx.translate(960, 1040 - h / 2); ctx.scale(k, k); ctx.translate(-960, -(1040 - h / 2));
-        box(ctx, 960 - 820, 1040 - h, 1640, h, 36, 'rgba(255,255,255,.95)', PAL[s.n % PAL.length][0], 6, 10);
-        let y = 1040 - h + 20 + f.size * .6;
-        f.lines.forEach(l => { text(ctx, l, 960, y, { size: f.size, color: C.navy }); y += f.size * 1.2; });
-        g2.lines.forEach(l => { text(ctx, l, 960, y - f.size * .2, { size: g2.size, w: 700, color: '#33406f' }); y += g2.size * 1.3; });
-        if (en) text(ctx, en, 960, y - 6, { size: 34, w: 800, color: PAL[s.n % PAL.length][0], maxW: 1500 });
-        ctx.restore();
-      }
-      if (s.type === 'number' && s.number) { const k2 = E.back(P(lt, .2, .7)); ctx.save(); ctx.translate(1700, 190); ctx.scale(k2, k2); ctx.beginPath(); ctx.arc(0, 0, 130, 0, TAU); ctx.fillStyle = PAL[s.n % PAL.length][0]; ctx.fill(); ctx.lineWidth = 10; ctx.strokeStyle = '#fff'; ctx.stroke(); text(ctx, s.number, 0, 8, { size: 92, color: '#fff', maxW: 220 }); ctx.restore(); }
-      ctx.fillStyle = 'rgba(255,255,255,.25)'; ctx.fillRect(0, 1068, 1920, 12); ctx.fillStyle = PAL[s.n % PAL.length][0]; ctx.fillRect(1920 * (1 - t / T.outro[0]), 1068, 1920 * t / T.outro[0], 12);
-      ctx.restore(); return;
-    }
     if (s.type === 'title' || s.type === 'quote') {
       if (s.type === 'quote') { ctx.globalAlpha = .18 * out; text(ctx, '”', 1500, 360, { size: 420, color: col }); text(ctx, '“', 420, 820, { size: 420, color: col }); ctx.globalAlpha = out; }
       else bubble(960, 300 + bob, 120, col, s.emoji || '✨', inK, Math.sin(t) * 6);
