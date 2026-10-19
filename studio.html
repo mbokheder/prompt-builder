@@ -123,7 +123,7 @@
       </div>
       <div class="row">
         <div><label for="sScenes">عدد المشاهد</label><select id="sScenes"><option value="0">تلقائي حسب المدة</option><option value="3">٣ مشاهد</option><option value="4">٤ مشاهد</option><option value="5">٥ مشاهد</option><option value="6">٦ مشاهد</option><option value="7">٧ مشاهد</option><option value="8">٨ مشاهد</option><option value="9">٩ مشاهد</option><option value="10">١٠ مشاهد</option></select></div>
-        <div></div>
+        <div><label for="sPlace">المكان <small>(للشخصيات الكرتونية)</small></label><select id="sPlace"><option value="auto">تلقائي حسب البطاقة</option><option value="kids_gym">🤸 صالة أطفال</option><option value="fitness_studio">🏋️ ستوديو رياضة</option><option value="park">🏞️ حديقة</option><option value="classroom">🏫 فصل دراسي</option></select></div>
       </div>
       <div class="row">
         <div><label for="sText">النص على الشاشة</label><select id="sText"><option value="ar">عربي</option><option value="bi">عربي + إنجليزي صغير</option><option value="none">بدون نص (صور وصوت فقط)</option></select></div>
@@ -212,7 +212,7 @@
   function voiceUI() { const g = $('sGender').value; $('sVoice').disabled = g === 'none'; $('sVoice').innerHTML = g === 'none' ? '<option>—</option>' : VOICES[g].map(([v, l]) => `<option value="${v}">${l}</option>`).join(''); }
   $('sGender').addEventListener('change', () => { voiceUI(); save(); }); voiceUI();
   // remember the choices
-  const FIELDS = ['sIdea', 'sAud', 'sLang', 'sGender', 'sVoice', 'sLen', 'sScenes', 'sStyle', 'sText', 'sMusic'];
+  const FIELDS = ['sIdea', 'sAud', 'sLang', 'sGender', 'sVoice', 'sLen', 'sScenes', 'sPlace', 'sStyle', 'sText', 'sMusic'];
   function save() { const o = {}; FIELDS.forEach(f => o[f] = $(f).value); o.sAuto = $('sAuto').checked; store.set('studio-form', JSON.stringify(o)); }
   try { const o = JSON.parse(store.get('studio-form') || '{}'); FIELDS.forEach(f => { if (o[f] != null && f !== 'sVoice') $(f).value = o[f]; }); voiceUI(); if (o.sVoice) $('sVoice').value = o.sVoice; if (o.sAuto === false) $('sAuto').checked = false; } catch (e) {}
   if (!$('sMusic').value) $('sMusic').value = 'auto';
@@ -550,6 +550,7 @@ Items: ${JSON.stringify(items)}`;
     const parts = [{ inlineData: { mimeType: imgRef.mime, data: imgRef.b64 } }, { text: cardPrompt(o) }];
     let j; try { j = await gapi(`models/${tm}:generateContent`, { contents: [{ parts }], generationConfig: { responseMimeType: 'application/json' } }); } catch (e) { if (e.status !== 400) throw e; j = await gapi(`models/${tm}:generateContent`, { contents: [{ parts }] }); }
     const raw = partText(j), card = JSON.parse(raw.slice(raw.indexOf('{'), raw.lastIndexOf('}') + 1));
+    if ($('sPlace').value !== 'auto') card.setting = $('sPlace').value;
     const nSteps = card.template === 'workout' ? (card.exercises || []).length : (card.steps || []).length;
     const N = card.narration || {}, list = [N.intro || '', ...Array.from({ length: nSteps }, (_, i) => (N.steps || [])[i] || ''), N.outro || ''];
     step('plan', 'doing', 'أراجع النص المنطوق…');
