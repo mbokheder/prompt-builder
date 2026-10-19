@@ -238,7 +238,7 @@ Narration language: ${o.lang}. Reply with ONLY a JSON object, no code fences, in
 {"title":{"ar":"","en":""},"voiceStyle":"","character":"","scenes":[{"type":"","emoji":"","heading":"","headingEn":"","text":"","textEn":"","number":"","items":[{"emoji":"","text":"","en":"","side":"good"}],"narration":"","image":""}]}
 Rules:
 - 4 to 8 scenes; the first one introduces the topic (type "title"); the last one wraps up${o.aud === 'marketing' || o.aud === 'product' ? ' with a call to action' : ''}.
-- narration: what the voice says in that scene, natural ${o.lang}, about ${words} words in total for all scenes. Written for text-to-speech: short sentences, numbers written as words, add Arabic diacritics on words that could be misread.
+- narration: what the voice says in that scene, natural ${o.lang}, about ${words} words in total for all scenes. Written for text-to-speech: short sentences, numbers written as words, add Arabic diacritics on words that could be misread. It must contain ONLY the exact words to be spoken: no tone or delivery instructions, no stage directions, nothing in brackets or parentheses, no speaker labels such as "الراوي:".
 - On-screen text summarises the narration and is SHORT: heading at most 6 words, text at most 14 words, items at most 5 words. Write it in ${/English/.test(o.lang) ? 'English' : 'Arabic'}.
 - type: "title", "icon_text" (one idea + one emoji), "list" (2–4 items), "steps" (2–4 ordered steps), "number" (a key number in "number"), "compare" (do vs don't, items with side "good"/"bad"), "quote" (advice or conclusion). Pick what explains each scene best; vary them.
 - emoji: one fitting emoji per scene and per item.
@@ -250,9 +250,16 @@ Rules:
 
   // ── voice: one TTS call per scene, so each scene's timing is exact ──
   function pcmToFloat(b64) { const bin = atob(b64), n = bin.length >> 1, out = new Float32Array(n); for (let i = 0; i < n; i++) { let v = bin.charCodeAt(2 * i) | (bin.charCodeAt(2 * i + 1) << 8); if (v >= 32768) v -= 65536; out[i] = v / 32768; } return out; }
+  // only the words to be spoken: no tone instructions (TTS sometimes reads them aloud), no (directions), [tags], <tags> or "Narrator:" labels
+  function spokenOnly(t) {
+    return String(t || '')
+      .replace(/<[^>]*>/g, ' ').replace(/\[[^\]]*\]/g, ' ').replace(/\([^)]*\)/g, ' ').replace(/（[^）]*）/g, ' ')
+      .replace(/^\s*(الراوي|الراوية|المعلق|المعلقة|المعلمة|المعلم|المذيع|المذيعة|الصوت|صوت|narrator|voice|speaker)\s*[:：]\s*/i, '')
+      .replace(/\*+/g, '').replace(/\s+/g, ' ').trim();
+  }
   async function sayScene(model, text, voice, style, ac) {
-    const body = (withStyle) => ({ contents: [{ parts: [{ text: withStyle && style ? `Say in a ${style} voice: ${text}` : text }] }], generationConfig: { responseModalities: ['AUDIO'], speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: voice } } } } });
-    let j; try { j = await gapi(`models/${model}:generateContent`, body(true)); } catch (e) { if (e.status !== 400) throw e; j = await gapi(`models/${model}:generateContent`, body(false)); }
+    const body = { contents: [{ parts: [{ text: spokenOnly(text) }] }], generationConfig: { responseModalities: ['AUDIO'], speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: voice } } } } };
+    const j = await gapi(`models/${model}:generateContent`, body);
     const d = partData(j); if (!d) throw new Error('ما رجع صوت');
     const mime = d.mimeType || d.mime_type || '';
     if (/wav|mpeg|mp3|ogg|webm/.test(mime)) { const buf = await ac.decodeAudioData(Uint8Array.from(atob(d.data), c => c.charCodeAt(0)).buffer); return { pcm: buf.getChannelData(0), rate: buf.sampleRate }; }
