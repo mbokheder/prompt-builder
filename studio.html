@@ -68,7 +68,16 @@
   .scene b{display:block}
   .spin{display:inline-block;animation:sp 1s linear infinite}@keyframes sp{to{transform:rotate(360deg)}}
   @media (min-width:901px){.sticky{position:sticky;top:12px}}
-  .themeBtn{margin-inline-start:auto;font-size:20px;padding:8px 14px}
+  .themeBtn{font-size:20px;padding:8px 14px}
+  .hdrRight{margin-inline-start:auto;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .acct{display:flex;align-items:center;gap:8px;border:2px solid var(--line);border-radius:16px;padding:4px 10px;background:var(--card)}
+  .acct img{width:34px;height:34px;border-radius:50%}
+  .acct .who{display:flex;flex-direction:column;line-height:1.25;font-size:14px}
+  .acct .who small{color:var(--orange);font-weight:800;font-size:13px}
+  .atable{width:100%;border-collapse:collapse;font-size:14px;margin-top:12px}
+  .atable th,.atable td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:right;white-space:nowrap}
+  .atable tr[data-email]{cursor:pointer}
+  .atable tr[data-email]:hover{background:var(--field)}
   header .by{margin:0;font-weight:800;color:var(--orange);font-size:16px}
   .hGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;margin-top:12px}
   .hItem{border:2px solid var(--line);border-radius:16px;overflow:hidden;background:var(--field);display:flex;flex-direction:column}
@@ -89,7 +98,7 @@
       <p class="by">من دكتور حلول</p>
       <p>اكتب فكرتك واضغط زر واحد: السيناريو والصوت والصور والفيديو تلقائيًا</p>
     </div>
-    <button type="button" class="ghost themeBtn" id="themeBtn" aria-label="الوضع الليلي أو النهاري">🌓</button>
+    <div class="hdrRight"><div id="acct" class="acct hidden"></div><button type="button" class="ghost themeBtn" id="themeBtn" aria-label="الوضع الليلي أو النهاري">🌓</button></div>
     
   </header>
 
@@ -110,7 +119,7 @@
       </div>
       <div class="row">
         <div><label for="sLen">المدة</label><select id="sLen"><option value="30">قصير (حوالي ٣٠ ثانية)</option><option value="60" selected>متوسط (حوالي دقيقة)</option><option value="90">طويل (دقيقة ونص)</option></select></div>
-        <div><label for="sStyle">الأسلوب</label><select id="sStyle"><option value="pictures">🎨 صور مرسومة بالذكاء الاصطناعي</option><option value="motion">✨ موشن جرافيك (إيموجي ونصوص)</option></select></div>
+        <div><label for="sStyle">الأسلوب</label><select id="sStyle"><option value="cartoon">🧒 شخصيات كرتونية متحركة (لبطاقات الأنشطة والتمارين)</option><option value="pictures">🎨 صور مرسومة بالذكاء الاصطناعي</option><option value="motion">✨ موشن جرافيك مع مقدّم كرتوني</option></select></div>
       </div>
       <div class="row">
         <div><label for="sScenes">عدد المشاهد</label><select id="sScenes"><option value="0">تلقائي حسب المدة</option><option value="3">٣ مشاهد</option><option value="4">٤ مشاهد</option><option value="5">٥ مشاهد</option><option value="6">٦ مشاهد</option><option value="7">٧ مشاهد</option><option value="8">٨ مشاهد</option><option value="9">٩ مشاهد</option><option value="10">١٠ مشاهد</option></select></div>
@@ -124,11 +133,13 @@
       <input type="text" id="sCredit" placeholder="اكتب الاسم">
       <label style="font-weight:400;display:flex;gap:8px;align-items:center"><input type="checkbox" id="sAuto" checked> بعد ما يجهز، سجّل الفيديو ونزّله تلقائيًا</label>
       <button type="button" class="go" id="sGo">🎬 اصنع الفيديو</button>
+      <p id="sCost" class="where hidden" style="text-align:center;margin:8px 0 0"></p>
       <div class="btns" style="margin-top:10px"><button type="button" class="ghost" id="sClear">🧹 فكرة جديدة</button></div>
       <div id="sMsg"></div>
 
       <details id="kBox">
-        <summary>🔑 مفتاح Gemini <small>(مرة وحدة بس)</small> <span id="kBadge" class="kbadge"></span></summary>
+        <summary><span id="kTitle">🔑 مفتاح Gemini <small>(مرة وحدة بس)</small></span> <span id="kBadge" class="kbadge"></span></summary>
+        <div id="kProxyNote" class="note info hidden" style="font-size:13px">ما تحتاج مفتاح: سجّل دخولك بحساب Google واستخدم نقاطك. وإذا حطيت مفتاح Gemini خاص فيك هنا، الاستوديو يستخدمه بدل النقاط.</div>
         <div id="kEdit"><label for="kIn">الصق المفتاح <small>(يبدأ بـ AIza أو AQ.)</small></label>
           <div style="display:flex;gap:8px"><input type="password" id="kIn" autocomplete="off" spellcheck="false" style="direction:ltr"><button type="button" class="primary small" id="kSave">💾 احفظ</button></div></div>
         <div id="kSaved" class="hidden"><p class="where" style="margin:6px 0">✓ المفتاح محفوظ في هذا المتصفح.</p><button type="button" class="ghost small" id="kChange">✏️ تغيير</button> <button type="button" class="ghost small" id="kDel">🗑️ حذف</button></div>
@@ -162,6 +173,14 @@
     <p class="where" style="margin-top:6px">كل فيديو تصنعه ينحفظ هنا بكل شي: السيناريو والصوت والصور. افتحه، وغيّر الموسيقى أو نزّله من جديد بدون ما يُصرف رصيد مرة ثانية. السجل محفوظ في هذا المتصفح.</p>
     <div id="hMsg"></div>
     <div id="hList" class="hGrid"></div>
+  </section>
+  <section id="adminCard" class="card hidden" style="margin-top:20px" aria-labelledby="aTitle">
+    <h2 id="aTitle" style="margin:0"><span class="dot" style="background:var(--red)"></span>🛠️ لوحة المدير</h2>
+    <p class="where" style="margin-top:6px">أضف نقاط لأي مستخدم بإيميله (ولو ما دخل للحين). اكتب رقم بالسالب للخصم. اضغط على أي مستخدم في الجدول عشان تعبّي إيميله.</p>
+    <div class="row"><div><label for="aEmail">إيميل المستخدم</label><input type="text" id="aEmail" style="direction:ltr" placeholder="name@gmail.com"></div><div><label for="aPts">النقاط</label><input type="text" id="aPts" value="10" style="direction:ltr"></div></div>
+    <div class="btns"><button type="button" class="primary" id="aAdd">➕ أضف النقاط</button><button type="button" class="ghost" id="aRefresh">🔄 تحديث القائمة</button></div>
+    <div id="aMsg"></div>
+    <div style="overflow:auto"><table class="atable" id="aUsers"></table></div>
   </section>
 </div>
 
@@ -214,8 +233,12 @@
 
   // ── Gemini API ──
   const G = 'https://generativelanguage.googleapis.com/v1beta/';
+  let SERVER = null, ME = null, JOB = null;
+  const useProxy = () => !!SERVER && !validKey(KEY());
   async function gapi(path, body) {
-    const r = await fetch(G + path, body ? { method: 'POST', headers: { 'content-type': 'application/json', 'x-goog-api-key': KEY() }, body: JSON.stringify(body) } : { headers: { 'x-goog-api-key': KEY() } });
+    const px = useProxy(), url = px ? '/api/g/' + path : G + path;
+    const headers = px ? Object.assign(body ? { 'content-type': 'application/json' } : {}, JOB ? { 'x-job': JOB } : {}) : Object.assign(body ? { 'content-type': 'application/json' } : {}, { 'x-goog-api-key': KEY() });
+    const r = await fetch(url, body ? { method: 'POST', headers, body: JSON.stringify(body), credentials: 'same-origin' } : { headers, credentials: 'same-origin' });
     const j = await r.json().catch(() => ({}));
     if (!r.ok) { const e = new Error((j.error && j.error.message) || ('HTTP ' + r.status)); e.status = r.status; throw e; }
     return j;
@@ -239,7 +262,7 @@
     return `You are a creative director making a short explainer video of about ${o.len} seconds for ${AUD[o.aud]}.
 Topic / idea from the client: """${o.idea}"""${o.img ? '\nThe attached picture belongs to this topic (an activity card, a product, a logo…). Use what it shows.' : ''}
 Narration language: ${o.lang}. Reply with ONLY a JSON object, no code fences, in exactly this shape:
-{"title":{"ar":"","en":""},"voiceStyle":"","character":"","scenes":[{"type":"","emoji":"","heading":"","headingEn":"","text":"","textEn":"","number":"","items":[{"emoji":"","text":"","en":"","side":"good"}],"narration":"","image":""}]}
+{"title":{"ar":"","en":""},"voiceStyle":"","character":"","presenter":{"hijab":false,"hair":"#000000","scarf":"#000000","skin":"#000000","top":"#000000","bottom":"#000000"},"scenes":[{"type":"","emoji":"","heading":"","headingEn":"","text":"","textEn":"","number":"","items":[{"emoji":"","text":"","en":"","side":"good"}],"narration":"","image":""}]}
 Rules:
 - ${o.scenes ? 'EXACTLY ' + o.scenes + ' scenes' : '4 to 8 scenes'}; the first one introduces the topic (type "title"); the last one wraps up${o.aud === 'marketing' || o.aud === 'product' ? ' with a call to action' : ''}.
 - narration: what the voice says in that scene, natural ${o.lang}, about ${words} words in total for all scenes. Written for text-to-speech: short sentences, numbers written as words, add Arabic diacritics on words that could be misread. It must contain ONLY the exact words to be spoken: no tone or delivery instructions, no stage directions, nothing in brackets or parentheses, no speaker labels such as "الراوي:".${/English/.test(o.lang) ? '' : ' Use Arabic letters only (no Latin letters): write English or foreign words, brands, apps and technical terms the way Arabic speakers pronounce them, for example ويندوز، واي فاي، رام.'}
@@ -248,6 +271,7 @@ Rules:
 - emoji: one fitting emoji per scene and per item.
 - character: ONE English description of the main character(s) to keep identical in every picture (age, gender, skin, hair, clothes colours; modest clothing and hijab for adult women when the audience is Arabic), or "" when no people are needed (for example a product).
 - image: an English prompt describing the illustration for that scene (what is shown, action, setting). No text or letters in the picture.
+- presenter: the look of a friendly cartoon ${$('sGender').value === 'male' ? 'man' : 'woman'} who presents the video, fitting the audience (hijab true for a woman when the audience is Arabic; clothes colours as hex codes).
 - voiceStyle: a short English description of the speaking tone (for example "warm, cheerful teacher").
 - ${o.textMode === 'bi' ? 'Fill title.en, headingEn, textEn and items[].en with short simple English.' : 'Leave every English field empty.'}`;
   }
@@ -307,7 +331,7 @@ Rules:
   // ── state + preview ──
   const cv = $('sCanvas');
   let eng = null, music = null, VOICE = null, playing = null, recording = false, PLAN = null, AC = null;
-  let PROJ = null, PICS = [], PICBLOBS = [];
+  let PROJ = null, PICS = [], PICBLOBS = [], CARDIMG = null;
   const fontsReady = Promise.all(['900 40px Cairo', '800 40px Cairo', '700 40px Cairo'].map(f => document.fonts.load(f, 'ابت abc'))).catch(() => {});
   function draw(t) { if (!eng) return; eng.render(t); $('sSeek').value = t; $('sTime').textContent = `${fmt(t)} / ${fmt(eng.DUR)}`; }
   const audioBuffer = (ac, m) => { const b = ac.createBuffer(2, m.L.length, m.sr); b.copyToChannel(m.L, 0); b.copyToChannel(m.R, 1); return b; };
@@ -356,8 +380,18 @@ Rules:
 
   function formValues() { const o = {}; FIELDS.forEach(f => o[f] = $(f).value); return o; }
   function buildVideo() {
-    const spec = { kind: 'explainer', title: PROJ.title, credit: PROJ.credit, textMode: PROJ.textMode, music: PROJ.music || {},
-      scenes: PROJ.plan.scenes.map((s, i) => Object.assign({}, s, { say: s.narration || '', img: PICS[i] || null })), voice: VOICE ? VOICE.info : null };
+    if (PROJ.kind === 'cartoon') {
+      eng = VideoEngine.create(cv, Object.assign({}, PROJ.card, { media: { image: CARDIMG }, voiceDur: PROJ.voiceDur, music: PROJ.music || {}, credit: PROJ.credit }));
+      music = PROJ.music ? eng.music() : null;
+      $('sSeek').max = eng.DUR; $('sEmpty').classList.add('hidden'); draw(Math.min(3, eng.DUR));
+      $('sReMusic').classList.toggle('hidden', !PROJ.music); $('sWav').classList.toggle('hidden', !VOICE);
+      $('sScript').classList.remove('hidden');
+      const n = PROJ.narr || { intro: '', steps: [], outro: '' };
+      $('sScenes').innerHTML = [['👋 البداية', n.intro], ...(n.steps || []).map((t, i) => [`${i + 1}. ${esc((PROJ.plan.scenes[i] || {}).heading || '')}`, t]), ['🎉 النهاية', n.outro]].map(([h, t]) => `<div class="scene"><b>${h}</b>${esc(t || '')}</div>`).join('');
+      return;
+    }
+    const spec = { kind: 'explainer', title: PROJ.title, credit: PROJ.credit, textMode: PROJ.textMode, music: PROJ.music || {}, presenter: PROJ.presenter || null,
+      scenes: PROJ.plan.scenes.map((s, i) => Object.assign({}, s, { say: s.narration || '', img: PICS[i] || null })), voice: VOICE ? Object.assign({}, VOICE.info, { env: VOICE.env || PROJ.voiceEnv || null }) : null };
     eng = VideoEngine.create(cv, spec); music = PROJ.music ? eng.music() : null;
     $('sSeek').max = eng.DUR; $('sEmpty').classList.add('hidden'); draw(Math.min(3, eng.DUR));
     $('sReMusic').classList.toggle('hidden', !PROJ.music); $('sWav').classList.toggle('hidden', !VOICE);
@@ -372,8 +406,9 @@ Rules:
   const hLoad = () => { try { const a = JSON.parse(store.get(HKEY) || '[]'); return Array.isArray(a) ? a : []; } catch (e) { return []; } };
   function hStore(list) { for (let i = list.length - 1; i >= -1; i--) { try { localStorage.setItem(HKEY, JSON.stringify(list)); return true; } catch (e) { if (i >= 0) list[i].thumb = ''; } } return false; }
   const hDate = ms => new Date(ms).toLocaleDateString('ar-u-ca-gregory-nu-arab', { day: 'numeric', month: 'long', year: 'numeric' });
-  function thumb() { try { const c = document.createElement('canvas'); c.width = 384; c.height = 216; const e = VideoEngine.create(c, eng.S && Object.assign({}, { kind: 'explainer', title: PROJ.title, textMode: PROJ.textMode, scenes: PROJ.plan.scenes.map((s, i) => Object.assign({}, s, { img: PICS[i] || null })), voice: VOICE ? VOICE.info : null })); const sc = e.T.scenes[Math.min(1, e.T.scenes.length - 1)]; e.render(sc.a + Math.min(2, (sc.b - sc.a) / 2)); return c.toDataURL('image/jpeg', .72); } catch (e) { return ''; } }
-  const meta = () => ({ id: PROJ.id, created: PROJ.created, updated: Date.now(), title: PROJ.title, plan: PROJ.plan, textMode: PROJ.textMode, credit: PROJ.credit, music: PROJ.music, voiceInfo: PROJ.voiceInfo, settings: PROJ.settings, nPics: PICBLOBS.filter(Boolean).length });
+  function thumb() { if (PROJ && PROJ.kind === 'cartoon') { try { const c = document.createElement('canvas'); c.width = 384; c.height = 216; const e = VideoEngine.create(c, Object.assign({}, PROJ.card, { media: { image: CARDIMG }, voiceDur: PROJ.voiceDur })); e.render(e.T.steps[0] ? e.T.steps[0].ts + 3 : 4); return c.toDataURL('image/jpeg', .72); } catch (e) { return ''; } }
+    try { const c = document.createElement('canvas'); c.width = 384; c.height = 216; const e = VideoEngine.create(c, eng.S && Object.assign({}, { kind: 'explainer', title: PROJ.title, textMode: PROJ.textMode, scenes: PROJ.plan.scenes.map((s, i) => Object.assign({}, s, { img: PICS[i] || null })), voice: VOICE ? VOICE.info : null })); const sc = e.T.scenes[Math.min(1, e.T.scenes.length - 1)]; e.render(sc.a + Math.min(2, (sc.b - sc.a) / 2)); return c.toDataURL('image/jpeg', .72); } catch (e) { return ''; } }
+  const meta = () => ({ id: PROJ.id, kind: PROJ.kind || 'explainer', created: PROJ.created, updated: Date.now(), title: PROJ.title, plan: PROJ.plan, card: PROJ.card, narr: PROJ.narr, voiceDur: PROJ.voiceDur, presenter: PROJ.presenter, voiceEnv: PROJ.voiceEnv, textMode: PROJ.textMode, credit: PROJ.credit, music: PROJ.music, voiceInfo: PROJ.voiceInfo, settings: PROJ.settings, nPics: PICBLOBS.filter(Boolean).length });
   async function saveProject() {
     if (!PROJ) return;
     if (VOICE) await IDB.set('voice:' + PROJ.id, VOICE.wav);
@@ -386,20 +421,21 @@ Rules:
   function hRender() {
     const list = hLoad(); $('hCount').textContent = list.length ? `(${list.length})` : '';
     $('hList').innerHTML = list.length ? list.map(x => `<div class="hItem${PROJ && x.id === PROJ.id ? ' cur' : ''}">${x.thumb ? `<img src="${x.thumb}" alt="">` : '<img alt="">'}
-      <div class="hBody"><b>${esc((x.title && x.title.ar) || 'بدون عنوان')}</b><small>${hDate(x.updated || x.created)} · ${x.plan.scenes.length} مشاهد${x.voiceInfo ? ' · بصوت' : ''}${x.nPics ? ' · صور' : ''}</small>
+      <div class="hBody"><b>${esc((x.title && x.title.ar) || 'بدون عنوان')}</b><small>${hDate(x.updated || x.created)} · ${x.kind === 'cartoon' ? '🧒 كرتون' : x.plan.scenes.length + ' مشاهد'}${x.voiceInfo ? ' · بصوت' : ''}${x.nPics ? ' · صور' : ''}</small>
       <div class="hBtns"><button type="button" class="primary small" data-open="${x.id}">🎬 افتح</button><button type="button" class="ghost small" data-del="${x.id}" title="احذف">🗑️</button></div></div></div>`).join('')
       : '<div class="where" style="padding:16px;text-align:center">السجل فاضي. أول فيديو تصنعه بيظهر هنا.</div>';
   }
   async function openProject(id) {
     const x = hLoad().find(i => i.id === id); if (!x) return;
     stopPlay(); clearPreview();
-    PROJ = { id: x.id, created: x.created, title: x.title, plan: x.plan, textMode: x.textMode, credit: x.credit, music: x.music, voiceInfo: x.voiceInfo, settings: x.settings };
+    PROJ = { id: x.id, kind: x.kind, created: x.created, title: x.title, plan: x.plan, card: x.card, narr: x.narr, voiceDur: x.voiceDur, presenter: x.presenter, voiceEnv: x.voiceEnv, textMode: x.textMode, credit: x.credit, music: x.music, voiceInfo: x.voiceInfo, settings: x.settings };
     if (x.settings) { FIELDS.forEach(f => { if (x.settings[f] != null && f !== 'sVoice') $(f).value = x.settings[f]; }); voiceUI(); if (x.settings.sVoice) $('sVoice').value = x.settings.sVoice; }
     PLAN = x.plan; PICS = []; PICBLOBS = []; VOICE = null;
     for (let i = 0; i < x.plan.scenes.length; i++) { const b = await IDB.get('pic:' + x.id + ':' + i); if (b) { const im = new Image(); im.src = URL.createObjectURL(b); try { await im.decode(); PICS[i] = im; PICBLOBS[i] = b; } catch (e) {} } }
     const w = await IDB.get('voice:' + x.id);
-    if (w && x.voiceInfo) { try { const ac = new (window.AudioContext || window.webkitAudioContext)(); const buf = await ac.decodeAudioData(await w.arrayBuffer()); ac.close(); VOICE = { buf, wav: w, info: x.voiceInfo }; } catch (e) {} }
-    const inp = await IDB.get('input:' + x.id); if (inp) setImg(inp);
+    if (w && x.voiceInfo) { try { const ac = new (window.AudioContext || window.webkitAudioContext)(); const buf = await ac.decodeAudioData(await w.arrayBuffer()); ac.close(); VOICE = { buf, wav: w, info: x.voiceInfo, env: x.voiceEnv }; } catch (e) {} }
+    const inp = await IDB.get('input:' + x.id); if (inp) { setImg(inp); if (x.kind === 'cartoon') { const im = new Image(); im.src = URL.createObjectURL(inp); try { await im.decode(); CARDIMG = im; } catch (e) {} } }
+    if (x.kind === 'cartoon' && !CARDIMG) return msg('sMsg', '⚠️ صورة البطاقة لهذا العمل غير محفوظة.', 'warn');
     await fontsReady; buildVideo();
     ['plan', 'voice', 'pics', 'video'].forEach(k => step(k, 'done', k === 'plan' ? 'من السجل' : '')); step('rec', '', 'اضغط «نزّل الفيديو»');
     hRender(); msg('sMsg', `✓ فتحت «${esc((x.title && x.title.ar) || '')}» من السجل.`); window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -419,21 +455,171 @@ Rules:
   };
   hRender();
 
+  // ── account (only when served with the «وسيط») ──
+  async function api(path, body) {
+    const r = await fetch('/api/' + path, body ? { method: 'POST', headers: { 'content-type': 'application/json' }, credentials: 'same-origin', body: JSON.stringify(body) } : { credentials: 'same-origin' });
+    const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error((j.error && j.error.message) || ('HTTP ' + r.status)); return j;
+  }
+  async function finishJob(ok) { if (!JOB) return; const id = JOB; JOB = null; try { const j = await api('job/' + id + '/finish', { ok }); setPoints(j.points); if (j.status === 'refunded') msg('sRecMsg', '↩️ رجعت نقاطك لأن الفيديو ما اكتمل.'); } catch (e) {} }
+  function setPoints(p) { if (!ME || p == null) return; ME.points = p; const n = $('ptsN'); if (n) n.textContent = p; costUI(); }
+  function costUI() {
+    const el = $('sCost'), on = useProxy() && ME && SERVER;
+    el.classList.toggle('hidden', !on); if (!on) return;
+    const c = $('sStyle').value === 'pictures' ? SERVER.points.pictures : SERVER.points.motion;
+    el.innerHTML = `هذا الفيديو يكلّف <b>${c}</b> ${c === 1 ? 'نقطة' : 'نقاط'} · رصيدك <b>${ME.points}</b>`;
+  }
+  $('sStyle').addEventListener('change', costUI);
+  const loadGIS = () => new Promise(res => { if (window.google && google.accounts && google.accounts.id) return res(); const sc = document.createElement('script'); sc.src = 'https://accounts.google.com/gsi/client'; sc.async = true; sc.onload = res; sc.onerror = res; document.head.appendChild(sc); });
+  async function login(body) { try { ME = (await api('login', body)).user; acctRender(); msg('sMsg', `✓ أهلاً ${esc(ME.name || ME.email)}! رصيدك ${ME.points} نقاط.`); } catch (e) { msg('sMsg', '⚠️ ' + esc(e.message), 'warn'); } }
+  async function acctRender() {
+    const box = $('acct');
+    $('kTitle').innerHTML = SERVER ? '🔑 مفتاحك الخاص <small>(اختياري)</small>' : '🔑 مفتاح Gemini <small>(مرة وحدة بس)</small>';
+    $('kProxyNote').classList.toggle('hidden', !SERVER);
+    $('adminCard').classList.toggle('hidden', !(ME && ME.admin));
+    costUI();
+    if (!SERVER) return box.classList.add('hidden');
+    box.classList.remove('hidden');
+    if (ME) {
+      box.innerHTML = `${ME.picture ? `<img src="${esc(ME.picture)}" alt="" referrerpolicy="no-referrer">` : '<span style="font-size:24px">👤</span>'}<span class="who"><b>${esc(ME.name || ME.email)}</b><small>⭐ <span id="ptsN">${ME.points}</span> نقطة</small></span><button type="button" class="ghost small" id="logoutBtn">خروج</button>`;
+      $('logoutBtn').onclick = async () => { try { await api('logout', {}); } catch (e) {} ME = null; try { google.accounts.id.disableAutoSelect(); } catch (e) {} acctRender(); };
+      if (ME.admin) adminLoad();
+      return;
+    }
+    box.innerHTML = '<div id="gBtn"></div>' + (SERVER.dev ? '<input id="devEmail" placeholder="dev email" style="direction:ltr;width:170px"><button type="button" class="ghost small" id="devLogin">دخول تجربة</button>' : '') + (!SERVER.clientId && !SERVER.dev ? '<span class="where" style="margin:0">الدخول غير مجهز بعد</span>' : '');
+    if (SERVER.dev) $('devLogin').onclick = () => login({ devEmail: $('devEmail').value || 'tester@example.com' });
+    if (SERVER.clientId) {
+      await loadGIS();
+      if (window.google && google.accounts && google.accounts.id) {
+        google.accounts.id.initialize({ client_id: SERVER.clientId, callback: r => login({ credential: r.credential }), ux_mode: 'popup' });
+        google.accounts.id.renderButton($('gBtn'), { theme: 'outline', size: 'large', text: 'signin_with', shape: 'pill', locale: 'ar' });
+      }
+    }
+  }
+  async function adminLoad() {
+    try {
+      const { users } = await api('admin/users');
+      $('aUsers').innerHTML = '<tr><th>الإيميل</th><th>الاسم</th><th>النقاط</th><th>الفيديوهات</th><th>آخر دخول</th></tr>' + users.map(u => `<tr data-email="${esc(u.email)}"><td style="direction:ltr;text-align:left">${esc(u.email)}</td><td>${esc(u.name || '')}</td><td><b>${u.points}</b></td><td>${u.videos}</td><td>${u.last_seen ? hDate(u.last_seen) : '—'}</td></tr>`).join('');
+    } catch (e) { msg('aMsg', '⚠️ ' + esc(e.message), 'warn'); }
+  }
+  $('aUsers').addEventListener('click', e => { const tr = e.target.closest('tr[data-email]'); if (tr) { $('aEmail').value = tr.dataset.email; $('aPts').focus(); } });
+  $('aRefresh').onclick = adminLoad;
+  $('aAdd').onclick = async () => {
+    const email = $('aEmail').value.trim(), delta = parseInt($('aPts').value, 10);
+    if (!email || !delta) return msg('aMsg', '⚠️ اكتب الإيميل وعدد النقاط.', 'warn');
+    try { const { user } = await api('admin/points', { email, delta }); msg('aMsg', `✓ رصيد ${esc(user.email)} صار ${user.points} نقطة.`); if (ME && user.email === ME.email) setPoints(user.points); adminLoad(); } catch (e) { msg('aMsg', '⚠️ ' + esc(e.message), 'warn'); }
+  };
+  (async () => {
+    try {
+      const r = await fetch('/api/config', { credentials: 'same-origin' });
+      if (r.ok && /json/.test(r.headers.get('content-type') || '')) { const c = await r.json(); if (c.proxy) { SERVER = c; try { ME = (await api('me')).user; } catch (e) { ME = null; } } }
+    } catch (e) {}
+    acctRender();
+  })();
+  // a personal key switches between «points» and «my key»
+  ['kSave', 'kDel'].forEach(id => $(id).addEventListener('click', () => setTimeout(costUI, 0)));
+
+  // ── cartoon style: analyse an activity / workout card, narrate each step ──
+  const CARD_PROMPT = "Read the attached card image. It may be a children's activity card, an exercise / workout card, or any other instructional card (cooking, hygiene, science, crafts, safety…). Reply with ONLY a JSON object (no code fences, no extra text) in exactly this shape:\n{\"template\":\"\",\"animatable\":true,\"setting\":\"\",\"title\":{\"ar\":\"\",\"en\":\"\"},\"desc\":{\"ar\":\"\",\"en\":\"\"},\"level\":{\"ar\":\"\",\"en\":\"\"},\"help\":{\"ar\":\"\",\"en\":\"\"},\n\"characters\":[{\"role\":\"main\",\"age\":\"\",\"gender\":\"\",\"hairStyle\":\"\",\"hijab\":false,\"hair\":\"#000000\",\"scarf\":\"#000000\",\"skin\":\"#000000\",\"top\":\"#000000\",\"bottom\":\"#000000\",\"shoes\":\"#000000\",\"sleeves\":\"\"}],\n\"setup\":{\"surface\":\"\",\"item\":\"\",\"target\":\"\",\"tongs\":false,\"helper\":false},\n\"steps\":[{\"ar\":\"\",\"en\":\"\",\"capAr\":\"\",\"capEn\":\"\",\"action\":\"\",\"box\":[0,0,0,0]}],\n\"exercises\":[{\"ar\":\"\",\"en\":\"\",\"move\":\"\",\"reps\":{\"ar\":\"\",\"en\":\"\"},\"target\":{\"ar\":\"\",\"en\":\"\"},\"hold\":false,\"box\":[0,0,0,0]}],\n\"tools\":[{\"ar\":\"\",\"en\":\"\",\"kind\":\"\",\"box\":[0,0,0,0]}],\n\"benefits\":[{\"ar\":\"\",\"en\":\"\",\"icon\":\"\"}]}\nRules:\n- template: \"activity\" = a children's motor / balance activity with equipment; \"workout\" = a list of exercises with reps, sets or time; \"other\" = any other subject.\n- Copy the Arabic text exactly as written on the card (title, desc, level, step titles \"ar\" and their sentences \"capAr\", exercise names, reps, targets, tools, benefits, and any safety / adult-help note as \"help\"). Add short, simple English translations in every \"en\" and \"capEn\".\n- box = where the PICTURE (illustration or photo) of that step / exercise / tool is on the card, as [ymin, xmin, ymax, xmax] on a 0–1000 scale. Only the picture, not its text or arrows. Use [] if it has no picture.\n- characters: the people in the pictures. \"main\" = the one doing it; add a second item with \"role\":\"helper\" if an adult helps. age: child | teen | adult. gender: male | female. hairStyle: short | ponytail | long | bun | pigtails. hijab: true if wearing a headscarf (then \"scarf\" is its colour). Colours are hex codes taken from the pictures. sleeves: long | short | none.\n- setting: \"kids_gym\" for children's activities, \"fitness_studio\" for workouts and adults.\n- template \"activity\": fill \"steps\" (action = ready, balance, squat, pick, stand, place, throw, repeat, walk, jump, oneleg, or other) and \"setup\" (surface: board | beam | floor; item: disc | bag | ball; target: cone | hoop | basket; tongs; helper).\n- template \"workout\": fill \"exercises\" in order (move = plank, leg_raise, crunch, bicycle, russian_twist, mountain_climber, push_up, glute_bridge, squat, lunge, superman, flutter, jumping_jack, high_knees, stretch, or other; reps = the reps / sets / time text; target = the muscle or benefit text; hold = true for positions held for time) and leave \"steps\" [].\n- template \"other\": fill \"steps\" (action \"other\") with their pictures' boxes, and leave \"exercises\" [].\n- animatable: true only if EVERY step / exercise uses one of the listed actions or moves (none is \"other\"), otherwise false.\n- tools[].kind: board, beam, discs, cone, tongs, mat, bags, hoop, ball, basket, table, helper, other. benefits[].icon: balance, weight, eye, focus, heart, brain, hand, star.\n- Use \"\" or [] for anything that is not on the card.";
+  const cardPrompt = o => CARD_PROMPT + `
+Also add to the JSON object a key "narration": {"intro":"","steps":[""],"outro":""} written in ${o.lang} for a voice-over, ONLY the words to be spoken (no tone or delivery notes, no brackets, no speaker labels${/English/.test(o.lang) ? '' : ', Arabic letters only: write foreign words the way Arabic speakers say them'}):
+- intro: at most 12 words, greets the viewers and names the activity.
+- steps: one item per step / exercise in the same order, 10 to 28 words each, explaining clearly how to do it${o.aud === 'kids' ? ' for children' : ''}.
+- outro: at most 12 words, encouraging.
+Client note: "${o.idea}".`;
+  async function cleanNarr(tm, items, lang) {
+    if (/English/.test(lang) || !items.length) return items;
+    try {
+      const cp = `You prepare narration for an Arabic text-to-speech voice (${lang}). For every item in the list: keep ONLY the words that will be spoken. Remove any description of tone, emotion, voice, pace or delivery in any language, any stage direction, bracketed note or speaker label. Write every English or foreign word, brand, app or technical term in Arabic letters the way Arabic speakers say it. Write numbers as Arabic words. No Latin letters at all. Keep the meaning, the dialect and about the same length. Reply with ONLY a JSON array of strings, same order, same count.
+Items: ${JSON.stringify(items)}`;
+      let cj; try { cj = await gapi(`models/${tm}:generateContent`, { contents: [{ parts: [{ text: cp }] }], generationConfig: { responseMimeType: 'application/json' } }); } catch (e) { if (e.status !== 400) throw e; cj = await gapi(`models/${tm}:generateContent`, { contents: [{ parts: [{ text: cp }] }] }); }
+      const ct = partText(cj), arr = JSON.parse(ct.slice(ct.indexOf('['), ct.lastIndexOf(']') + 1));
+      return Array.isArray(arr) && arr.length === items.length ? arr.map((v, i) => typeof v === 'string' && v.trim() ? v.trim() : items[i]) : items;
+    } catch (e) { return items; }
+  }
+  function cartoonSpec(card, o) {
+    const sp = JSON.parse(JSON.stringify(card)); delete sp.narration;
+    if (o.textMode !== 'bi') { ['title', 'desc', 'level', 'help'].forEach(k => { if (sp[k]) sp[k].en = ''; }); (sp.steps || []).forEach(x => { x.en = ''; x.capEn = ''; }); (sp.tools || []).forEach(x => { x.en = ''; }); (sp.benefits || []).forEach(x => { x.en = ''; }); (sp.exercises || []).forEach(x => { x.en = ''; if (x.reps) x.reps.en = ''; if (x.target) x.target.en = ''; }); }
+    if (o.textMode === 'none') { (sp.steps || []).forEach(x => { x.capAr = ''; x.capEn = ''; }); }
+    return sp;
+  }
+  async function runCartoon(o, gender, voiceName, imgRef, tm) {
+    if (!imgRef) throw new Error('أسلوب الشخصيات الكرتونية يحتاج صورة بطاقة النشاط أو التمارين. ارفعها أو اختر أسلوب ثاني.');
+    step('plan', 'doing', 'Gemini يقرأ البطاقة…');
+    const parts = [{ inlineData: { mimeType: imgRef.mime, data: imgRef.b64 } }, { text: cardPrompt(o) }];
+    let j; try { j = await gapi(`models/${tm}:generateContent`, { contents: [{ parts }], generationConfig: { responseMimeType: 'application/json' } }); } catch (e) { if (e.status !== 400) throw e; j = await gapi(`models/${tm}:generateContent`, { contents: [{ parts }] }); }
+    const raw = partText(j), card = JSON.parse(raw.slice(raw.indexOf('{'), raw.lastIndexOf('}') + 1));
+    const nSteps = card.template === 'workout' ? (card.exercises || []).length : (card.steps || []).length;
+    const N = card.narration || {}, list = [N.intro || '', ...Array.from({ length: nSteps }, (_, i) => (N.steps || [])[i] || ''), N.outro || ''];
+    step('plan', 'doing', 'أراجع النص المنطوق…');
+    const clean = await cleanNarr(tm, list, o.lang);
+    card.narration = { intro: clean[0], steps: clean.slice(1, 1 + nSteps), outro: clean[clean.length - 1] };
+    step('plan', 'done', `${nSteps} خطوات`);
+    $('sScript').classList.remove('hidden');
+    $('sScenes').innerHTML = [['👋 البداية', card.narration.intro], ...card.narration.steps.map((t, i) => [`${i + 1}. ${esc(((card.template === 'workout' ? card.exercises : card.steps)[i] || {}).ar || '')}`, t]), ['🎉 النهاية', card.narration.outro]].map(([h, t]) => `<div class="scene"><b>${h}</b>${esc(t)}</div>`).join('');
+    // voice: one clip per part
+    let clips = null;
+    if (gender !== 'none') {
+      step('voice', 'doing', '…');
+      try {
+        const vm = await pick('tts'); if (!vm) throw new Error('ما لقيت موديل صوت (TTS)');
+        clips = [];
+        for (let i = 0; i < clean.length; i++) { step('voice', 'doing', `${i + 1} / ${clean.length}`); clips.push(clean[i].trim() ? await sayScene(vm, clean[i], voiceName, '', AC) : { pcm: new Float32Array(0), rate: 24000 }); }
+        step('voice', 'done', '');
+      } catch (e) { clips = null; step('voice', 'fail', 'بدون صوت'); msg('sMsg', `⚠️ الصوت: ${esc(e.message)} — كملت بالموسيقى فقط.`, 'warn'); }
+    } else step('voice', 'done', 'موسيقى فقط');
+    step('pics', 'done', 'شخصيات من البطاقة');
+    return { card, clips };
+  }
+  // put the narration clips where the engine shows each part
+  function placeVoice(clips, T) {
+    if (!clips) return null;
+    const rate = (clips.find(c => c.pcm.length) || { rate: 24000 }).rate, total = Math.ceil(T.DUR * rate), pcm = new Float32Array(total);
+    const at = [1.0, ...T.steps.map(x => (x.a != null ? x.a : x.ts + 1.35)), T.outro[0] + .4];
+    clips.forEach((c, i) => { const p = Math.round(at[i] * rate); if (c.pcm.length && p < total) pcm.set(c.pcm.subarray(0, Math.max(0, total - p)), p); });
+    const buf = AC.createBuffer(1, total, rate); buf.copyToChannel(pcm, 0);
+    return { buf, wav: wavBlob(pcm, rate), info: { duration: total / rate, at, durs: clips.map(c => c.pcm.length / rate) } };
+  }
+
   // ── the one button ──
   $('sGo').onclick = async () => {
     const idea = $('sIdea').value.trim();
     if (!idea && !IMG) return msg('sMsg', '⚠️ اكتب فكرتك أو ارفع صورة.', 'warn');
-    if (!validKey(KEY())) { $('kBox').open = true; keyUI(true); return msg('sMsg', '⚠️ تحتاج مفتاح Gemini أول مرة. الصقه في المربع اللي انفتح تحت.', 'warn'); }
+    if (useProxy()) { if (!ME) { $('acct').scrollIntoView({ behavior: 'smooth', block: 'center' }); return msg('sMsg', '⚠️ سجّل دخولك بحساب Google أولاً (الزر فوق).', 'warn'); } }
+    else if (!validKey(KEY())) { $('kBox').open = true; keyUI(true); return msg('sMsg', '⚠️ تحتاج مفتاح Gemini أول مرة. الصقه في المربع اللي انفتح تحت.', 'warn'); }
     stopPlay(); AC = new (window.AudioContext || window.webkitAudioContext)(); AC.resume();   // created on the click, reused for auto-recording
     const go = $('sGo'), oldTxt = go.innerHTML; go.disabled = true; go.innerHTML = '<span class="spin">⏳</span> يشتغل…';
     ['plan', 'voice', 'pics', 'video', 'rec'].forEach(k => step(k, '')); msg('sMsg', ''); msg('sRecMsg', ''); $('sWav').classList.add('hidden'); PICBLOBS = [];
     const o = { idea: idea || 'Explain what is shown in the attached picture.', aud: $('sAud').value, lang: $('sLang').value, len: +$('sLen').value, scenes: +$('sScenes').value, textMode: $('sText').value, img: !!IMG };
-    const gender = $('sGender').value, voiceName = $('sVoice').value, style = $('sStyle').value;
+    const gender = $('sGender').value, voiceName = $('sVoice').value; let style = $('sStyle').value;
+    JOB = null;
     try {
+      if (useProxy()) {
+        const r = await fetch('/api/job', { method: 'POST', headers: { 'content-type': 'application/json' }, credentials: 'same-origin', body: JSON.stringify({ style: style === 'pictures' ? 'pictures' : 'motion', scenes: o.scenes || 8 }) });
+        const jj = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error(((jj.error && jj.error.message) || 'تعذّر بدء الفيديو') + (jj.error && jj.error.code === 'no_points' ? ' — اشحن نقاطك أو تواصل معنا.' : ''));
+        JOB = jj.job; setPoints(jj.points);
+      }
       // 1. script + scenes
       step('plan', 'doing', 'Gemini يكتب…');
       const tm = await pick('text'); if (!tm) throw new Error('ما لقيت موديل نصوص في حسابك');
       const imgRef = IMG ? { mime: IMG.type || 'image/png', b64: await fileB64(IMG) } : null;
+      if (style === 'cartoon' && !imgRef) { style = 'motion'; msg('sMsg', 'ℹ️ أسلوب الشخصيات الكرتونية يحتاج صورة بطاقة نشاط أو تمارين، فسويت موشن جرافيك مع مقدّم كرتوني.'); }
+      if (style === 'cartoon') {
+        const { card, clips } = await runCartoon(o, gender, voiceName, imgRef, tm);
+        step('video', 'doing'); await fontsReady;
+        const im = new Image(); im.src = URL.createObjectURL(IMG); await im.decode();
+        const vd = clips ? clips.slice(1, -1).map(c => c.pcm.length / c.rate) : null;
+        PROJ = { kind: 'cartoon', id: 's' + Date.now().toString(36), created: Date.now(), title: card.title || { ar: '', en: '' }, card: cartoonSpec(card, o), voiceDur: vd, textMode: o.textMode, credit: $('sCredit').value.trim(), music: musicChoice(),
+          plan: { scenes: (card.narration.steps || []).map((t, i) => ({ heading: (((card.template === 'workout' ? card.exercises : card.steps) || [])[i] || {}).ar || '', narration: t })) }, settings: Object.assign(formValues(), { idea: $('sIdea').value }) };
+        PROJ.narr = card.narration; CARDIMG = im; PICS = []; PICBLOBS = [];
+        eng = VideoEngine.create(cv, Object.assign({}, PROJ.card, { media: { image: im }, voiceDur: vd, music: PROJ.music || {}, credit: PROJ.credit }));
+        VOICE = placeVoice(clips, eng.T); if (VOICE) PROJ.voiceInfo = VOICE.info;
+        buildVideo();
+        step('video', 'done', fmt(eng.DUR));
+        await saveProject(); await finishJob(true);
+        if ($('sAuto').checked) await record(AC); else { step('rec', '', 'اضغط «نزّل الفيديو»'); try { AC.close(); } catch (e) {} }
+        return;
+      }
       const parts = (imgRef ? [{ inlineData: { mimeType: imgRef.mime, data: imgRef.b64 } }] : []).concat({ text: planPrompt(o) });
       let j; try { j = await gapi(`models/${tm}:generateContent`, { contents: [{ parts }], generationConfig: { responseMimeType: 'application/json' } }); } catch (e) { if (e.status !== 400) throw e; j = await gapi(`models/${tm}:generateContent`, { contents: [{ parts }] }); }
       const raw = partText(j), a = raw.indexOf('{'), b = raw.lastIndexOf('}');
@@ -466,7 +652,9 @@ Items: ${JSON.stringify(items)}`;
         clips.forEach(c => { const st = pos / rate; pcm.set(c.pcm.length && c.rate === rate ? c.pcm : c.pcm, pos); pos += c.pcm.length + Math.round(gap * rate); marks.push([st, pos / rate]); });
         const buf = AC.createBuffer(1, total, rate); buf.copyToChannel(pcm, 0);
         step('voice', 'done', `${Math.round(total / rate)} ثانية`);
-        return { buf, wav: wavBlob(pcm, rate), info: { duration: total / rate, marks } };
+        const env = []; const win = Math.round(rate * .04); let mx = 1e-6;
+        for (let k = 0; k < total; k += win) { let q = 0; const e2 = Math.min(total, k + win); for (let m = k; m < e2; m += 4) q += pcm[m] * pcm[m]; const v = Math.sqrt(q / Math.max(1, (e2 - k) / 4)); env.push(v); mx = Math.max(mx, v); }
+        return { buf, wav: wavBlob(pcm, rate), info: { duration: total / rate, marks }, env: env.map(v => +(v / mx).toFixed(2)) };
       })().catch(e => { step('voice', 'fail', 'بدون صوت'); msg('sMsg', `⚠️ الصوت: ${esc(e.message)} — كملت بالموسيقى فقط.`, 'warn'); return null; });
       const picsJob = (async () => {
         if (style !== 'pictures') { step('pics', 'done', 'موشن جرافيك'); return []; }
@@ -489,12 +677,15 @@ Items: ${JSON.stringify(items)}`;
       await fontsReady;
       PICS = pics;
       PROJ = { id: 's' + Date.now().toString(36), created: Date.now(), title: PLAN.title || { ar: '', en: '' }, plan: PLAN, textMode: o.textMode, credit: $('sCredit').value.trim(),
-        music: musicChoice(), voiceInfo: VOICE ? VOICE.info : null, settings: Object.assign(formValues(), { idea: $('sIdea').value }) };
+        music: musicChoice(), voiceInfo: VOICE ? VOICE.info : null, settings: Object.assign(formValues(), { idea: $('sIdea').value }),
+        presenter: style === 'motion' ? Object.assign({}, PLAN.presenter || {}, { gender: gender === 'male' ? 'male' : 'female' }) : null, voiceEnv: VOICE ? VOICE.env : null };
       buildVideo();
       step('video', 'done', fmt(eng.DUR));
       await saveProject();
+      await finishJob(true);
       if ($('sAuto').checked) await record(AC); else { step('rec', '', 'اضغط «نزّل الفيديو»'); try { AC.close(); } catch (e) {} }
     } catch (err) {
+      await finishJob(false);
       msg('sMsg', `⚠️ ${esc(err.message)}`, 'warn'); ['plan', 'voice', 'pics', 'video'].forEach(k => { const li = document.querySelector(`#sSteps li[data-k="${k}"]`); if (li.classList.contains('doing')) step(k, 'fail'); });
     } finally { go.disabled = false; go.innerHTML = oldTxt; }
   };

@@ -640,7 +640,7 @@ function planWorkout(S) {
     const m = MOVES[x.move] || MOVES.stretch, ts = st0 + .45, a = ts + 1.35;
     const hold = x.hold || m.type === 'hold';
     const n = hold ? 1 : Math.max(3, Math.min(8, Math.round(6.5 / m.rep)));
-    const dur = hold ? 7 : Math.max(6.5, n * m.rep);
+    const dur = Math.max(hold ? 7 : Math.max(6.5, n * m.rep), S.voiceDur && S.voiceDur[k] ? S.voiceDur[k] + .4 : 0);
     const end = a + dur + .7;
     T.steps.push(Object.assign({}, S.steps[k], { n: k, ts, te: ts + .8, end, a, dur, reps: n, hold, move: x.move }));
     st0 = end;
@@ -670,7 +670,7 @@ function planCards(S) {
   T.steps = []; let st0 = g0 - .35;
   S.steps.forEach((x, k) => {
     const ts = st0 + .45, a = ts + 1.35, words = (x.capAr + ' ' + x.ar).split(/\s+/).length;
-    const dur = Math.max(4.6, Math.min(8.5, 3.2 + words * .32));
+    const dur = Math.max(Math.max(4.6, Math.min(8.5, 3.2 + words * .32)), S.voiceDur && S.voiceDur[k] ? S.voiceDur[k] + .4 : 0);
     const end = a + dur + .5;
     T.steps.push(Object.assign({}, x, { n: k, ts, te: ts + .8, end, a, dur }));
     st0 = end;
@@ -741,6 +741,7 @@ function normalize(s) {
     steps,
     tools: (Array.isArray(s.tools) ? s.tools : []).slice(0, 6).map(x => ({ ar: str(x.ar || x), en: str(x.en), kind: TOOL_KINDS.includes(x.kind) ? x.kind : 'other', box: Array.isArray(x.box) ? x.box.map(Number) : null })),
     mode: ['auto', 'cards', 'cartoon'].includes(s.mode) ? s.mode : 'auto', animatable: s.animatable !== false,
+    voiceDur: Array.isArray(s.voiceDur) ? s.voiceDur.map(v => +v || 0) : null,
     benefits: (Array.isArray(s.benefits) ? s.benefits : []).slice(0, 5).map(x => ({ ar: str(x.ar || x), en: str(x.en), icon: BEN_ICONS.includes(x.icon) ? x.icon : 'star' })),
   };
 }
@@ -884,8 +885,8 @@ function plan(S) {
       case 'oneleg': e = oneleg(a); break;
     }
     if (k === S.steps.length - 1 && st.action !== 'repeat') { if (crouched) e = stand(e, 1.2, true); e = celebrate(e + .2); }
-    const end = Math.max(e + .6, ts + 4.5);
-    T.steps.push(Object.assign({}, st, { n: k, ts, te: ts + .8, end }));
+    const end = Math.max(e + .6, ts + 4.5, S.voiceDur && S.voiceDur[k] ? a + S.voiceDur[k] + .6 : 0);
+    T.steps.push(Object.assign({}, st, { n: k, ts, te: ts + .8, end, a }));
     st0 = end;
   });
   C.cam.to(st0 - 1.4, st0 - .4, CAM.wide);
@@ -934,7 +935,8 @@ function normExplainer(s) {
   const textMode = ['ar', 'bi', 'none'].includes(s.textMode) ? s.textMode : 'bi';
   if (textMode === 'ar') scenes.forEach(x => { x.headingEn = ''; x.textEn = ''; x.items.forEach(i => { i.en = ''; }); });
   if (!scenes.length) scenes.push({ type: 'title', emoji: '✨', heading: str(s.title && s.title.ar) || 'عنوان', headingEn: '', text: '', textEn: '', number: '', say: '', items: [] });
-  return { kind: 'explainer', music: s.music || {}, title: pair(s.title), credit: str(s.credit), scenes, textMode, voice: s.voice && isFinite(s.voice.duration) ? s.voice : null };
+  const presenter = s.presenter ? normChar(Object.assign({ age: 'adult', sleeves: 'long' }, s.presenter), 'helper') : null;
+  return { kind: 'explainer', presenter, music: s.music || {}, title: pair(s.title), credit: str(s.credit), scenes, textMode, voice: s.voice && isFinite(s.voice.duration) ? s.voice : null };
 }
 // scene timing: by reading length, or snapped to the pauses of the recorded voice
 function planExplainer(X) {
@@ -996,6 +998,21 @@ function createExplainer(canvas, spec) {
   const burst = makeBurst(shapes, 41, 160, { power: 1300, spread: 170, w: 600 }), rain = makeBurst(shapes, 43, 120, { dir: 90, power: 200, spread: 40, w: 1900 });
   const AR_N = ['١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
   const toArabicDigits = s => String(s).replace(/\d/g, d => AR_N[+d - 1] || '٠');
+  // talking presenter: mouth follows the voice loudness, points at the content when a scene starts
+  const PRES = X.presenter ? (() => { const g = el('g'), o = personOpts(X.presenter); return { g, o, p: makePerson(g, o) }; })() : null;
+  const env = X.voice && Array.isArray(X.voice.env) ? X.voice.env : null;
+  const talk = t => { if (!env) return 0; const i = Math.floor(t * 25); return clamp(((env[i] || 0) * .6 + (env[i - 1] || 0) * .4) * 1.5); };
+  function presenter(t, s, mode) {
+    if (!PRES) return;
+    const lt = s ? t - s.a : 0, x = mode === 'outro' ? 250 : 255, y = 1060, sc = .95;
+    ctx.save(); ctx.globalAlpha = .55; const sp = ctx.createRadialGradient(x, y - 10, 10, x, y - 10, 240); sp.addColorStop(0, 'rgba(255,255,255,.9)'); sp.addColorStop(1, 'rgba(255,255,255,0)'); ctx.fillStyle = sp; ctx.fillRect(x - 260, y - 260, 520, 300); ctx.restore();
+    let ra = [12, -8], la = [-12, 8], look = [0, 0], lean = Math.sin(t * .9) * 2;
+    if (mode === 'outro') { const k = P(t - T.outro[0], .2, .6); ra = [lerp(12, 160 + Math.sin(t * 10) * 8, k), 10]; la = [lerp(-12, -160 - Math.sin(t * 10) * 8, k), -10]; }
+    else if (s && s.n === 0 && lt < 2.6) { const k = P(lt, .2, .5) * (1 - P(lt, 2.2, 2.6)); la = [lerp(-12, -150 + Math.sin(t * 12) * 20, k), lerp(8, -25, k)]; }
+    else { const k = E.io(P(lt, .3, .8)) * (1 - E.io(P(lt, 2.2, 2.8))); if (k > 0) { ra = { t: [x + 330, y - 520], b: 1, mix: k }; look = [1, -.3]; } else if (Math.sin(t * .7 + 1) > .85) ra = [40, -70]; }
+    PRES.p.update({ x, y: y - Math.abs(Math.sin(t * 2)) * 3, s: sc, t, ra, la, look, lean, mouth: talk(t), tilt: Math.sin(t * .8) * 3, pony: Math.sin(t * 2) * 4 });
+    drawNode(ctx, PRES.g, 1);
+  }
   function bubble(x, y, r, col, emo, k, rot = 0) {
     if (k <= 0) return; ctx.save(); ctx.translate(x, y); ctx.scale(k, k); ctx.rotate(rot * D2R);
     ctx.fillStyle = 'rgba(0,0,0,.12)'; ctx.beginPath(); ctx.arc(0, r * .08, r, 0, TAU); ctx.fill();
@@ -1027,6 +1044,7 @@ function createExplainer(canvas, spec) {
     fl.forEach(f => { const x = ((f.x + f.vx * t) % 2100 + 2100) % 2100 - 90, y = ((f.y + f.vy * t + Math.sin(t + f.ph) * 20) % 1250 + 1250) % 1250 - 85; f.g.setAttribute('transform', `translate(${x} ${y}) rotate(${f.vr * t})`); const n0 = f.g.children[0]; n0.setAttribute(n0.getAttribute('fill') === 'none' ? 'stroke' : 'fill', col); });
     drawNode(ctx, shapes, 1);
     ctx.save(); ctx.globalAlpha = out; ctx.translate(960, 540); ctx.scale(.96 + .04 * out, .96 + .04 * out); ctx.translate(-960, -540);
+    if (PRES && !s.img) { ctx.translate(1160, 540); ctx.scale(.79, .79); ctx.translate(-960, -540); }
     const rev = j => P(lt, .5 + j * Math.min(1.2, d * .55 / Math.max(1, s.items.length)), .5 + j * Math.min(1.2, d * .55 / Math.max(1, s.items.length)) + .45);
     const bob = Math.sin(t * 2.2) * 8;
     if (s.img) {
@@ -1108,6 +1126,7 @@ function createExplainer(canvas, spec) {
       textBlock(s, 960, 820 + (s.headingEn ? 40 : 0), 1400, P(lt, .9, 1.7), 'center', 2);
     }
     ctx.restore();
+    presenter(t, s, 'scene');
     // progress bar
     ctx.fillStyle = 'rgba(0,0,0,.08)'; ctx.fillRect(0, 1068, 1920, 12); ctx.fillStyle = col; ctx.fillRect(1920 * (1 - t / T.outro[0]), 1068, 1920 * t / T.outro[0], 12);
   }
@@ -1116,8 +1135,9 @@ function createExplainer(canvas, spec) {
     const g = ctx.createLinearGradient(0, 0, 0, 1080); g.addColorStop(0, '#9fd8ff'); g.addColorStop(1, '#fff3e0'); ctx.fillStyle = g; ctx.fillRect(0, 0, 1920, 1080);
     fl.forEach(f => { const x = ((f.x + f.vx * t) % 2100 + 2100) % 2100 - 90, y = ((f.y + f.vy * t + Math.sin(t + f.ph) * 20) % 1250 + 1250) % 1250 - 85; f.g.setAttribute('transform', `translate(${x} ${y}) rotate(${f.vr * t})`); });
     burst.update(t, o + .2, 960, 420, 2.4); rain.update(t, o + .4, 960, -60, 3.5); drawNode(ctx, shapes, 1);
+    presenter(t, null, 'outro');
     const k = E.back(P(lt, .1, .6));
-    if (k > 0) { ctx.save(); ctx.translate(960, 420); ctx.scale(k, k); box(ctx, -760, -170, 1520, 340, 80, '#d7efff', '#fff', 8, 18);
+    if (k > 0) { ctx.save(); ctx.translate(PRES ? 1130 : 960, 420); ctx.scale(k * (PRES ? .82 : 1), k * (PRES ? .82 : 1)); box(ctx, -760, -170, 1520, 340, 80, '#d7efff', '#fff', 8, 18);
       const f = fitWrap(ctx, X.title.ar || X.scenes[0].heading, 1380, 2, 150, 60); lines(f.lines, 0, X.title.en ? -20 - (f.lines.length - 1) * f.size * .5 : -(f.lines.length - 1) * f.size * .55, f.size, C.navy, 'center', 1.1);
       if (X.title.en) text(ctx, X.title.en, 0, 110, { size: 58, w: 800, color: C.orange, maxW: 1380 }); ctx.restore(); }
     const ck = X.credit ? E.back(P(lt, 1, 1.5)) : 0;
@@ -1771,7 +1791,7 @@ function create(canvas, spec) {
     if (sc !== 'gym') { const v = ctx.createRadialGradient(960, 540, 600, 960, 540, 1150); v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, 'rgba(0,0,0,.2)'); ctx.fillStyle = v; ctx.fillRect(0, 0, 1920, 1080); }
     renderOverlays(t);
   }
-  return { DUR: T.DUR, T, S, render, mode: CARDS ? 'cards' : WK ? 'workout' : 'activity', music: () => synthMusic(T) };
+  return { DUR: T.DUR, T, S, render, mode: CARDS ? 'cards' : WK ? 'workout' : 'activity', music: () => synthMusic(T, 32000, spec.music || {}) };
 }
 
 // ───────────── original background music (120 BPM, C–G–Am–F) + sound effects ─────────────
