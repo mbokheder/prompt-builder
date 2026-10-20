@@ -953,7 +953,7 @@ Pictures (shown big and professional instead of an emoji, on "title" scenes and 
       hStore(hLoad().filter(i => i.id !== x.id)); IDB.del('voice:' + x.id); IDB.del('input:' + x.id); IDB.del('logo:' + x.id); for (let i = 0; i < 8; i++) IDB.del('pic:' + x.id + ':' + i); for (let i = 0; i < (x.nPimg || 0); i++) IDB.del('ppic:' + x.id + ':' + i); hRender(); }
   });
   // ── new idea: clear everything except the settings and the key ──
-  function clearPreview() { eng = null; music = null; previewSize(); cv.getContext('2d').clearRect(0, 0, cv.width, cv.height); $('sEmpty').classList.remove('hidden'); $('sTime').textContent = '0:00 / 0:00'; $('sSeek').value = 0; $('sScript').classList.add('hidden'); $('sWav').classList.add('hidden'); $('sReMusic').classList.add('hidden'); msg('sRecMsg', ''); ['plan', 'voice', 'pics', 'video', 'rec'].forEach(k => step(k, '')); }
+  function clearPreview() { eng = null; music = null; previewSize(); { const c2 = cv.getContext('2d'); c2.setTransform(1, 0, 0, 1, 0, 0); c2.globalAlpha = 1; c2.clearRect(0, 0, cv.width, cv.height); } $('sEmpty').classList.remove('hidden'); $('sTime').textContent = '0:00 / 0:00'; $('sSeek').value = 0; $('sScript').classList.add('hidden'); $('sWav').classList.add('hidden'); $('sReMusic').classList.add('hidden'); msg('sRecMsg', ''); ['plan', 'voice', 'pics', 'video', 'rec'].forEach(k => step(k, '')); }
   $('sClear').onclick = () => {
     if (($('sIdea').value.trim() || PROJ) && !confirm('تبدأ فكرة جديدة؟ (الفيديو الحالي محفوظ في السجل)')) return;
     stopPlay(); clearPreview(); PROJ = null; PLAN = null; VOICE = null; PICS = []; PICBLOBS = [];
