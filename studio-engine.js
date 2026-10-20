@@ -1272,7 +1272,7 @@ const hsla = (h, s, l, a = 1) => `hsla(${Math.round(((h % 360) + 360) % 360)},${
 const pWords = s => str(s).replace(/\*/g, ' ').split(/\s+/).filter(Boolean);
 function normPromo(s) {
   const its = a => (Array.isArray(a) ? a : []).map(i => typeof i === 'string' ? { text: i } : (i || {}))
-    .map(i => ({ emoji: str(i.emoji).slice(0, 8), img: i.img || null, cut: !!i.cut, text: str(i.text), en: str(i.en), visual: PVIS.includes(i.visual) ? i.visual : '' })).filter(i => i.text || i.emoji || i.img);
+    .map(i => ({ emoji: str(i.emoji).slice(0, 8), img: i.img || null, cut: !!i.cut, vd: isFinite(i.vd) ? +i.vd : 0, text: str(i.text), en: str(i.en), visual: PVIS.includes(i.visual) ? i.visual : '' })).filter(i => i.text || i.emoji || i.img);
   const b = s.brand || {};
   const brand = { name: str(b.name), tagline: str(b.tagline), url: str(b.url).replace(/^https?:\/\//i, '').replace(/\/$/, ''), phone: str(b.phone), color: /^#[0-9a-f]{6}$/i.test(str(b.color)) ? str(b.color) : '#ff6a13', logo: b.logo || null };
   const title = pair(s.title);
@@ -1308,9 +1308,9 @@ function planPromo(X) {
     if (x.type === 'logo') { s.hit = 2.0; s.tw = 2.9; s.tag = 2.9 + nW * .35 + .25; nat = Math.max(6, s.tag + 2.2); s.vAt = 2.5; }
     else if (x.type === 'title') { s.tw = .35; s.sub = .35 + nW * .28 + .3; nat = Math.max(4.5, s.sub + 2); s.vAt = .45; }
     else if (x.type === 'typing') { s.ty = Math.max(1.2, Math.min(2.6, [...x.text].length * .085)); s.click = 1.0 + s.ty + 1.0; nat = s.click + 1.6; s.vAt = .45; }
-    else if (x.type === 'checklist') { s.step = 2.3; nat = .4 + x.items.length * 2.3 + .8; s.vAt = .45; }
+    else if (x.type === 'checklist') { s.step = Math.max(2.3, ...x.items.map(i => i.vd + .8)); nat = .4 + x.items.length * s.step + .8; s.vAt = .45; }
     else if (x.type === 'cards') { s.cT = .5 + x.items.length * .35 + .6; nat = Math.max(5.5, s.cT + x.chips.length * .35 + 1.8); s.vAt = .45; }
-    else if (x.type === 'showcase') { s.seg = 2.6; nat = .2 + x.items.length * 2.6 + .3; s.vAt = .45; }
+    else if (x.type === 'showcase') { s.seg = Math.max(2.6, ...x.items.map(i => i.vd + .9)); nat = .2 + x.items.length * s.seg + .3; s.vAt = .45; }
     else if (x.type === 'chips') { s.tw = .3; s.cT = .3 + nW * .25 + .35; nat = Math.max(4.5, s.cT + x.items.length * .35 + 1.6); s.vAt = .45; }
     else if (x.type === 'phone') { s.icon = 1.2; s.tap = 2.6; nat = 4.6; s.vAt = .45; }
     else { nat = 6.5; s.vAt = 1.0; }

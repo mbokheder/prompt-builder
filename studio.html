@@ -495,7 +495,7 @@ Rules:
 Client idea: """${o.idea}"""
 Brand / business name: ${brand.name ? '"' + brand.name + '"' : '(not given: infer a short name from the idea, or the product name)'}.${brand.url ? ' Website: ' + brand.url + '.' : ''}${brand.phone ? ' Phone / WhatsApp: ' + brand.phone + '.' : ''}${o.img ? '\nThe attached picture belongs to this (a product, a logo, a flyer…). Use what it shows.' : ''}
 The video is built from a fixed kit of animated scenes. Reply with ONLY a JSON object, no code fences, in exactly this shape:
-{"brand":{"name":"","tagline":""},"title":{"ar":"","en":""},"scenes":[{"type":"","emoji":"","pic":0,"draw":"","heading":"","headingEn":"","text":"","textEn":"","label":"","button":"","items":[{"emoji":"","pic":0,"draw":"","text":"","en":"","visual":""}],"chips":[{"emoji":"","text":"","en":""}],"narration":""}]}
+{"brand":{"name":"","tagline":""},"title":{"ar":"","en":""},"scenes":[{"type":"","emoji":"","pic":0,"draw":"","heading":"","headingEn":"","text":"","textEn":"","label":"","button":"","items":[{"emoji":"","pic":0,"draw":"","text":"","en":"","visual":"","narration":""}],"chips":[{"emoji":"","text":"","en":""}],"narration":""}]}
 Scene types:
 - "logo": FIRST scene, the logo reveal. heading = brand name, text = a short tagline (at most 6 words).
 - "title": a bold kinetic headline (at most 6 words), one emoji, text = one short supporting line (at most 12 words).
@@ -510,7 +510,7 @@ Rules:
 - ${count} scenes in total, starting with "logo" and ending with "outro". Use each middle type at most once; pick the ones that sell this idea best ("typing" and "phone" only when they make sense).
 - In every heading wrap the ONE or TWO most important words in *asterisks* (they are shown in the brand colour), for example "عندك *فكرة*؟ اكتبها بس".
 - On-screen text in ${en ? 'English' : 'Arabic (' + o.lang + ')'}: punchy, simple, persuasive. ${o.noEmoji ? 'NO emoji anywhere: leave every "emoji" field "" and never put an emoji in any text, heading, label or button. The look must be premium and photographic.' : 'Emojis only in the emoji fields, button labels and at the end of a heading.'}
-- narration: ${o.voice ? `what the voice-over says in that scene, natural ${o.lang}, 6 to 18 words, an energetic friendly ad voice. ONLY the exact spoken words: no tone notes, no brackets, no speaker labels.${en ? '' : ' Arabic letters only: write foreign words and brands the way Arabic speakers say them.'}` : 'leave it "" (music only).'}
+- narration: ${o.voice ? `what the voice-over says in that scene, natural ${o.lang}, 6 to 18 words, an energetic friendly ad voice. In "showcase" and "checklist" scenes the voice must follow the pictures: leave the scene narration "" and give EACH item its own "narration" (3 to 10 words) about that item only, said while it is on screen, in the same order. ONLY the exact spoken words: no tone notes, no brackets, no speaker labels.${en ? '' : ' Arabic letters only: write foreign words and brands the way Arabic speakers say them.'}` : 'leave it "" (music only).'}
 - ${o.textMode === 'bi' ? 'Fill headingEn, textEn and items[].en with short simple English.' : 'Leave every English field empty.'}
 Pictures (shown big and professional instead of an emoji, on "title" scenes and on "showcase", "cards" and "checklist" items):
 - ${o.pics && o.pics.length ? `The client attached ${o.pics.length} numbered picture(s), in order, each after its label: ${o.pics.map((t, i) => `Picture ${i + 1}${t ? ' = "' + t + '"' : ''}`).join('; ')}. The idea may name them by number ("صورة 1", "الصورة الثانية") or by name. Set "pic" to the picture number on every title scene / showcase / card / checklist item that shows that thing (one showcase item per product when there are several), and use every picture at least once when it fits. pic = 0 otherwise.` : 'No pictures were attached: pic = 0 everywhere.'}
@@ -1140,12 +1140,17 @@ Items: ${JSON.stringify(items)}`;
       msg('sMsg', `ℹ️ ${e.message === 'بدون مفتاح' ? 'ما فيه مفتاح Gemini' : 'ما قدرت أوصل لـ Gemini (' + esc(e.message) + ')'}، فسويت الإعلان من قالب جاهز بنفس الحركة والمؤثرات.`);
     }
     if (o.scenes) plan.scenes = plan.scenes.slice(0, Math.max(o.scenes, 2));
-    const N0 = plan.scenes.map(x => String(x.narration || '').trim());
+    // showcase / checklist: one voice line per item, said while that item is on screen (a scene intro joins the first item)
+    plan.scenes.forEach(x => { const its = Array.isArray(x.items) ? x.items : [];
+      if (['showcase', 'checklist'].includes(x.type) && its.some(i => i && String(i.narration || '').trim())) { const intro = String(x.narration || '').trim(); if (intro && its[0]) its[0].narration = (intro + ' ' + String(its[0].narration || '')).trim(); x.narration = ''; }
+      else its.forEach(i => { if (i) i.narration = ''; }); });
+    const LINES = []; plan.scenes.forEach((x, k) => { LINES.push({ x, k, t: String(x.narration || '').trim() }); if (['showcase', 'checklist'].includes(x.type)) (x.items || []).forEach((it, j) => { if (it && String(it.narration || '').trim()) LINES.push({ x: it, k, j, t: String(it.narration).trim(), item: true }); }); });
+    const N0 = LINES.map(l => l.t);
     let narr = N0.slice();
     if (!offline && gender !== 'none' && N0.some(Boolean)) { step('plan', 'doing', 'أراجع النص المنطوق…'); narr = await cleanNarr(tm, N0, o.lang); }
-    plan.scenes.forEach((x, i) => { x.narration = narr[i] || ''; });
+    LINES.forEach((l, i) => { l.x.narration = narr[i] || ''; });
     step('plan', 'done', `${plan.scenes.length} مشاهد${offline ? ' · قالب' : ''}`);
-    // voice: one clip per scene
+    // voice: one clip per scene line and per item line
     let clips = null;
     if (gender === 'none' || offline || !narr.some(Boolean)) step('voice', 'done', 'موسيقى فقط');
     else {
@@ -1155,6 +1160,7 @@ Items: ${JSON.stringify(items)}`;
         step('voice', 'done', '');
       } catch (e) { clips = null; step('voice', 'fail', 'بدون صوت'); msg('sMsg', `⚠️ الصوت: ${esc(e.message)} — كملت بالموسيقى فقط.`, 'warn'); }
     }
+    LINES.forEach((l, i) => { if (l.item) l.x.vd = clips ? clips[i].pcm.length / clips[i].rate : 0; });
     const pimgs = await promoPics(plan, pics, !offline && o.draw);
     step('video', 'doing'); await fontsReady;
     const pb = plan.brand || {};
@@ -1162,12 +1168,14 @@ Items: ${JSON.stringify(items)}`;
     PICS = []; PICBLOBS = [];
     PROJ = { kind: 'promo', id: 's' + Date.now().toString(36), created: Date.now(), title: { ar: brand.name || pb.name || PLAN.title.ar, en: (plan.title && plan.title.en) || '' }, plan: PLAN, aspect: $('pAspect').value,
       brand: { name: brand.name || pb.name || '', tagline: pb.tagline || '', color: brand.color, url: brand.url, phone: brand.phone }, logoIm: LOGO ? LOGO.im : null, logoBlob: LOGO ? LOGO.blob : null, pimgs, nPimg: pimgs.length,
-      textMode: o.textMode, noEmoji: o.noEmoji, credit: $('sCredit').value.trim(), music: musicChoice(), voiceDur: clips ? clips.map(c => c.pcm.length / c.rate) : null, settings: Object.assign(formValues(), { idea: $('sIdea').value }) };
+      textMode: o.textMode, noEmoji: o.noEmoji, credit: $('sCredit').value.trim(), music: musicChoice(), voiceDur: clips ? plan.scenes.map((x, k) => { const i = LINES.findIndex(l => !l.item && l.k === k); return i < 0 ? 0 : clips[i].pcm.length / clips[i].rate; }) : null, settings: Object.assign(formValues(), { idea: $('sIdea').value }) };
     eng = VideoEngine.create(cv, promoSpec());
     VOICE = null;
     if (clips) {    // each clip where its scene starts speaking
       const T = eng.T, rate = (clips.find(c => c.pcm.length) || { rate: 24000 }).rate, total = Math.ceil(T.DUR * rate), pcm = new Float32Array(total), at = T.scenes.map(s => s.a + s.vAt);
-      clips.forEach((c, i) => { const p = Math.round((at[i] || 0) * rate); if (c.pcm.length && p < total) pcm.set(c.pcm.subarray(0, Math.max(0, total - p)), p); });
+      // an item line starts when its picture / step comes on screen
+      const lineAt = LINES.map(l => { const sc = T.scenes[l.k]; if (!sc) return 0; if (!l.item) return sc.a + sc.vAt; return sc.type === 'showcase' ? sc.a + .2 + l.j * sc.seg + .3 : sc.a + .4 + l.j * sc.step + .35; });
+      clips.forEach((c, i) => { const p = Math.round((lineAt[i] || 0) * rate); if (c.pcm.length && p < total) pcm.set(c.pcm.subarray(0, Math.max(0, total - p)), p); });
       const buf = AC.createBuffer(1, total, rate); buf.copyToChannel(pcm, 0);
       VOICE = { buf, wav: wavBlob(pcm, rate), info: { duration: total / rate, at, durs: PROJ.voiceDur } }; PROJ.voiceInfo = VOICE.info;
     }
