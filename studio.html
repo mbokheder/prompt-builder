@@ -165,7 +165,8 @@
   .pPic img{width:100%;height:96px;object-fit:contain;border-radius:10px;display:block;background:repeating-conic-gradient(#ccd 0 25%,#fff 0 50%) 0 0/14px 14px}
   .pPic .n{position:absolute;top:4px;right:4px;background:var(--orange);color:#fff;font-weight:900;border-radius:999px;min-width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:15px}
   .pPic .x{position:absolute;top:4px;left:4px;border:0;background:rgba(0,0,0,.55);color:#fff;border-radius:999px;width:28px;height:28px;cursor:pointer;padding:0}
-  .pPic input{margin-top:6px;font-size:14px;padding:6px 8px}
+  .pPic input[type=text]{margin-top:6px;font-size:14px;padding:6px 8px}
+  .pPic label{display:flex;gap:6px;align-items:center;font-weight:400;font-size:13px;margin:6px 0 0;color:var(--muted)}
   input[type=color]{width:64px;height:46px;border:2px solid var(--line);border-radius:12px;padding:3px;background:var(--field);cursor:pointer}
   .vStage.vert{aspect-ratio:9/16;max-height:72vh;margin:0 auto}
   .acct.pulse{animation:pulse 1s ease 3}@keyframes pulse{50%{box-shadow:0 0 0 6px rgba(255,122,26,.45);border-color:var(--orange)}}
@@ -214,9 +215,10 @@
         <div id="pLogoDrop" class="drop" tabindex="0" role="button"><input type="file" id="pLogo" accept="image/*" hidden><div id="pLogoTxt">🏷️ اسحب شعارك أو <u>اضغط للاختيار</u></div><img id="pLogoPrev" class="hidden" alt=""><button type="button" id="pLogoDel" class="ghost small hidden">إزالة الشعار</button></div>
         <label style="font-weight:400;display:flex;gap:8px;align-items:center;margin-top:8px"><input type="checkbox" id="pWhite" checked> شيل الخلفية البيضاء من الشعار تلقائيًا</label>
         <label style="margin-top:12px">📸 صور المنتجات أو الخدمات <small>(اختياري — لين 8 صور)</small></label>
-        <p class="where" style="margin:0 0 6px;font-size:13px">كل صورة تاخذ رقم، واكتب تحتها اسمها (مثلًا: رمان منعش). وفي الفكرة تقدر تكتب «صورة 1 …» أو اسمها، والإعلان يعرض صورك الحقيقية بدل الرموز.</p>
+        <p class="where" style="margin:0 0 6px;font-size:13px">كل صورة تاخذ رقم، واكتب تحتها اسمها (مثلًا: رمان منعش). الصورة تنعرض بخلفيتها، إلا إذا اخترت «شيل الخلفية البيضاء» لها. وفي الفكرة تقدر تكتب «صورة 1 …» أو اسمها، والإعلان يعرض صورك الحقيقية بدل الرموز.</p>
         <div id="pPicsDrop" class="drop" tabindex="0" role="button"><input type="file" id="pPics" accept="image/*" multiple hidden>📸 اسحب الصور أو <u>اضغط للاختيار</u></div>
         <div id="pPicsList" class="pPics"></div>
+        <label style="font-weight:400;display:flex;gap:8px;align-items:center;margin-top:10px"><input type="checkbox" id="pNoEmoji" checked> بدون رموز تعبيرية (إيموجي) في الإعلان</label>
         <label style="font-weight:400;display:flex;gap:8px;align-items:flex-start;margin-top:10px"><input type="checkbox" id="pDraw" checked style="margin-top:4px"> <span>🎨 ارسم بالذكاء الاصطناعي صور احترافية للمنتجات اللي ما لها صورة (مثل النكهات والأطباق) بدل الرموز التعبيرية <small>(<span class="pc" data-k="pictures">3</span> نقاط بدل نقطة)</small></span></label>
         <div class="row">
           <div><label for="pName">اسم النشاط أو المنتج</label><input type="text" id="pName" placeholder="مثال: مقهى الورد"></div>
@@ -507,12 +509,12 @@ Scene types:
 Rules:
 - ${count} scenes in total, starting with "logo" and ending with "outro". Use each middle type at most once; pick the ones that sell this idea best ("typing" and "phone" only when they make sense).
 - In every heading wrap the ONE or TWO most important words in *asterisks* (they are shown in the brand colour), for example "عندك *فكرة*؟ اكتبها بس".
-- On-screen text in ${en ? 'English' : 'Arabic (' + o.lang + ')'}: punchy, simple, persuasive. Emojis only in the emoji fields, button labels and at the end of a heading.
+- On-screen text in ${en ? 'English' : 'Arabic (' + o.lang + ')'}: punchy, simple, persuasive. ${o.noEmoji ? 'NO emoji anywhere: leave every "emoji" field "" and never put an emoji in any text, heading, label or button. The look must be premium and photographic.' : 'Emojis only in the emoji fields, button labels and at the end of a heading.'}
 - narration: ${o.voice ? `what the voice-over says in that scene, natural ${o.lang}, 6 to 18 words, an energetic friendly ad voice. ONLY the exact spoken words: no tone notes, no brackets, no speaker labels.${en ? '' : ' Arabic letters only: write foreign words and brands the way Arabic speakers say them.'}` : 'leave it "" (music only).'}
 - ${o.textMode === 'bi' ? 'Fill headingEn, textEn and items[].en with short simple English.' : 'Leave every English field empty.'}
 Pictures (shown big and professional instead of an emoji, on "title" scenes and on "showcase", "cards" and "checklist" items):
 - ${o.pics && o.pics.length ? `The client attached ${o.pics.length} numbered picture(s), in order, each after its label: ${o.pics.map((t, i) => `Picture ${i + 1}${t ? ' = "' + t + '"' : ''}`).join('; ')}. The idea may name them by number ("صورة 1", "الصورة الثانية") or by name. Set "pic" to the picture number on every title scene / showcase / card / checklist item that shows that thing (one showcase item per product when there are several), and use every picture at least once when it fits. pic = 0 otherwise.` : 'No pictures were attached: pic = 0 everywhere.'}
-- ${o.draw ? 'For every title scene, showcase, card or checklist item that shows a concrete thing (a product, a flavour, a dish, a drink, a device, a place…) and has no attached picture, write "draw": an English description of an immersive, real advertising PHOTOGRAPH of exactly that thing, filling the whole frame with what it is made of or used with: its real ingredients, materials or setting (for example "a tall glass of blueberry juice surrounded by heaps of fresh blueberries with water droplets, a few berries splashing into the juice"). The items of one scene must look like one set (same angle, light and mood). Keep "draw" "" for abstract ideas (speed, quality, price…), where the emoji is better.' : 'Leave every "draw" empty.'}`;
+- ${o.draw ? 'For every title scene, showcase, card or checklist item that shows a concrete thing (a product, a flavour, a dish, a drink, a device, a place…) and has no attached picture, write "draw": an English description of an immersive, real advertising PHOTOGRAPH of exactly that thing, filling the whole frame with what it is made of or used with: its real ingredients, materials or setting (for example "a tall glass of blueberry juice surrounded by heaps of fresh blueberries with water droplets, a few berries splashing into the juice"). The items of one scene must look like one set (same angle, light and mood). Keep "draw" "" for abstract ideas (speed, quality, price…), where the emoji is better.' : 'Leave every "draw" empty.'}${o.noEmoji && o.draw ? '\n- Because there are no emojis, EVERY title scene, showcase item and card needs a picture: an attached "pic" or a "draw". Offers, sizes and prices are concrete too: draw the product in that size (for example "a small cup of strawberry gelato" / "a large waffle cone with three scoops"), with the same style for the whole set. Only checklist steps and chips may stay without a picture.' : ''}`;
   }
   // offline: a good-looking template from the idea alone (no API)
   function promoTemplate(o, brand) {
@@ -551,13 +553,25 @@ Pictures (shown big and professional instead of an emoji, on "title" scenes and 
       .replace(/(^|[.!؟?]\s*)[A-Za-z ,'-]{2,40}(tone|voice|style|cheerful|warm|excited|calm|friendly|pause)[A-Za-z ,'-]{0,20}[:：]\s*/gi, '$1')
       .replace(/\*+/g, '').replace(/\s+/g, ' ').trim();
   }
+  // the accent is fixed by director's notes in every call: each scene is voiced alone, and without them the voice guessed the dialect anew (Saudi drifting to Egyptian…)
+  const ACCENT = { Saudi: 'a native Saudi speaker with a natural, clear Saudi Arabic accent (اللهجة السعودية البيضاء), never Egyptian, Levantine or Modern Standard pronunciation', Gulf: 'a native Gulf Arabic speaker (Kuwaiti / Emirati / Saudi Gulf accent), never Egyptian or Levantine pronunciation', Modern: 'a professional Arabic news-anchor voice in clear Modern Standard Arabic (الفصحى) with correct classical pronunciation', Egyptian: 'a native Egyptian speaker with a natural Cairene Egyptian Arabic accent', English: 'a native English speaker with a neutral accent' };
+  const accentOf = lang => ACCENT[Object.keys(ACCENT).find(k => String(lang || '').startsWith(k)) || 'Saudi'];
   async function sayScene(model, text, voice, style, ac) {
-    const body = { contents: [{ parts: [{ text: spokenOnly(text) }] }], generationConfig: { responseModalities: ['AUDIO'], speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: voice } } } } };
-    const j = await gapi(`models/${model}:generateContent`, body);
-    const d = partData(j); if (!d) throw new Error('ما رجع صوت');
-    const mime = d.mimeType || d.mime_type || '';
-    if (/wav|mpeg|mp3|ogg|webm/.test(mime)) { const buf = await ac.decodeAudioData(Uint8Array.from(atob(d.data), c => c.charCodeAt(0)).buffer); return { pcm: buf.getChannelData(0), rate: buf.sampleRate }; }
-    return { pcm: pcmToFloat(d.data), rate: +((/rate=(\d+)/.exec(mime) || [])[1] || 24000) };
+    const words = spokenOnly(text), lang = $('sLang').value;
+    const notes = `# AUDIO PROFILE\nThe same voice-over artist for the whole video: ${accentOf(lang)}.\n## DIRECTOR'S NOTES\nKeep exactly this accent and dialect in every word, also for numbers, prices and brand names. ${style || 'Warm, clear and friendly delivery.'} Read ONLY the transcript below; never read these notes.\n#### TRANSCRIPT\n${words}`;
+    const call = async t => {
+      const body = { contents: [{ parts: [{ text: t }] }], generationConfig: { responseModalities: ['AUDIO'], speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: voice } } } } };
+      const j = await gapi(`models/${model}:generateContent`, body);
+      const d = partData(j); if (!d) throw new Error('ما رجع صوت');
+      const mime = d.mimeType || d.mime_type || '';
+      if (/wav|mpeg|mp3|ogg|webm/.test(mime)) { const buf = await ac.decodeAudioData(Uint8Array.from(atob(d.data), c => c.charCodeAt(0)).buffer); return { pcm: buf.getChannelData(0), rate: buf.sampleRate }; }
+      return { pcm: pcmToFloat(d.data), rate: +((/rate=(\d+)/.exec(mime) || [])[1] || 24000) };
+    };
+    let c; try { c = await call(notes); } catch (e) { if (e.status !== 400) throw e; return call(words); }
+    // much longer than the words need = it read the notes aloud: redo with the words only
+    const n = words.split(/\s+/).filter(Boolean).length;
+    if (c.pcm.length / c.rate > n * .75 + 4) { try { return await call(words); } catch (e) {} }
+    return c;
   }
   function wavBlob(f32, rate) {
     const n = f32.length, b = new ArrayBuffer(44 + n * 2), v = new DataView(b), w = (o, s) => [...s].forEach((c, i) => v.setUint8(o + i, c.charCodeAt(0)));
@@ -621,7 +635,7 @@ Pictures (shown big and professional instead of an emoji, on "title" scenes and 
       const r = a[i * 4], g = a[i * 4 + 1], b = a[i * 4 + 2], mx = Math.max(r, g, b), mn = Math.min(r, g, b), sat = mx ? (mx - mn) / mx : 0;
       if (a[i * 4 + 3] > 200 && sat > .4 && mx > 70) { let hue = mx === mn ? 0 : mx === r ? (g - b) / (mx - mn) : mx === g ? 2 + (b - r) / (mx - mn) : 4 + (r - g) / (mx - mn); hue = ((hue * 60) + 360) % 360; const k2 = Math.floor(hue / 15); const o = hist[k2] || (hist[k2] = { n: 0, r: 0, g: 0, b: 0 }); o.n += sat; o.r += r * sat; o.g += g * sat; o.b += b * sat; } }
     if (x1 < 0) { x0 = 0; y0 = 0; x1 = w - 1; y1 = h - 1; }
-    const pad = Math.round(Math.max(x1 - x0, y1 - y0) * .03), cw = x1 - x0 + 1 + pad * 2, ch = y1 - y0 + 1 + pad * 2;
+    const pad = transparent || cut > N * .02 ? Math.round(Math.max(x1 - x0, y1 - y0) * .03) : 0, cw = x1 - x0 + 1 + pad * 2, ch = y1 - y0 + 1 + pad * 2;
     const o2 = document.createElement('canvas'); o2.width = cw; o2.height = ch; o2.getContext('2d').drawImage(c, x0 - pad, y0 - pad, cw, ch, 0, 0, cw, ch);
     const best = Object.values(hist).sort((p, q) => q.n - p.n)[0], hex = best ? '#' + [best.r, best.g, best.b].map(v => Math.round(v / best.n).toString(16).padStart(2, '0')).join('') : null;
     const blob = await new Promise(r => o2.toBlob(r, 'image/png')); const im = new Image(); im.src = URL.createObjectURL(blob); await im.decode();
@@ -644,10 +658,10 @@ Pictures (shown big and professional instead of an emoji, on "title" scenes and 
   IDB.get('promo-logo').then(f => { if (f && !LOGO) setLogo(f, false); });
   const brandValues = () => ({ name: $('pName').value.trim(), color: $('pColor').value, url: $('pUrl').value.trim(), phone: $('pPhone').value.trim() });
   // ── 🚀 promo: numbered product pictures with a name each («صورة 1: رمان منعش») ──
-  let PPICS = [];                                    // [{ file, tag, url }]
-  const ppSave = () => IDB.set('promo-pics', PPICS.map(p => ({ file: p.file, tag: p.tag })));
+  let PPICS = [];                                    // [{ file, tag, url, cut }] — cut = remove a white background (only when asked)
+  const ppSave = () => IDB.set('promo-pics', PPICS.map(p => ({ file: p.file, tag: p.tag, cut: !!p.cut })));
   function ppRender() {
-    $('pPicsList').innerHTML = PPICS.map((p, i) => `<div class="pPic"><span class="n">${i + 1}</span><button type="button" class="x" data-i="${i}" title="احذف الصورة">✕</button><img src="${p.url}" alt=""><input type="text" data-i="${i}" value="${esc(p.tag)}" placeholder="اسمها: مثلًا رمان منعش"></div>`).join('');
+    $('pPicsList').innerHTML = PPICS.map((p, i) => `<div class="pPic"><span class="n">${i + 1}</span><button type="button" class="x" data-i="${i}" title="احذف الصورة">✕</button><img src="${p.url}" alt=""><input type="text" data-i="${i}" value="${esc(p.tag)}" placeholder="اسمها: مثلًا رمان منعش"><label><input type="checkbox" data-cut="${i}"${p.cut ? ' checked' : ''}> شيل الخلفية البيضاء</label></div>`).join('');
   }
   function ppAdd(files) {
     const fs = [...(files || [])].filter(f => /^image\//.test(f.type || ''));
@@ -660,10 +674,12 @@ Pictures (shown big and professional instead of an emoji, on "title" scenes and 
   ['dragenter', 'dragover'].forEach(ev => $('pPicsDrop').addEventListener(ev, e => { e.preventDefault(); $('pPicsDrop').classList.add('over'); }));
   ['dragleave', 'drop'].forEach(ev => $('pPicsDrop').addEventListener(ev, e => { e.preventDefault(); $('pPicsDrop').classList.remove('over'); }));
   $('pPicsDrop').addEventListener('drop', e => ppAdd(e.dataTransfer.files));
+  $('pPicsList').addEventListener('change', e => { const i = e.target.dataset.cut; if (i != null && PPICS[i]) { PPICS[i].cut = e.target.checked; ppSave(); } });
   $('pPicsList').addEventListener('input', e => { const i = e.target.dataset.i; if (i != null && PPICS[i]) { PPICS[i].tag = e.target.value; ppSave(); } });
   $('pPicsList').addEventListener('click', e => { const b = e.target.closest('.x'); if (!b) return; PPICS.splice(+b.dataset.i, 1); ppRender(); ppSave(); });
-  IDB.get('promo-pics').then(a => { if (Array.isArray(a) && !PPICS.length) { PPICS = a.filter(p => p && p.file).slice(0, 8).map(p => ({ file: p.file, tag: p.tag || '', url: URL.createObjectURL(p.file) })); ppRender(); } });
-  try { if (store.get('studio-pdraw') === '0') $('pDraw').checked = false; } catch (e) {}
+  IDB.get('promo-pics').then(a => { if (Array.isArray(a) && !PPICS.length) { PPICS = a.filter(p => p && p.file).slice(0, 8).map(p => ({ file: p.file, tag: p.tag || '', cut: !!p.cut, url: URL.createObjectURL(p.file) })); ppRender(); } });
+  try { if (store.get('studio-pdraw') === '0') $('pDraw').checked = false; if (store.get('studio-pnoemoji') === '0') $('pNoEmoji').checked = false; } catch (e) {}
+  $('pNoEmoji').addEventListener('change', () => store.set('studio-pnoemoji', $('pNoEmoji').checked ? '1' : '0'));
   $('pDraw').addEventListener('change', () => { store.set('studio-pdraw', $('pDraw').checked ? '1' : '0'); costUI(); goLabel(); });
   // a small JPEG for Gemini to look at
   async function smallJpeg(file, max = 768) {
@@ -779,7 +795,7 @@ Pictures (shown big and professional instead of an emoji, on "title" scenes and 
   $('sWav').onclick = () => { if (!VOICE) return; const a = document.createElement('a'); a.href = URL.createObjectURL(VOICE.wav); a.download = ((PLAN && PLAN.title && PLAN.title.ar) || 'صوت') + '.wav'; document.body.appendChild(a); a.click(); a.remove(); };
 
   function formValues() { const o = {}; FIELDS.forEach(f => o[f] = $(f).value); return o; }
-  const promoSpec = (P2 = PROJ) => ({ kind: 'promo', aspect: P2.aspect, brand: Object.assign({}, P2.brand, { logo: P2.logoIm || null }), title: P2.title, credit: P2.credit, textMode: P2.textMode, scenes: withPics(P2.plan.scenes, P2.pimgs), voiceDur: P2.voiceDur, music: P2.music || {} });
+  const promoSpec = (P2 = PROJ) => ({ kind: 'promo', aspect: P2.aspect, brand: Object.assign({}, P2.brand, { logo: P2.logoIm || null }), title: P2.title, credit: P2.credit, textMode: P2.textMode, noEmoji: P2.noEmoji, scenes: withPics(P2.plan.scenes, P2.pimgs), voiceDur: P2.voiceDur, music: P2.music || {} });
   function buildVideo() {
     if (PROJ.kind === 'promo') {
       eng = VideoEngine.create(cv, promoSpec()); previewSize(); music = PROJ.music ? eng.music() : null;
@@ -823,7 +839,7 @@ Pictures (shown big and professional instead of an emoji, on "title" scenes and 
       const o = document.createElement('canvas'); o.width = 384; o.height = 216; o.getContext('2d').drawImage(c, 0, 95, 216, 121.5, 0, 0, 384, 216); return o.toDataURL('image/jpeg', .72); } catch (e) { return ''; } }
     if (PROJ && PROJ.kind === 'cartoon') { try { const c = document.createElement('canvas'); c.width = 384; c.height = 216; const e = VideoEngine.create(c, Object.assign({}, PROJ.card, { media: { image: CARDIMG }, voiceDur: PROJ.voiceDur })); e.render(e.T.steps[0] ? e.T.steps[0].ts + 3 : 4); return c.toDataURL('image/jpeg', .72); } catch (e) { return ''; } }
     try { const c = document.createElement('canvas'); c.width = 384; c.height = 216; const e = VideoEngine.create(c, eng.S && Object.assign({}, { kind: 'explainer', title: PROJ.title, textMode: PROJ.textMode, cinematic: !!PROJ.cinematic, look: PROJ.look || {}, presenter: PROJ.presenter || null, scenes: PROJ.plan.scenes.map((s, i) => Object.assign({}, s, { img: PICS[i] || null })), voice: VOICE ? VOICE.info : null })); const sc = e.T.scenes[Math.min(1, e.T.scenes.length - 1)]; e.render(sc.a + Math.min(2, (sc.b - sc.a) / 2)); return c.toDataURL('image/jpeg', .72); } catch (e) { return ''; } }
-  const meta = () => ({ id: PROJ.id, kind: PROJ.kind || 'explainer', cinematic: PROJ.cinematic, look: PROJ.look, created: PROJ.created, updated: Date.now(), title: PROJ.title, plan: PROJ.plan, card: PROJ.card, narr: PROJ.narr, voiceDur: PROJ.voiceDur, presenter: PROJ.presenter, voiceEnv: PROJ.voiceEnv, textMode: PROJ.textMode, credit: PROJ.credit, music: PROJ.music, voiceInfo: PROJ.voiceInfo, settings: PROJ.settings, brand: PROJ.brand, aspect: PROJ.aspect, nPimg: PROJ.nPimg, pimgCut: PROJ.pimgs ? PROJ.pimgs.map(p => p.cut) : undefined, nPics: PICBLOBS.filter(Boolean).length });
+  const meta = () => ({ id: PROJ.id, kind: PROJ.kind || 'explainer', cinematic: PROJ.cinematic, look: PROJ.look, created: PROJ.created, updated: Date.now(), title: PROJ.title, plan: PROJ.plan, card: PROJ.card, narr: PROJ.narr, voiceDur: PROJ.voiceDur, presenter: PROJ.presenter, voiceEnv: PROJ.voiceEnv, textMode: PROJ.textMode, noEmoji: PROJ.noEmoji, credit: PROJ.credit, music: PROJ.music, voiceInfo: PROJ.voiceInfo, settings: PROJ.settings, brand: PROJ.brand, aspect: PROJ.aspect, nPimg: PROJ.nPimg, pimgCut: PROJ.pimgs ? PROJ.pimgs.map(p => p.cut) : undefined, nPics: PICBLOBS.filter(Boolean).length });
   async function saveProject() {
     if (!PROJ) return;
     if (VOICE) await IDB.set('voice:' + PROJ.id, VOICE.wav);
@@ -845,7 +861,7 @@ Pictures (shown big and professional instead of an emoji, on "title" scenes and 
   async function openProject(id) {
     const x = hLoad().find(i => i.id === id); if (!x) return;
     stopPlay(); clearPreview();
-    PROJ = { id: x.id, kind: x.kind, cinematic: x.cinematic, look: x.look, created: x.created, title: x.title, plan: x.plan, card: x.card, narr: x.narr, voiceDur: x.voiceDur, presenter: x.presenter, voiceEnv: x.voiceEnv, textMode: x.textMode, credit: x.credit, music: x.music, voiceInfo: x.voiceInfo, settings: x.settings, brand: x.brand, aspect: x.aspect };
+    PROJ = { id: x.id, kind: x.kind, cinematic: x.cinematic, look: x.look, created: x.created, title: x.title, plan: x.plan, card: x.card, narr: x.narr, voiceDur: x.voiceDur, presenter: x.presenter, voiceEnv: x.voiceEnv, textMode: x.textMode, noEmoji: x.noEmoji, credit: x.credit, music: x.music, voiceInfo: x.voiceInfo, settings: x.settings, brand: x.brand, aspect: x.aspect };
     if (x.kind === 'promo') { const lb = await IDB.get('logo:' + x.id); if (lb) { const im = new Image(); im.src = URL.createObjectURL(lb); try { await im.decode(); PROJ.logoIm = im; PROJ.logoBlob = lb; } catch (e) {} }
       PROJ.pimgs = []; PROJ.nPimg = x.nPimg || 0;
       for (let i = 0; i < PROJ.nPimg; i++) { const b = await IDB.get('ppic:' + x.id + ':' + i), im = new Image(); if (!b) { PROJ.pimgs[i] = null; continue; } im.src = URL.createObjectURL(b); try { await im.decode(); PROJ.pimgs[i] = { im, blob: b, cut: !!(x.pimgCut && x.pimgCut[i]) }; } catch (e) { PROJ.pimgs[i] = null; } } }
@@ -1082,7 +1098,7 @@ Items: ${JSON.stringify(items)}`;
     for (const sl of slots) {
       const n = parseInt(sl.pic, 10);
       if (n >= 1 && n <= pics.length) {
-        if (byPic[n] == null) { try { const r = await cleanLogo(pics[n - 1].file, true); byPic[n] = pimgs.push({ im: r.im, blob: r.blob, cut: r.cut }) - 1; } catch (e) { byPic[n] = -1; } }
+        if (byPic[n] == null) { try { const r = await cleanLogo(pics[n - 1].file, !!pics[n - 1].cut); byPic[n] = pimgs.push({ im: r.im, blob: r.blob, cut: r.cut }) - 1; } catch (e) { byPic[n] = -1; } }
         if (byPic[n] >= 0) { sl.ix = byPic[n]; continue; }
       }
       const d = String(sl.draw || '').trim(); if (d && draw) (byDraw[d] = byDraw[d] || []).push(sl);
@@ -1108,7 +1124,7 @@ Items: ${JSON.stringify(items)}`;
   // ── 🚀 promo: plan (Gemini or offline template) → optional voice per scene → promo engine ──
   async function runPromo(o, gender, voiceName, imgRef) {
     const brand = brandValues(), pics = PPICS.slice(0, 8); let plan = null, tm = null, offline = false;
-    o = Object.assign({}, o, { pics: pics.map(p => p.tag.trim()), draw: $('pDraw').checked });
+    o = Object.assign({}, o, { pics: pics.map(p => p.tag.trim()), draw: $('pDraw').checked, noEmoji: $('pNoEmoji').checked });
     step('plan', 'doing', 'Gemini يكتب الإعلان…');
     try {
       if (!useProxy() && !validKey(KEY())) throw new Error('بدون مفتاح');
@@ -1135,7 +1151,7 @@ Items: ${JSON.stringify(items)}`;
     else {
       step('voice', 'doing', '…');
       try { const vm = await pick('tts'); if (!vm) throw new Error('ما لقيت موديل صوت (TTS)'); clips = [];
-        for (let i = 0; i < narr.length; i++) { step('voice', 'doing', `${i + 1} / ${narr.length}`); clips.push(narr[i] ? await sayScene(vm, narr[i], voiceName, '', AC) : { pcm: new Float32Array(0), rate: 24000 }); }
+        for (let i = 0; i < narr.length; i++) { step('voice', 'doing', `${i + 1} / ${narr.length}`); clips.push(narr[i] ? await sayScene(vm, narr[i], voiceName, 'Energetic, confident, premium advertising delivery.', AC) : { pcm: new Float32Array(0), rate: 24000 }); }
         step('voice', 'done', '');
       } catch (e) { clips = null; step('voice', 'fail', 'بدون صوت'); msg('sMsg', `⚠️ الصوت: ${esc(e.message)} — كملت بالموسيقى فقط.`, 'warn'); }
     }
@@ -1146,7 +1162,7 @@ Items: ${JSON.stringify(items)}`;
     PICS = []; PICBLOBS = [];
     PROJ = { kind: 'promo', id: 's' + Date.now().toString(36), created: Date.now(), title: { ar: brand.name || pb.name || PLAN.title.ar, en: (plan.title && plan.title.en) || '' }, plan: PLAN, aspect: $('pAspect').value,
       brand: { name: brand.name || pb.name || '', tagline: pb.tagline || '', color: brand.color, url: brand.url, phone: brand.phone }, logoIm: LOGO ? LOGO.im : null, logoBlob: LOGO ? LOGO.blob : null, pimgs, nPimg: pimgs.length,
-      textMode: o.textMode, credit: $('sCredit').value.trim(), music: musicChoice(), voiceDur: clips ? clips.map(c => c.pcm.length / c.rate) : null, settings: Object.assign(formValues(), { idea: $('sIdea').value }) };
+      textMode: o.textMode, noEmoji: o.noEmoji, credit: $('sCredit').value.trim(), music: musicChoice(), voiceDur: clips ? clips.map(c => c.pcm.length / c.rate) : null, settings: Object.assign(formValues(), { idea: $('sIdea').value }) };
     eng = VideoEngine.create(cv, promoSpec());
     VOICE = null;
     if (clips) {    // each clip where its scene starts speaking

@@ -1289,11 +1289,14 @@ function normPromo(s) {
   if (!scenes.length || scenes[0].type !== 'logo') scenes.unshift({ type: 'logo', emoji: '', heading: name, headingEn: '', text: brand.tagline, textEn: '', label: '', button: '', items: [], chips: [], say: '' });
   if (scenes[scenes.length - 1].type !== 'outro') scenes.push({ type: 'outro', emoji: '', heading: name, headingEn: '', text: brand.tagline, textEn: '', label: '', button: '', items: [], chips: [], say: '' });
   scenes.forEach(x => { if ((x.type === 'logo' || x.type === 'outro') && !x.heading) x.heading = name; });
-  const textMode = s.textMode === 'bi' ? 'bi' : 'ar';
+  const textMode = s.textMode === 'bi' ? 'bi' : 'ar', noEmoji = !!s.noEmoji;
+  // «بدون رموز تعبيرية»: no emoji anywhere, not even inside the texts
+  if (noEmoji) { const ne = v => str(v).replace(/[\p{Extended_Pictographic}\u{1F1E6}-\u{1F1FF}\u{FE0F}\u{200D}\u{20E3}]/gu, '').replace(/\s{2,}/g, ' ').trim();
+    scenes.forEach(x => { x.emoji = ''; ['heading', 'headingEn', 'text', 'textEn', 'label', 'button'].forEach(k => { x[k] = ne(x[k]); }); x.items.concat(x.chips).forEach(i => { i.emoji = ''; i.text = ne(i.text); i.en = ne(i.en); }); }); }
   if (textMode !== 'bi') scenes.forEach(x => { x.headingEn = ''; x.textEn = ''; x.items.forEach(i => { i.en = ''; }); x.chips.forEach(i => { i.en = ''; }); });
   const vd = Array.isArray(s.voiceDur) ? s.voiceDur : [];
   scenes.forEach((x, i) => { x.vd = isFinite(vd[i]) ? +vd[i] : 0; });
-  return { kind: 'promo', vertical: s.aspect === '9:16', brand, title, credit: str(s.credit), scenes, textMode, music: s.music || {}, en: !isAr(scenes.map(x => x.heading + x.text).join(' ')) };
+  return { kind: 'promo', vertical: s.aspect === '9:16', brand, title, credit: str(s.credit), scenes, textMode, noEmoji, music: s.music || {}, en: !isAr(scenes.map(x => x.heading + x.text).join(' ')) };
 }
 // timings shared by the picture and the sound (every scene starts on a whole second = a beat at 120 BPM)
 function planPromo(X) {
@@ -1421,11 +1424,21 @@ function createPromo(canvas, spec) {
   function ring(x, y, lt, h, r0 = 120, r1 = 700) { const k = P(lt, h, h + 1.1); if (k <= 0 || k >= 1) return; ctx.save(); al(1 - k); ctx.strokeStyle = hsla(hh + 10, 100, 62, .8); ctx.lineWidth = 14 * (1 - k) + 2; ctx.beginPath(); ctx.arc(x, y, r0 + E.out(k) * r1, 0, TAU); ctx.stroke(); ctx.restore(); }
   function pointer(x, y, sc = 1, o = 1) { if (o <= 0) return; ctx.save(); al(o); ctx.translate(x, y); ctx.scale(4.6 * sc, 4.6 * sc); ctx.translate(-5, -2); ctx.fillStyle = '#fff'; ctx.fill(PTR); ctx.strokeStyle = '#111'; ctx.lineWidth = 1.2; ctx.lineJoin = 'round'; ctx.stroke(PTR); ctx.restore(); }
   function ripple(x, y, lt, t0, o = 1) { const k = P(lt, t0, t0 + .8); if (k <= 0 || k >= 1) return; ctx.save(); al((1 - k) * o); ctx.strokeStyle = '#fff'; ctx.lineWidth = 8; ctx.beginPath(); ctx.arc(x, y, 30 * (1 + k * 7), 0, TAU); ctx.stroke(); ctx.restore(); }
-  function emojiText(s, x, y, size) { font(ctx, size, 400); ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = '#fff'; ctx.fillText(s, x, y); }
+  function emojiText(s, x, y, size) { if (X.noEmoji) return; font(ctx, size, 400); ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = '#fff'; ctx.fillText(s, x, y); }
   // a photo filling a w × h box centred on (x, y), with a slow cinematic zoom
   function coverAt(im, x, y, w, h, zoom = 1) {
     const iw = im.naturalWidth || im.width, ih = im.naturalHeight || im.height; if (!iw || !ih) return;
     const k = Math.max(w / iw, h / ih) * zoom; ctx.drawImage(im, x - iw * k / 2, y - ih * k / 2, iw * k, ih * k);
+  }
+  // a photo for a w × h screen: same shape → it fills the screen; another shape (an uploaded square photo…) → shown whole,
+  // in front of a blurred, darker copy of itself that fills the screen, so nothing of the product is cut off
+  function photoAt(im, x, y, w, h, zoom = 1) {
+    const iw = im.naturalWidth || im.width, ih = im.naturalHeight || im.height; if (!iw || !ih) return;
+    if (Math.abs(iw / ih - w / h) / (w / h) < .18) return coverAt(im, x, y, w, h, zoom);
+    ctx.save(); ctx.filter = 'blur(28px) brightness(.5) saturate(1.2)'; coverAt(im, x, y, w * 1.1, h * 1.1, zoom); ctx.restore();
+    const k = Math.min(w * .82 / iw, h * .72 / ih) * (.97 + .03 * zoom), dw = iw * k, dh = ih * k, cy = y - h * .06, r = Math.min(dw, dh) * .05;
+    ctx.save(); ctx.shadowColor = 'rgba(0,0,0,.55)'; ctx.shadowBlur = 50; ctx.shadowOffsetY = 18; ctx.fillStyle = '#000'; ctx.fill(rrPath(new Path2D(), x - dw / 2, cy - dh / 2, dw, dh, r)); ctx.restore();
+    ctx.save(); ctx.clip(rrPath(new Path2D(), x - dw / 2, cy - dh / 2, dw, dh, r)); ctx.drawImage(im, x - dw / 2, cy - dh / 2, dw, dh); ctx.restore();
   }
   // a product picture centred in a size × size box: cut-out pictures float with a soft shadow, photos sit in a rounded frame
   function picAt(im, cut, x, y, size) {
@@ -1470,7 +1483,7 @@ function createPromo(canvas, spec) {
   };
   SC.title = (s, lt, d) => {
     const full = !!(s.img && !s.cut);
-    if (full) { ctx.save(); al(P(lt, 0, .6)); coverAt(s.img, CX, H / 2, W, H, 1.02 + .08 * P(lt, 0, d)); const sh = ctx.createLinearGradient(0, 0, 0, H); sh.addColorStop(0, 'rgba(4,6,18,.25)'); sh.addColorStop(.5, 'rgba(4,6,18,.55)'); sh.addColorStop(1, 'rgba(4,6,18,.85)'); ctx.fillStyle = sh; ctx.fillRect(0, 0, W, H); ctx.restore(); }
+    if (full) { ctx.save(); al(P(lt, 0, .6)); photoAt(s.img, CX, H / 2, W, H, 1.02 + .08 * P(lt, 0, d)); const sh = ctx.createLinearGradient(0, 0, 0, H); sh.addColorStop(0, 'rgba(4,6,18,.25)'); sh.addColorStop(.5, 'rgba(4,6,18,.55)'); sh.addColorStop(1, 'rgba(4,6,18,.85)'); ctx.fillStyle = sh; ctx.fillRect(0, 0, W, H); ctx.restore(); }
     const bob = Math.sin(lt * 1.5) * 6, hasE = !full && !!(s.emoji || s.img), big = !full && !!s.img;
     if (hasE) { const k = E.back(P(lt, .15, .75)); if (k > 0) { ctx.save(); al(P(lt, .15, .4)); ctx.translate(CX, (VERT ? (big ? 600 : 680) : (big ? 230 : 250)) + bob); ctx.scale(k, k);
       if (big) { ctx.fillStyle = BRA(.16); ctx.beginPath(); ctx.arc(0, 0, VERT ? 260 : 170, 0, TAU); ctx.fill(); picAt(s.img, s.cut, 0, 0, VERT ? 470 : 300); }
@@ -1551,7 +1564,7 @@ function createPromo(canvas, spec) {
       const a0 = .4 + j * s.step, on = P(lt, a0, a0 + .5), done = lt > a0 + s.step - .3, y = top + j * gap; if (on <= 0) return;
       ctx.save(); al(on); ctx.translate((1 - E.back(on)) * 800 * (rtlRows ? 1 : -1), 0);
       rr(rx, y, RW, RH, 30, CARD, done ? GREEN : lt > a0 ? BR : LINE, 4);
-      const ic = rtlRows ? rx + RW - 74 : rx + 74; if (it.img) picAt(it.img, it.cut, ic, y + RH / 2, RH * .78); else emojiText(it.emoji || '✨', ic, y + RH / 2 + 4, VERT ? 60 : 64);
+      const ic = rtlRows ? rx + RW - 74 : rx + 74; if (it.img) picAt(it.img, it.cut, ic, y + RH / 2, RH * .78); else if (X.noEmoji) { ctx.fillStyle = BRA(.22); ctx.beginPath(); ctx.arc(ic, y + RH / 2, RH * .32, 0, TAU); ctx.fill(); text(ctx, X.en ? String(j + 1) : '١٢٣٤٥٦'[j] || String(j + 1), ic, y + RH / 2 + 4, { size: VERT ? 48 : 50, w: 900, color: '#fff' }); } else emojiText(it.emoji || '✨', ic, y + RH / 2 + 4, VERT ? 60 : 64);
       const tx = rtlRows ? rx + RW - 140 : rx + 140, mw = RW - 140 - 130;
       if (it.en) { text(ctx, it.text, tx, y + RH / 2 - 16, { size: VERT ? 46 : 48, w: 800, color: '#fff', align: rtlRows ? 'right' : 'left', maxW: mw, min: 26 }); text(ctx, it.en, tx, y + RH / 2 + 32, { size: 28, w: 600, color: A3, align: rtlRows ? 'right' : 'left', maxW: mw }); }
       else text(ctx, it.text, tx, y + RH / 2 + 4, { size: VERT ? 52 : 54, w: 800, color: '#fff', align: rtlRows ? 'right' : 'left', maxW: mw, min: 28 });
@@ -1584,7 +1597,8 @@ function createPromo(canvas, spec) {
       if (full) { ctx.save(); ctx.clip(cp); coverAt(it.img, 0, 0, p.w, p.h, 1.04 + .05 * P(lt, .5 + i * .35, d)); const sh = ctx.createLinearGradient(0, 0, 0, p.h / 2); sh.addColorStop(0, 'rgba(0,0,0,0)'); sh.addColorStop(1, 'rgba(0,0,0,.78)'); ctx.fillStyle = sh; ctx.fillRect(-p.w / 2, 0, p.w, p.h / 2); ctx.restore();
         ctx.save(); ctx.strokeStyle = 'rgba(255,255,255,.35)'; ctx.lineWidth = 3; ctx.stroke(cp); ctx.restore(); }
       else if (it.img) picAt(it.img, it.cut, 0, -p.h * .17 + Math.sin(lt * 2.2 + i * 1.3) * 5, p.h * .5); else emojiText(it.emoji || '✨', 0, -p.h * .18, p.h * .34);
-      const f = fitWrap(ctx, it.text, p.w - 50, 2, 46, 28); const y0 = (full ? p.h * .36 - (f.lines.length - 1) * f.size * 1.25 - (it.en ? 30 : 0) : p.h * .2 - (f.lines.length - 1) * f.size * .62);
+      const plain = X.noEmoji && !it.img; if (plain) rr(-50, -p.h / 2 + 44, 100, 10, 5, 'rgba(255,255,255,.9)');
+      const f = fitWrap(ctx, it.text, p.w - 50, plain ? 3 : 2, plain ? 64 : 46, 28); const y0 = plain ? -(f.lines.length - 1) * f.size * .62 - (it.en ? 20 : 0) : (full ? p.h * .36 - (f.lines.length - 1) * f.size * 1.25 - (it.en ? 30 : 0) : p.h * .2 - (f.lines.length - 1) * f.size * .62);
       f.lines.forEach((l, k) => text(ctx, l, 0, y0 + k * f.size * 1.25, { size: f.size, color: '#fff' }));
       if (it.en) text(ctx, it.en, 0, y0 + f.lines.length * f.size * 1.25 + 4, { size: 28, w: 700, color: 'rgba(255,255,255,.85)', maxW: p.w - 50 });
       ctx.restore(); });
@@ -1594,7 +1608,7 @@ function createPromo(canvas, spec) {
   // 🎬 showcase: every product gets the whole screen in turn, like a TV commercial
   function showItem(it, j, u, seg) {
     const k = clamp(u / seg), zoom = 1.06 + .1 * k, drift = (j % 2 ? -1 : 1) * 40 * (k - .5);
-    if (it.img && !it.cut) coverAt(it.img, CX + drift, H / 2, W, H, zoom);
+    if (it.img && !it.cut) photoAt(it.img, CX + drift, H / 2, W, H, zoom);
     else {
       ctx.fillStyle = grad(0, 0, W, H, hsla(hh + j * 35, 70, 22), hsla(hh + 200 + j * 35, 60, 10)); ctx.fillRect(0, 0, W, H);
       for (let q = 0; q < 3; q++) blob(W * (.2 + .3 * q) + Math.sin(u + q) * 60, H * (.35 + .15 * (q % 2)), W * .5, a => hsla(hh + j * 35 + q * 40, 90, 55, .28 * a));
