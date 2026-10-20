@@ -164,6 +164,8 @@
   @media (max-width:980px){.pk3{grid-template-columns:1fr;max-width:520px;margin:0 auto;width:100%}.pk.best{order:-1}.ptsTwo{grid-template-columns:1fr}}
   @media (max-width:640px){.ptsHero{padding:20px;border-radius:20px}.ptsHero h2{font-size:23px}.ptsBal{width:100%;display:flex;align-items:center;justify-content:space-between;text-align:start;padding:10px 16px}.ptsBal b{font-size:26px}.ptsKey{flex-direction:column;align-items:flex-start}.ptsKey .keyLink{white-space:normal}.pkN{font-size:34px}}
   .pGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(340px,100%),1fr));gap:20px;align-items:start}
+  .aSet{margin:12px 0 4px;padding:12px 14px;border:1px dashed var(--line);border-radius:14px}
+  .aSet label{margin-top:0}
   .pTable{width:100%;border-collapse:collapse;font-size:15px}
   .pTable td{border-bottom:1px solid var(--line);padding:8px 6px}
   .pTable td:last-child{text-align:left;font-weight:900;color:var(--orange);white-space:nowrap}
@@ -335,6 +337,7 @@
     <p class="where" style="margin-top:6px">أضف نقاط لأي مستخدم بإيميله (ولو ما دخل للحين)، أو حدّد رصيده الجديد مباشرة. اضغط على أي مستخدم في الجدول عشان تعبّي إيميله. كل تعديل يسألك «متأكد؟» قبل التنفيذ، وتقدر تتراجع عنه بعدها.</p>
     <div class="row"><div><label for="aEmail">إيميل المستخدم</label><input type="text" id="aEmail" style="direction:ltr" placeholder="name@gmail.com"></div><div><label for="aMode">نوع التعديل</label><select id="aMode"><option value="add">➕ أضف أو اخصم (بالسالب)</option><option value="set">✏️ حدّد المجموع الجديد</option></select></div><div><label for="aPts" id="aPtsL">النقاط</label><input type="text" id="aPts" value="10" style="direction:ltr"></div></div>
     <div class="btns"><button type="button" class="ghost aQuick" style="direction:ltr" data-n="10">+10</button><button type="button" class="ghost aQuick" style="direction:ltr" data-n="30">+30</button><button type="button" class="ghost aQuick" style="direction:ltr" data-n="100">+100</button><button type="button" class="primary" id="aAdd">➕ أضف النقاط</button><button type="button" class="ghost" id="aRefresh">🔄 تحديث القائمة</button></div>
+    <div class="aSet"><label for="aWelcome">نقاط الهدية لكل حساب جديد</label><div style="display:flex;gap:8px;align-items:center"><input type="number" id="aWelcome" min="0" max="100" step="1" style="direction:ltr;max-width:110px"><button type="button" class="ghost" id="aWelcomeSave">احفظ</button></div><small class="where">تنضاف تلقائيًا أول ما يدخل الشخص بحساب Google لأول مرة. الحسابات الموجودة ما تتأثر.</small></div>
     <div id="aMsg"></div>
     <div style="overflow:auto"><table class="atable" id="aUsers"></table></div>
   </section>
@@ -375,7 +378,7 @@
         </div>
         <ul class="ptsNotes">
           <li><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg><span>إذا فشل الفيديو قبل ما يتولّد الصوت أو الصور، <b>ترجع نقاطك تلقائيًا</b>.</span></li>
-          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M5 12l5 5L20 7"/></svg><span>كل حساب جديد يدخل بـ Google ياخذ <b><span class="pc" data-k="welcome">3</span> نقاط هدية</b>.</span></li>
+          <li id="welcomeLi"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M5 12l5 5L20 7"/></svg><span>كل حساب جديد يدخل بـ Google ياخذ <b id="welcomeTxt">نقطة هدية</b>.</span></li>
           <li><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M5 12l5 5L20 7"/></svg><span>فتح أي فيديو من «سجل الأعمال» وتغيير موسيقاه أو تنزيله من جديد <b>مجاني</b>.</span></li>
         </ul>
       </section>
@@ -994,13 +997,14 @@ Pictures (shown big and professional instead of an emoji, on "title" scenes and 
     $('kProxyNote').classList.toggle('hidden', !SERVER);
     setTimeout(goLabel, 0); $('adminCard').classList.toggle('hidden', !(ME && ME.admin)); $('pAdmin').classList.toggle('hidden', !(ME && ME.admin));
     if (SERVER) document.querySelectorAll('.pc').forEach(e => { const v = e.dataset.k === 'welcome' ? SERVER.welcome : SERVER.points[e.dataset.k]; if (v != null) e.textContent = v; });
+    if (SERVER) { $('welcomeTxt').textContent = ptsTxt(SERVER.welcome) + ' هدية'; $('welcomeLi').classList.toggle('hidden', !SERVER.welcome); }
     costUI(); balUI();
     if (!SERVER) return box.classList.add('hidden');
     box.classList.remove('hidden');
     if (ME) {
       box.innerHTML = `${ME.picture ? `<img src="${esc(ME.picture)}" alt="" referrerpolicy="no-referrer">` : '<span style="font-size:24px">👤</span>'}<span class="who"><b>${esc(ME.name || ME.email)}</b><small>⭐ <span id="ptsN">${ME.points}</span> نقطة</small></span><button type="button" class="ghost small" id="logoutBtn">خروج</button>`;
       $('logoutBtn').onclick = async () => { try { await api('logout', {}); } catch (e) {} ME = null; try { google.accounts.id.disableAutoSelect(); } catch (e) {} acctRender(); };
-      if (ME.admin) adminLoad();
+      if (ME.admin) { adminLoad(); welcomeLoad(); }
       return;
     }
     box.innerHTML = '<div id="gBtn"></div>' + (SERVER.dev ? '<input id="devEmail" placeholder="dev email" style="direction:ltr;width:170px"><button type="button" class="ghost small" id="devLogin">دخول تجربة</button>' : '') + (!SERVER.clientId && !SERVER.dev ? '<span class="where" style="margin:0">الدخول غير مجهز بعد</span>' : '');
@@ -1023,6 +1027,13 @@ Pictures (shown big and professional instead of an emoji, on "title" scenes and 
   }
   $('aUsers').addEventListener('click', e => { const tr = e.target.closest('tr[data-email]'); if (tr) { $('aEmail').value = tr.dataset.email; $('aPts').focus(); } });
   $('aRefresh').onclick = adminLoad;
+  // the welcome gift for new accounts
+  async function welcomeLoad() { try { const r = await api('admin/settings'); $('aWelcome').value = r.welcome; } catch (e) {} }
+  $('aWelcomeSave').onclick = async () => {
+    const n = parseInt($('aWelcome').value, 10); if (isNaN(n) || n < 0 || n > 100) return msg('aMsg', '⚠️ اكتب رقم من 0 إلى 100.', 'warn');
+    if (!(await ptsAsk(`نقاط الهدية لكل حساب جديد تصير <b>${n}</b>${SERVER && SERVER.welcome != null ? ` بدل <b>${SERVER.welcome}</b>` : ''}.`))) return msg('aMsg', 'انلغى، ما تغيّر شي.');
+    try { const r = await api('admin/settings', { welcome: n }); if (SERVER) SERVER.welcome = r.welcome; $('aWelcome').value = r.welcome; acctRender(); msg('aMsg', `✓ أي حساب جديد بياخذ ${ptsTxt(r.welcome)} هدية.`); } catch (e) { msg('aMsg', '⚠️ ' + esc(e.message), 'warn'); }
+  };
   document.querySelectorAll('.aQuick').forEach(b => b.onclick = () => { $('aPts').value = b.dataset.n; if ($('aMode').value !== 'add') { $('aMode').value = 'add'; aModeUI(); } if ($('aEmail').value.trim()) $('aAdd').click(); else { msg('aMsg', '⚠️ اكتب إيميل المستخدم أو اضغط عليه في الجدول.', 'warn'); $('aEmail').focus(); } });
   // ── top-up request on WhatsApp with the package and the account email ready ──
   const WA = '966564444664';
