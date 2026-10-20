@@ -4,6 +4,30 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>الاستوديو الآلي — دكتور حلول</title>
+<meta name="description" content="اكتب فكرتك واضغط زر واحد: السيناريو والصوت والصور والفيديو تلقائيًا. فيديوهات تعليمية وتسويقية بالذكاء الاصطناعي للأطفال والمعلمات والمنتجات.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="الاستوديو الآلي">
+<meta property="og:locale" content="ar_SA">
+<meta property="og:url" content="https://studio.drpc.sa/">
+<meta property="og:title" content="🎬 الاستوديو الآلي — من دكتور حلول">
+<meta property="og:description" content="اكتب فكرتك واضغط زر واحد: السيناريو والصوت والصور والفيديو تلقائيًا. فيديوهات تعليمية وتسويقية بالذكاء الاصطناعي للأطفال والمعلمات والمنتجات.">
+<meta property="og:image" content="https://studio.drpc.sa/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="الاستوديو الآلي — من دكتور حلول">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="🎬 الاستوديو الآلي — من دكتور حلول">
+<meta name="twitter:description" content="اكتب فكرتك واضغط زر واحد: السيناريو والصوت والصور والفيديو تلقائيًا. فيديوهات تعليمية وتسويقية بالذكاء الاصطناعي للأطفال والمعلمات والمنتجات.">
+<meta name="twitter:image" content="https://studio.drpc.sa/og.png">
+<meta name="theme-color" content="#ff6a13">
+<link rel="icon" href="favicon-48.png" type="image/png" sizes="48x48">
+<link rel="icon" href="icon-192.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="الاستوديو الآلي">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
   :root{--navy:#1d2a6e;--orange:#ff7a1a;--blue:#2f6fe0;--yellow:#ffd21f;--red:#e53935;--green:#20a35a;--purple:#8e5bff;
@@ -14,7 +38,7 @@
   body{margin:0;background:var(--bg);color:var(--text);font-family:'Cairo',Tahoma,sans-serif;line-height:1.7}
   .wrap{max-width:1180px;margin:0 auto;padding:24px 16px 60px}
   header{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:22px}
-  .logo{width:58px;height:58px;border-radius:18px;background:linear-gradient(135deg,var(--purple),var(--orange));display:flex;align-items:center;justify-content:center;font-size:30px;box-shadow:0 6px 0 rgba(0,0,0,.12)}
+  .logo{width:64px;height:64px;display:block;object-fit:contain}
   h1{margin:0;font-size:30px;font-weight:900}
   header p{margin:0;color:var(--muted);font-size:15px}
   .back{margin-inline-start:auto;text-decoration:none;color:var(--text);border:2px solid var(--line);border-radius:14px;padding:8px 14px;font-weight:700;font-size:14px}
@@ -87,21 +111,78 @@
   .hBody b{font-size:16px;line-height:1.4}
   .hBody small{color:var(--muted);font-size:12.5px}
   .hBtns{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto;padding-top:6px}
+  .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 18px}
+  .tab{background:var(--card);color:var(--text);border:2px solid var(--line);border-radius:16px;padding:10px 20px;font-size:16px}
+  .tab[aria-selected="true"]{background:var(--navy);border-color:var(--navy);color:#fff;box-shadow:0 4px 0 rgba(0,0,0,.18)}
+  :root[data-theme="dark"] .tab[aria-selected="true"]{background:var(--orange);border-color:var(--orange)}
+  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .tab[aria-selected="true"]{background:var(--orange);border-color:var(--orange)}}
+  .pGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(340px,100%),1fr));gap:20px;align-items:start}
+  .pTable{width:100%;border-collapse:collapse;font-size:15px}
+  .pTable td{border-bottom:1px solid var(--line);padding:8px 6px}
+  .pTable td:last-child{text-align:left;font-weight:900;color:var(--orange);white-space:nowrap}
+  .pList{margin:0;padding-inline-start:22px}
+  .pList li{margin:4px 0}
+  .packs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:8px}
+  .pack{padding:12px 6px !important}
+  .pack{border:2px solid var(--line);border-radius:18px;padding:14px;text-align:center;background:var(--field)}
+  .pack.best{border-color:var(--orange)}
+  .pack b{display:block;font-size:26px;font-weight:900}
+  .pack span{display:block;font-size:20px;font-weight:900;color:var(--orange)}
+  .pack small{color:var(--muted);font-size:12.5px}
+  .pack{display:flex;flex-direction:column;align-items:center}
+  .waBtn{margin-top:10px;background:#25d366;color:#fff;font-size:14px;padding:7px 10px;border-radius:12px;box-shadow:0 3px 0 #179a4a;width:100%;display:flex;align-items:center;justify-content:center;gap:6px}
+  .waBtn:hover{background:#20bd5a}
+  .waIc{width:18px;height:18px;flex:none}
+  .waBig{margin-top:16px;padding:12px 16px;border-radius:18px;justify-content:flex-start;gap:14px;box-shadow:0 4px 0 #179a4a;text-align:right}
+  .waBig .waIc{width:34px;height:34px;background:rgba(255,255,255,.18);border-radius:50%;padding:7px;box-sizing:content-box}
+  .waBig .waT{display:flex;flex-direction:column;line-height:1.35}
+  .waBig .waT b{font-size:17px;font-weight:900}
+  .waBig .waT span{direction:ltr;text-align:right;font-size:14px;opacity:.92;font-weight:700;letter-spacing:.5px}
+  .payBox{margin-top:16px;border:2px solid var(--line);border-radius:18px;padding:12px 14px;background:var(--field)}
+  .payBox h3{margin:0 0 8px;font-size:16px;font-weight:900}
+  .payRow{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line)}
+  .payRow:first-of-type{border-top:0}
+  .payLogo{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:12px;flex:none;text-align:center;line-height:1.1}
+  .payRow .pt{flex:1;display:flex;flex-direction:column;line-height:1.35}
+  .payRow .pt small{color:var(--muted);font-size:12.5px;font-weight:400}
+  .payNum{direction:ltr;text-align:right;font-weight:900;font-size:18px;letter-spacing:.5px;color:var(--orange)}
+  .copyBtn{padding:6px 12px;font-size:13px;white-space:nowrap;flex:none}
+  .modal{position:fixed;inset:0;background:rgba(5,10,30,.55);display:flex;align-items:center;justify-content:center;padding:16px;z-index:50}
+  .modal .box{background:var(--card);color:var(--text);border-radius:22px;padding:22px;max-width:380px;width:100%;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.35)}
+  .modal .box .big{font-size:42px;line-height:1}
+  .modal .box h3{margin:8px 0 6px;font-size:20px;font-weight:900}
+  .modal .box p{margin:0 0 16px;color:var(--muted);font-size:15px}
+  .costT{width:100%;border-collapse:collapse;margin:0 0 14px;font-size:15px}
+  .costT td{padding:7px 4px;border-bottom:1px solid var(--line);text-align:right}
+  .costT td:last-child{text-align:left;font-weight:900}
+  .costT tr.after td{border-bottom:0;color:var(--green)}
+  .costT td:first-child{white-space:nowrap;padding-left:14px}
+  .go small{font-size:15px;font-weight:700;opacity:.9}
+  .promoBox{margin-top:14px;border:2px solid var(--orange);border-radius:18px;padding:10px 14px 14px;background:rgba(255,122,26,.06)}
+  .promoBox .drop img{max-height:110px;background:repeating-conic-gradient(#ccd 0 25%,#fff 0 50%) 0 0/16px 16px}
+  input[type=color]{width:64px;height:46px;border:2px solid var(--line);border-radius:12px;padding:3px;background:var(--field);cursor:pointer}
+  .vStage.vert{aspect-ratio:9/16;max-height:72vh;margin:0 auto}
+  .acct.pulse{animation:pulse 1s ease 3}@keyframes pulse{50%{box-shadow:0 0 0 6px rgba(255,122,26,.45);border-color:var(--orange)}}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
-    <div class="logo">🎬</div>
+    <img class="logo" src="icon-192.png" alt="" width="64" height="64">
     <div>
       <h1>الاستوديو الآلي</h1>
       <p class="by">من دكتور حلول</p>
       <p>اكتب فكرتك واضغط زر واحد: السيناريو والصوت والصور والفيديو تلقائيًا</p>
     </div>
-    <div class="hdrRight"><div id="acct" class="acct hidden"></div><button type="button" class="ghost themeBtn" id="themeBtn" aria-label="الوضع الليلي أو النهاري">🌓</button></div>
+    <div class="hdrRight"><button type="button" class="ghost hidden" id="installBtn">📲 ثبّت التطبيق</button><div id="acct" class="acct hidden"></div><button type="button" class="ghost themeBtn" id="themeBtn" aria-label="الوضع الليلي أو النهاري">🌓</button></div>
     
   </header>
 
+  <nav class="tabs" role="tablist">
+    <button type="button" class="tab" role="tab" data-tab="studio" aria-selected="true">🎬 الاستوديو</button>
+    <button type="button" class="tab" role="tab" data-tab="points" aria-selected="false">💳 النقاط والأسعار</button>
+  </nav>
+  <div data-pane="studio">
   <div class="grid">
     <section class="card" aria-labelledby="t1">
       <h2 id="t1"><span class="dot" style="background:var(--orange)"></span>١. فكرتك</h2>
@@ -119,7 +200,22 @@
       </div>
       <div class="row">
         <div><label for="sLen">المدة</label><select id="sLen"><option value="30">قصير (حوالي ٣٠ ثانية)</option><option value="60" selected>متوسط (حوالي دقيقة)</option><option value="90">طويل (دقيقة ونص)</option></select></div>
-        <div><label for="sStyle">الأسلوب</label><select id="sStyle"><option value="cartoon">🧒 شخصيات كرتونية متحركة (لبطاقات الأنشطة والتمارين)</option><option value="cinematic">🎬 سينمائي (صور ثلاثية الأبعاد بإضاءة أفلام)</option><option value="pictures">🎨 صور مرسومة بالذكاء الاصطناعي</option><option value="motion">✨ موشن جرافيك مع مقدّم كرتوني</option></select></div>
+        <div><label for="sStyle">الأسلوب</label><select id="sStyle"><option value="cartoon">🧒 شخصيات كرتونية متحركة (لبطاقات الأنشطة والتمارين)</option><option value="cinematic">🎬 سينمائي (صور ثلاثية الأبعاد بإضاءة أفلام)</option><option value="pictures">🎨 صور مرسومة بالذكاء الاصطناعي</option><option value="motion">✨ موشن جرافيك مع مقدّم كرتوني</option><option value="promo">🚀 إعلان موشن احترافي (شعارك وحركة ومؤثرات)</option></select></div>
+      </div>
+      <div id="promoBox" class="promoBox hidden">
+        <p class="where" style="margin:0">🚀 إعلان بمستوى احترافي: شعارك يظهر بإضاءة ولمعة، عناوين تتحرك كلمة كلمة، كتابة وضغط زر، خطوات بعلامات صح، بطاقات، جوال، وخاتمة فيها رابطك. وكل حركة لها صوتها مع الموسيقى.</p>
+        <label>الشعار <small>(اختياري — PNG بخلفية شفافة أفضل)</small></label>
+        <div id="pLogoDrop" class="drop" tabindex="0" role="button"><input type="file" id="pLogo" accept="image/*" hidden><div id="pLogoTxt">🏷️ اسحب شعارك أو <u>اضغط للاختيار</u></div><img id="pLogoPrev" class="hidden" alt=""><button type="button" id="pLogoDel" class="ghost small hidden">إزالة الشعار</button></div>
+        <label style="font-weight:400;display:flex;gap:8px;align-items:center;margin-top:8px"><input type="checkbox" id="pWhite" checked> شيل الخلفية البيضاء من الشعار تلقائيًا</label>
+        <div class="row">
+          <div><label for="pName">اسم النشاط أو المنتج</label><input type="text" id="pName" placeholder="مثال: مقهى الورد"></div>
+          <div><label for="pColor">اللون الرئيسي <small>(ينأخذ من الشعار)</small></label><input type="color" id="pColor" value="#ff6a13"></div>
+        </div>
+        <div class="row">
+          <div><label for="pUrl">الرابط <small>(اختياري)</small></label><input type="text" id="pUrl" placeholder="example.com" style="direction:ltr"></div>
+          <div><label for="pPhone">الجوال أو واتساب <small>(اختياري)</small></label><input type="text" id="pPhone" placeholder="05xxxxxxxx" style="direction:ltr"></div>
+        </div>
+        <label for="pAspect">المقاس</label><select id="pAspect"><option value="16:9">🖥️ عرضي 16:9 (يوتيوب، عرض، واتساب)</option><option value="9:16">📱 طولي 9:16 (ريلز، تيك توك، ستوري)</option></select>
       </div>
       <div class="row">
         <div><label for="sScenes">عدد المشاهد</label><select id="sScenes"><option value="0">تلقائي حسب المدة</option><option value="3">٣ مشاهد</option><option value="4">٤ مشاهد</option><option value="5">٥ مشاهد</option><option value="6">٦ مشاهد</option><option value="7">٧ مشاهد</option><option value="8">٨ مشاهد</option><option value="9">٩ مشاهد</option><option value="10">١٠ مشاهد</option></select></div>
@@ -164,7 +260,7 @@
       </div>
       <div id="sProg" class="prog hidden"><div id="sBar"></div></div>
       <div id="sRecMsg"></div>
-      <details id="sScript" class="hidden"><summary>📝 السيناريو</summary><div id="sScenes"></div></details>
+      <details id="sScript" class="hidden"><summary>📝 السيناريو</summary><div id="sSceneList"></div></details>
       <div class="note info" style="font-size:13px">🎵 الموسيقى مؤلَّفة داخل الصفحة بدون حقوق. التسجيل يأخذ نفس طول الفيديو، فخلّ الصفحة مفتوحة قدّامك.</div>
     </section>
   </div>
@@ -178,11 +274,89 @@
     <h2 id="aTitle" style="margin:0"><span class="dot" style="background:var(--red)"></span>🛠️ لوحة المدير</h2>
     <p class="where" style="margin-top:6px">أضف نقاط لأي مستخدم بإيميله (ولو ما دخل للحين). اكتب رقم بالسالب للخصم. اضغط على أي مستخدم في الجدول عشان تعبّي إيميله.</p>
     <div class="row"><div><label for="aEmail">إيميل المستخدم</label><input type="text" id="aEmail" style="direction:ltr" placeholder="name@gmail.com"></div><div><label for="aPts">النقاط</label><input type="text" id="aPts" value="10" style="direction:ltr"></div></div>
-    <div class="btns"><button type="button" class="primary" id="aAdd">➕ أضف النقاط</button><button type="button" class="ghost" id="aRefresh">🔄 تحديث القائمة</button></div>
+    <div class="btns"><button type="button" class="ghost aQuick" style="direction:ltr" data-n="10">+10</button><button type="button" class="ghost aQuick" style="direction:ltr" data-n="30">+30</button><button type="button" class="ghost aQuick" style="direction:ltr" data-n="100">+100</button><button type="button" class="primary" id="aAdd">➕ أضف النقاط</button><button type="button" class="ghost" id="aRefresh">🔄 تحديث القائمة</button></div>
     <div id="aMsg"></div>
     <div style="overflow:auto"><table class="atable" id="aUsers"></table></div>
   </section>
+  </div>
+  <div data-pane="points" class="hidden">
+    <div class="pGrid">
+      <section class="card" aria-labelledby="p1">
+        <h2 id="p1"><span class="dot" style="background:var(--orange)"></span>⭐ كيف تنحسب النقاط</h2>
+        <table class="pTable">
+          <tr><td>✨ موشن جرافيك (مع المقدّم أو بدونه)</td><td><span class="pc" data-k="motion">1</span> نقطة</td></tr>
+          <tr><td>🧒 شخصيات كرتونية</td><td><span class="pc" data-k="motion">1</span> نقطة</td></tr>
+          <tr><td>🚀 إعلان موشن احترافي (بصوت أو بدونه)</td><td><span class="pc" data-k="motion">1</span> نقطة</td></tr>
+          <tr><td>🎨 صور بالذكاء الاصطناعي / 🎬 سينمائي</td><td><span class="pc" data-k="pictures">3</span> نقاط</td></tr>
+        </table>
+        <ul class="pList" style="margin-top:12px">
+          <li>النقاط تنحجز أول ما تضغط «اصنع الفيديو».</li>
+          <li>إذا فشل الفيديو قبل ما يتولّد أي صوت أو صورة، ترجع نقاطك تلقائيًا.</li>
+          <li>كل حساب جديد يدخل بـ Google ياخذ <b><span class="pc" data-k="welcome">3</span> نقاط هدية</b>.</li>
+          <li>فتح أي فيديو من «سجل الأعمال» وتغيير موسيقاه أو تنزيله من جديد مجاني.</li>
+        </ul>
+      </section>
+      <section class="card" aria-labelledby="p2">
+        <h2 id="p2"><span class="dot" style="background:var(--green)"></span>💳 باقات النقاط</h2>
+        <div class="packs">
+          <div class="pack"><b>10</b><small>نقاط</small><span>19 ريال</span><small>10 فيديو موشن</small><button type="button" class="waBtn" data-pts="10" data-price="19"><svg class="waIc" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 1.8a8.2 8.2 0 1 1-4.3 15.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 0 1 12 3.8z"/><path fill="currentColor" d="M8.6 7.4c.2-.5.5-.5.8-.5h.6c.2 0 .4 0 .6.5l.8 1.9c.1.2.1.4 0 .6l-.5.7c-.1.2-.2.3 0 .6.5.8 1.1 1.5 1.9 2 .3.2.5.2.6 0l.7-.8c.2-.2.4-.2.6-.1l1.8.9c.3.1.4.3.4.5 0 .8-.6 1.9-1.6 2-.9.1-1.8 0-3.7-.9-2.1-1-3.5-3.1-3.8-3.5-.3-.4-.9-1.5-.9-2.6s.4-1.6.7-1.9z"/></svg>اطلبها</button></div>
+          <div class="pack best"><b>30</b><small>نقطة · الأوفر ⭐</small><span>49 ريال</span><small>30 موشن أو 10 بالصور</small><button type="button" class="waBtn" data-pts="30" data-price="49"><svg class="waIc" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 1.8a8.2 8.2 0 1 1-4.3 15.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 0 1 12 3.8z"/><path fill="currentColor" d="M8.6 7.4c.2-.5.5-.5.8-.5h.6c.2 0 .4 0 .6.5l.8 1.9c.1.2.1.4 0 .6l-.5.7c-.1.2-.2.3 0 .6.5.8 1.1 1.5 1.9 2 .3.2.5.2.6 0l.7-.8c.2-.2.4-.2.6-.1l1.8.9c.3.1.4.3.4.5 0 .8-.6 1.9-1.6 2-.9.1-1.8 0-3.7-.9-2.1-1-3.5-3.1-3.8-3.5-.3-.4-.9-1.5-.9-2.6s.4-1.6.7-1.9z"/></svg>اطلبها</button></div>
+          <div class="pack"><b>100</b><small>نقطة</small><span>149 ريال</span><small>للمدارس والشركات</small><button type="button" class="waBtn" data-pts="100" data-price="149"><svg class="waIc" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 1.8a8.2 8.2 0 1 1-4.3 15.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 0 1 12 3.8z"/><path fill="currentColor" d="M8.6 7.4c.2-.5.5-.5.8-.5h.6c.2 0 .4 0 .6.5l.8 1.9c.1.2.1.4 0 .6l-.5.7c-.1.2-.2.3 0 .6.5.8 1.1 1.5 1.9 2 .3.2.5.2.6 0l.7-.8c.2-.2.4-.2.6-.1l1.8.9c.3.1.4.3.4.5 0 .8-.6 1.9-1.6 2-.9.1-1.8 0-3.7-.9-2.1-1-3.5-3.1-3.8-3.5-.3-.4-.9-1.5-.9-2.6s.4-1.6.7-1.9z"/></svg>اطلبها</button></div>
+        </div>
+        <div class="payBox">
+          <h3>🏦 حوّل قيمة الباقة على</h3>
+          <div class="payRow"><span class="payLogo" style="background:#4f008c">STC<br>Pay</span><span class="pt"><b>STC Pay <small>· تحويل لرقم الجوال</small></b><span class="payNum">0564444664</span></span><button type="button" class="ghost copyBtn" data-copy="0564444664">📋 نسخ</button></div>
+          <div class="payRow"><span class="payLogo" style="background:#0a3b8f">الراجحي</span><span class="pt"><b>مصرف الراجحي <small>· تحويل فوري برقم الجوال</small></b><span class="payNum">0564444664</span></span><button type="button" class="ghost copyBtn" data-copy="0564444664">📋 نسخ</button></div>
+        </div>
+        <h2 style="font-size:17px;margin:18px 0 6px">طريقة الشحن</h2>
+        <ol class="pList">
+          <li>سجّل دخولك بحساب Google (الزر فوق).</li>
+          <li>حوّل قيمة الباقة على STC Pay أو الراجحي برقم الجوال <b style="direction:ltr;display:inline-block">0564444664</b>.</li>
+          <li>اضغط زر «اطلبها» الأخضر تحت الباقة: تنفتح محادثة واتساب فيها الباقة و<b>إيميل حسابك</b> جاهزة، أرفق صورة إيصال التحويل وأرسلها.</li>
+          <li>تنضاف النقاط لحسابك، وتظهر لك بعد تحديث الصفحة.</li>
+        </ol>
+        <button type="button" class="waBig waBtn" data-pts="" data-price=""><svg class="waIc" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 1.8a8.2 8.2 0 1 1-4.3 15.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 0 1 12 3.8z"/><path fill="currentColor" d="M8.6 7.4c.2-.5.5-.5.8-.5h.6c.2 0 .4 0 .6.5l.8 1.9c.1.2.1.4 0 .6l-.5.7c-.1.2-.2.3 0 .6.5.8 1.1 1.5 1.9 2 .3.2.5.2.6 0l.7-.8c.2-.2.4-.2.6-.1l1.8.9c.3.1.4.3.4.5 0 .8-.6 1.9-1.6 2-.9.1-1.8 0-3.7-.9-2.1-1-3.5-3.1-3.8-3.5-.3-.4-.9-1.5-.9-2.6s.4-1.6.7-1.9z"/></svg><span class="waT"><b>تواصل معنا على واتساب</b><span>+966 56 444 4664</span></span></button>
+        <div class="note info" style="font-size:13px">الشحن حاليًا يدوي، والدفع الإلكتروني المباشر قريبًا.</div>
+      </section>
+      <section class="card" aria-labelledby="p3">
+        <h2 id="p3"><span class="dot" style="background:var(--blue)"></span>🔑 عندك مفتاح Gemini خاص؟</h2>
+        <ul class="pList">
+          <li>حطّه في صندوق «🔑 مفتاحك الخاص» تحت زر «اصنع الفيديو».</li>
+          <li><b>ما ينخصم منك ولا نقطة</b>: الطلبات تروح من متصفحك إلى Google مباشرة، والتكلفة على حسابك في Google.</li>
+          <li>المفتاح ينحفظ في متصفحك فقط، ما يوصل لنا أبدًا.</li>
+          <li>إذا مسحت المفتاح، يرجع الاستوديو يشتغل بنقاطك.</li>
+        </ul>
+        <div class="btns"><a class="ghost" href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" style="text-decoration:none;border-radius:14px;padding:8px 16px;font-weight:700">طلّع مفتاحك من Google AI Studio ↗</a></div>
+      </section>
+      <section id="pAdmin" class="card hidden" aria-labelledby="p4">
+        <h2 id="p4"><span class="dot" style="background:var(--red)"></span>🛠️ للمدير: التفعيل اليدوي</h2>
+        <ol class="pList">
+          <li>العميل يحوّل ويرسل لك إيميل حسابه في Google.</li>
+          <li>روح تبويب «🎬 الاستوديو» ← «لوحة المدير» تحت الصفحة.</li>
+          <li>اكتب إيميله وعدد النقاط ← «➕ أضف النقاط». (رقم بالسالب = خصم)</li>
+          <li>الجدول يعرض كل المستخدمين ونقاطهم وعدد فيديوهاتهم.</li>
+        </ol>
+        <p class="where" style="margin-top:10px">التكلفة علينا تقريبًا: موشن ≈ 0.2 ريال · بالصور ≈ 1.7 ريال للدقيقة.</p>
+      </section>
+    </div>
+  </div>
 </div>
+<div id="loginAsk" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="laT"><div class="box">
+  <div class="big">🔐</div><h3 id="laT">سجّل دخولك أول</h3>
+  <p>عشان يوصلنا إيميل حسابك مع الطلب، ونضيف النقاط عليه مباشرة.</p>
+  <div class="btns" style="justify-content:center"><button type="button" class="primary" id="laGo">سجّل الدخول بحساب Google</button><button type="button" class="ghost" id="laNo">إلغاء</button></div>
+</div></div>
+<div id="costAsk" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="caT"><div class="box">
+  <div class="big" id="caIc">⭐</div><h3 id="caT"></h3>
+  <table class="costT" id="caTable"></table>
+  <p id="caNote" style="font-size:13px"></p>
+  <div class="btns" style="justify-content:center"><button type="button" class="primary" id="caGo"></button><button type="button" class="ghost" id="caNo">إلغاء</button></div>
+</div></div>
+<div id="iosAsk" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="ioT"><div class="box">
+  <img src="icon-192.png" alt="" width="80" height="80"><h3 id="ioT">ثبّت الاستوديو على جوالك</h3>
+  <p style="text-align:right">١. اضغط زر المشاركة <b>⬆️</b> تحت في Safari.<br>٢. اختر <b>«إضافة إلى الشاشة الرئيسية»</b> ➕.<br>٣. اضغط <b>«إضافة»</b>، ويصير الاستوديو أيقونة مثل أي تطبيق.</p>
+  <div class="btns" style="justify-content:center"><button type="button" class="primary" id="ioOk">تمام</button></div>
+</div></div>
 
 <script src="studio-engine.js"></script>
 <script>
@@ -193,6 +367,26 @@
   const msg = (el, html, cls = 'info') => { $(el).innerHTML = html ? `<div class="note ${cls}">${html}</div>` : ''; };
   const sleep = ms => new Promise(r => setTimeout(r, ms));
   const fmt = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+
+  // ── tabs: studio | points & prices ──
+  const showTab = k => { document.querySelectorAll('.tab').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === k)); document.querySelectorAll('[data-pane]').forEach(p => p.classList.toggle('hidden', p.dataset.pane !== k)); };
+  document.querySelectorAll('.tab').forEach(b => b.onclick = () => { showTab(b.dataset.tab); history.replaceState(null, '', b.dataset.tab === 'studio' ? location.pathname : '#' + b.dataset.tab); });
+  if (location.hash === '#points') showTab('points');
+
+  // ── installable app (PWA) ──
+  if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('sw.js').catch(() => {});
+  const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+  const ios = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  let installEvt = null;
+  window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; if (!standalone) $('installBtn').classList.remove('hidden'); });
+  window.addEventListener('appinstalled', () => { installEvt = null; $('installBtn').classList.add('hidden'); });
+  if (ios && !standalone) $('installBtn').classList.remove('hidden');
+  $('installBtn').onclick = async () => {
+    if (installEvt) { installEvt.prompt(); const r = await installEvt.userChoice.catch(() => null); if (r && r.outcome === 'accepted') $('installBtn').classList.add('hidden'); installEvt = null; return; }
+    $('iosAsk').classList.remove('hidden');
+  };
+  $('ioOk').onclick = () => $('iosAsk').classList.add('hidden');
+  $('iosAsk').addEventListener('click', e => { if (e.target === $('iosAsk')) $('iosAsk').classList.add('hidden'); });
 
   // ── light / dark ──
   const applyTheme = th => { if (th) document.documentElement.setAttribute('data-theme', th); else document.documentElement.removeAttribute('data-theme'); };
@@ -276,6 +470,54 @@ Rules:
 - ${o.textMode === 'bi' ? 'Fill title.en, headingEn, textEn and items[].en with short simple English.' : 'Leave every English field empty.'}`;
   }
 
+  // ── 🚀 promo plan: Gemini picks scenes from the animation kit and writes short punchy texts ──
+  function promoPrompt(o, brand) {
+    const en = /English/.test(o.lang), count = o.scenes ? 'EXACTLY ' + o.scenes : o.len <= 30 ? '5 to 6' : o.len >= 90 ? '7 to 9' : '6 to 8';
+    return `You are an award-winning motion designer and copywriter making a short, punchy promo / ad video (about ${Math.min(60, Math.max(30, o.len))} seconds) for ${AUD[o.aud]}.
+Client idea: """${o.idea}"""
+Brand / business name: ${brand.name ? '"' + brand.name + '"' : '(not given: infer a short name from the idea, or the product name)'}.${brand.url ? ' Website: ' + brand.url + '.' : ''}${brand.phone ? ' Phone / WhatsApp: ' + brand.phone + '.' : ''}${o.img ? '\nThe attached picture belongs to this (a product, a logo, a flyer…). Use what it shows.' : ''}
+The video is built from a fixed kit of animated scenes. Reply with ONLY a JSON object, no code fences, in exactly this shape:
+{"brand":{"name":"","tagline":""},"title":{"ar":"","en":""},"scenes":[{"type":"","emoji":"","heading":"","headingEn":"","text":"","textEn":"","label":"","button":"","items":[{"emoji":"","text":"","en":"","visual":""}],"chips":[{"emoji":"","text":"","en":""}],"narration":""}]}
+Scene types:
+- "logo": FIRST scene, the logo reveal. heading = brand name, text = a short tagline (at most 6 words).
+- "title": a bold kinetic headline (at most 6 words), one emoji, text = one short supporting line (at most 12 words).
+- "typing": shows how easy it is. heading = a hook question (at most 6 words), label = the input field label (at most 4 words), text = what the customer types (at most 8 words: an order, a search, a booking, an idea…), button = the button label starting with an emoji (at most 3 words).
+- "checklist": what is done for the customer, step by step. heading (at most 6 words), items = 3 or 4 steps (emoji + at most 3 words), visual for each item = one of: doc (writing, planning, a form), wave (voice, sound, talking, calls), tiles (pictures, products, choices), progress (delivery, preparing, loading, finishing), chart (growth, results, savings).
+- "cards": options / products / features. heading (at most 6 words), items = 2 to 4 cards (emoji + at most 3 words), chips = 0 to 3 short extra perks (emoji + at most 4 words).
+- "chips": short benefits. heading (at most 6 words), items = 3 to 6 chips (emoji + at most 3 words).
+- "phone": the app / online ordering / booking / contact on the phone. heading (at most 6 words), text (at most 16 words).
+- "outro": LAST scene. heading = brand name, text = the call to action (at most 7 words).
+Rules:
+- ${count} scenes in total, starting with "logo" and ending with "outro". Use each middle type at most once; pick the ones that sell this idea best ("typing" and "phone" only when they make sense).
+- In every heading wrap the ONE or TWO most important words in *asterisks* (they are shown in the brand colour), for example "عندك *فكرة*؟ اكتبها بس".
+- On-screen text in ${en ? 'English' : 'Arabic (' + o.lang + ')'}: punchy, simple, persuasive. Emojis only in the emoji fields, button labels and at the end of a heading.
+- narration: ${o.voice ? `what the voice-over says in that scene, natural ${o.lang}, 6 to 18 words, an energetic friendly ad voice. ONLY the exact spoken words: no tone notes, no brackets, no speaker labels.${en ? '' : ' Arabic letters only: write foreign words and brands the way Arabic speakers say them.'}` : 'leave it "" (music only).'}
+- ${o.textMode === 'bi' ? 'Fill headingEn, textEn and items[].en with short simple English.' : 'Leave every English field empty.'}`;
+  }
+  // offline: a good-looking template from the idea alone (no API)
+  function promoTemplate(o, brand) {
+    const en = /English/.test(o.lang), idea = String(o.idea || '').replace(/\s+/g, ' ').trim();
+    const first = (idea.split(/[.!؟?\n،,:]/)[0] || '').trim().split(' ').slice(0, 6), rest = idea.split(' ').slice(first.length).slice(0, 14).join(' ');
+    const name = brand.name || first.slice(0, 3).join(' ') || (en ? 'Your brand' : 'علامتك');
+    const head = first.length ? first.map((w, i) => i === first.length - 1 && first.length > 1 ? '*' + w + '*' : w).join(' ') : (en ? 'Made *for you*' : 'صُنع *لك*');
+    const S = en ? [
+      { type: 'logo', heading: name, text: 'Quality you deserve' },
+      { type: 'title', emoji: '✨', heading: head, text: rest || 'Everything you need, in one place.' },
+      { type: 'chips', heading: 'Why *choose us*?', items: [{ emoji: '⚡', text: 'Fast' }, { emoji: '💎', text: 'Top quality' }, { emoji: '💰', text: 'Fair price' }, { emoji: '🤝', text: 'Great service' }] },
+      { type: 'checklist', heading: 'In *simple* steps', items: [{ emoji: '📲', text: 'Contact us', visual: 'wave' }, { emoji: '🎯', text: 'Pick your choice', visual: 'tiles' }, { emoji: '🚀', text: 'We deliver fast', visual: 'progress' }] },
+      ...(brand.url || brand.phone ? [{ type: 'phone', heading: 'Order *from your phone* 📲', text: 'Everything is easier now: reach us today and enjoy the experience.' }] : []),
+      { type: 'outro', heading: name, text: 'Contact us today!' },
+    ] : [
+      { type: 'logo', heading: name, text: 'الجودة اللي تستاهلها' },
+      { type: 'title', emoji: '✨', heading: head, text: rest || 'كل اللي تحتاجه في مكان واحد.' },
+      { type: 'chips', heading: 'ليش *تختارنا*؟', items: [{ emoji: '⚡', text: 'سريع' }, { emoji: '💎', text: 'جودة عالية' }, { emoji: '💰', text: 'سعر مناسب' }, { emoji: '🤝', text: 'خدمة ممتازة' }] },
+      { type: 'checklist', heading: 'بخطوات *بسيطة*', items: [{ emoji: '📲', text: 'تواصل معنا', visual: 'wave' }, { emoji: '🎯', text: 'اختر اللي يناسبك', visual: 'tiles' }, { emoji: '🚀', text: 'نوصلك بسرعة', visual: 'progress' }] },
+      ...(brand.url || brand.phone ? [{ type: 'phone', heading: 'اطلب *من جوالك* 📲', text: 'كل شيء صار أسهل: تواصل معنا الحين واستمتع بالتجربة.' }] : []),
+      { type: 'outro', heading: name, text: 'تواصل معنا اليوم!' },
+    ];
+    return { brand: { name, tagline: S[0].text }, title: { ar: name, en: '' }, scenes: S.map(s => Object.assign({ narration: '' }, s)) };
+  }
+
   // ── voice: one TTS call per scene, so each scene's timing is exact ──
   function pcmToFloat(b64) { const bin = atob(b64), n = bin.length >> 1, out = new Float32Array(n); for (let i = 0; i < n; i++) { let v = bin.charCodeAt(2 * i) | (bin.charCodeAt(2 * i + 1) << 8); if (v >= 32768) v -= 65536; out[i] = v / 32768; } return out; }
   // only the words to be spoken: no tone instructions (TTS sometimes reads them aloud), no (directions), [tags], <tags> or "Narrator:" labels
@@ -325,6 +567,62 @@ Rules:
     return { get: k => safe(run('readonly', st => st.get(k))), set: (k, v) => safe(run('readwrite', st => st.put(v, k))), del: k => safe(run('readwrite', st => st.delete(k))) };
   })();
 
+  // ── 🚀 promo style: brand kit (logo, colour, name, link, phone, size) ──
+  let LOGO = null;                                   // { blob, im } — the cleaned logo
+  const PFIELDS = ['pName', 'pColor', 'pUrl', 'pPhone', 'pAspect'];
+  function pSave() { const o = {}; PFIELDS.forEach(f => o[f] = $(f).value); o.pWhite = $('pWhite').checked; store.set('studio-promo', JSON.stringify(o)); }
+  try { const o = JSON.parse(store.get('studio-promo') || '{}'); PFIELDS.forEach(f => { if (o[f] != null) $(f).value = o[f]; }); if (o.pWhite === false) $('pWhite').checked = false; } catch (e) {}
+  PFIELDS.forEach(f => { $(f).addEventListener('change', pSave); $(f).addEventListener('input', pSave); }); $('pWhite').addEventListener('change', pSave);
+  const promoUI = () => $('promoBox').classList.toggle('hidden', $('sStyle').value !== 'promo');
+  $('sStyle').addEventListener('change', promoUI); promoUI();
+  // white background → transparent (flood fill from the edges), crop, and the main colour of the logo
+  async function cleanLogo(file, white) {
+    const im0 = new Image(); im0.src = URL.createObjectURL(file); await im0.decode();
+    const k = Math.min(1, 720 / Math.max(im0.naturalWidth, im0.naturalHeight)), w = Math.max(1, Math.round(im0.naturalWidth * k)), h = Math.max(1, Math.round(im0.naturalHeight * k));
+    const c = document.createElement('canvas'); c.width = w; c.height = h; const x = c.getContext('2d'); x.drawImage(im0, 0, 0, w, h);
+    const d = x.getImageData(0, 0, w, h), a = d.data, N = w * h;
+    let transparent = false; for (let i = 0; i < N; i += 7) if (a[i * 4 + 3] < 200) { transparent = true; break; }
+    if (white && !transparent) {
+      const near = i => Math.min(a[i * 4], a[i * 4 + 1], a[i * 4 + 2]) > 222 && Math.max(a[i * 4], a[i * 4 + 1], a[i * 4 + 2]) - Math.min(a[i * 4], a[i * 4 + 1], a[i * 4 + 2]) < 34;
+      const bg = new Uint8Array(N), st = []; const push = i => { if (!bg[i] && near(i)) { bg[i] = 1; st.push(i); } };
+      for (let px = 0; px < w; px++) { push(px); push((h - 1) * w + px); } for (let py = 0; py < h; py++) { push(py * w); push(py * w + w - 1); }
+      while (st.length) { const i = st.pop(), px = i % w; if (px > 0) push(i - 1); if (px < w - 1) push(i + 1); if (i >= w) push(i - w); if (i < N - w) push(i + w); }
+      for (let i = 0; i < N; i++) {
+        if (bg[i]) { a[i * 4 + 3] = 0; continue; }
+        const px = i % w; const edge = (px > 0 && bg[i - 1]) || (px < w - 1 && bg[i + 1]) || (i >= w && bg[i - w]) || (i < N - w && bg[i + w]);
+        if (edge) a[i * 4 + 3] = Math.min(255, Math.round((255 - Math.min(a[i * 4], a[i * 4 + 1], a[i * 4 + 2])) * 3.5));
+      }
+      x.putImageData(d, 0, 0);
+    }
+    // crop to the visible part
+    let x0 = w, y0 = h, x1 = -1, y1 = -1; const hist = {};
+    for (let i = 0; i < N; i++) { if (a[i * 4 + 3] < 24) continue; const px = i % w, py = (i / w) | 0; if (px < x0) x0 = px; if (px > x1) x1 = px; if (py < y0) y0 = py; if (py > y1) y1 = py;
+      const r = a[i * 4], g = a[i * 4 + 1], b = a[i * 4 + 2], mx = Math.max(r, g, b), mn = Math.min(r, g, b), sat = mx ? (mx - mn) / mx : 0;
+      if (a[i * 4 + 3] > 200 && sat > .4 && mx > 70) { let hue = mx === mn ? 0 : mx === r ? (g - b) / (mx - mn) : mx === g ? 2 + (b - r) / (mx - mn) : 4 + (r - g) / (mx - mn); hue = ((hue * 60) + 360) % 360; const k2 = Math.floor(hue / 15); const o = hist[k2] || (hist[k2] = { n: 0, r: 0, g: 0, b: 0 }); o.n += sat; o.r += r * sat; o.g += g * sat; o.b += b * sat; } }
+    if (x1 < 0) { x0 = 0; y0 = 0; x1 = w - 1; y1 = h - 1; }
+    const pad = Math.round(Math.max(x1 - x0, y1 - y0) * .03), cw = x1 - x0 + 1 + pad * 2, ch = y1 - y0 + 1 + pad * 2;
+    const o2 = document.createElement('canvas'); o2.width = cw; o2.height = ch; o2.getContext('2d').drawImage(c, x0 - pad, y0 - pad, cw, ch, 0, 0, cw, ch);
+    const best = Object.values(hist).sort((p, q) => q.n - p.n)[0], hex = best ? '#' + [best.r, best.g, best.b].map(v => Math.round(v / best.n).toString(16).padStart(2, '0')).join('') : null;
+    const blob = await new Promise(r => o2.toBlob(r, 'image/png')); const im = new Image(); im.src = URL.createObjectURL(blob); await im.decode();
+    return { blob, im, color: hex };
+  }
+  function logoUI() { const on = !!LOGO; $('pLogoPrev').classList.toggle('hidden', !on); $('pLogoDel').classList.toggle('hidden', !on); $('pLogoTxt').classList.toggle('hidden', on); if (on) $('pLogoPrev').src = LOGO.im.src; }
+  let LOGOFILE = null;
+  async function setLogo(f, fromUser) {
+    if (!f || !/^image\//.test(f.type || 'image/png')) return;
+    try { LOGOFILE = f; const r = await cleanLogo(f, $('pWhite').checked); LOGO = { blob: r.blob, im: r.im }; if (fromUser && r.color) { $('pColor').value = r.color; pSave(); } logoUI(); if (fromUser) { IDB.set('promo-logo', f); } }
+    catch (e) { msg('sMsg', '⚠️ ما قدرت أقرأ الشعار: ' + esc(e.message), 'warn'); }
+  }
+  $('pLogoDrop').addEventListener('click', e => { if (e.target.id !== 'pLogoDel') $('pLogo').click(); });
+  $('pLogo').addEventListener('change', e => setLogo(e.target.files[0], true));
+  ['dragenter', 'dragover'].forEach(ev => $('pLogoDrop').addEventListener(ev, e => { e.preventDefault(); $('pLogoDrop').classList.add('over'); }));
+  ['dragleave', 'drop'].forEach(ev => $('pLogoDrop').addEventListener(ev, e => { e.preventDefault(); $('pLogoDrop').classList.remove('over'); }));
+  $('pLogoDrop').addEventListener('drop', e => setLogo(e.dataTransfer.files[0], true));
+  $('pLogoDel').onclick = e => { e.stopPropagation(); LOGO = null; LOGOFILE = null; $('pLogo').value = ''; IDB.del('promo-logo'); logoUI(); };
+  $('pWhite').addEventListener('change', () => { if (LOGOFILE) setLogo(LOGOFILE, false); });
+  IDB.get('promo-logo').then(f => { if (f && !LOGO) setLogo(f, false); });
+  const brandValues = () => ({ name: $('pName').value.trim(), color: $('pColor').value, url: $('pUrl').value.trim(), phone: $('pPhone').value.trim() });
+
   // ── progress list ──
   function step(k, state, note) { const li = document.querySelector(`#sSteps li[data-k="${k}"]`); li.classList.remove('doing', 'done', 'fail'); if (state) li.classList.add(state); li.querySelector('.ic').textContent = state === 'doing' ? '⏳' : state === 'done' ? '✅' : state === 'fail' ? '⚠️' : ({ plan: '📝', voice: '🎙️', pics: '🎨', video: '🎬', rec: '⬇️' })[k]; li.querySelector('small').textContent = note || ''; }
 
@@ -337,7 +635,7 @@ Rules:
   const audioBuffer = (ac, m) => { const b = ac.createBuffer(2, m.L.length, m.sr); b.copyToChannel(m.L, 0); b.copyToChannel(m.R, 1); return b; };
   function startAudio(ac, out, t0, off) {
     const srcs = [];
-    if (music) { const ms = ac.createBufferSource(), g = ac.createGain(); ms.buffer = audioBuffer(ac, music); g.gain.value = VOICE ? .18 : 1; ms.connect(g); g.connect(out); ms.start(t0, off); srcs.push(ms); }
+    if (music) { const ms = ac.createBufferSource(), g = ac.createGain(); ms.buffer = audioBuffer(ac, music); g.gain.value = VOICE ? (PROJ && PROJ.kind === 'promo' ? .3 : .18) : 1; ms.connect(g); g.connect(out); ms.start(t0, off); srcs.push(ms); }
     if (VOICE && off < VOICE.buf.duration) { const vs = ac.createBufferSource(); vs.buffer = VOICE.buf; vs.connect(out); vs.start(t0, off); srcs.push(vs); }
     return srcs;
   }
@@ -351,35 +649,94 @@ Rules:
   };
   $('sSeek').addEventListener('input', () => { stopPlay(); draw(+$('sSeek').value); });
 
-  // ── record ──
+  // ── record: frame-exact MP4 (WebCodecs + mp4-muxer) when the browser can, else real-time MediaRecorder ──
+  const isVert = () => !!(eng && eng.mode === 'promo' && eng.S.vertical);
+  function previewSize() { const v = isVert(); if (cv.width !== (v ? 720 : 1280)) { cv.width = v ? 720 : 1280; cv.height = v ? 1280 : 720; } document.querySelector('.vStage').classList.toggle('vert', v); }
+  const yieldUI = () => new Promise(r => { const c = new MessageChannel(); c.port1.onmessage = () => r(); c.port2.postMessage(0); });   // not throttled in background tabs
+  const MUXER_URL = 'https://cdn.jsdelivr.net/npm/mp4-muxer@5.1.3/build/mp4-muxer.min.js';
+  const loadMuxer = () => window.Mp4Muxer ? Promise.resolve() : new Promise((res, rej) => { const s = document.createElement('script'); s.src = MUXER_URL; s.onload = res; s.onerror = () => rej(new Error('mp4-muxer')); document.head.appendChild(s); });
+  async function exportOffline() {
+    if (!window.VideoEncoder || !window.VideoFrame || !window.OfflineAudioContext) return null;
+    const w = cv.width, h = cv.height, FPS = 30, br = Math.max(w, h) >= 1900 ? 12e6 : 6e6;
+    let vcfg = null;
+    for (const codec of ['avc1.640028', 'avc1.4d0028', 'avc1.42002a', 'avc1.42001f']) { const c = { codec, width: w, height: h, bitrate: br, framerate: FPS, avc: { format: 'avc' } }; try { if ((await VideoEncoder.isConfigSupported(c)).supported) { vcfg = c; break; } } catch (e) {} }
+    if (!vcfg) return null;
+    let acfg = null;
+    if (music || VOICE) {
+      if (!window.AudioEncoder || !window.AudioData) return null;
+      const c = { codec: 'mp4a.40.2', sampleRate: 48000, numberOfChannels: 2, bitrate: 192000 }; try { if ((await AudioEncoder.isConfigSupported(c)).supported) acfg = c; } catch (e) {}
+      if (!acfg) return null;
+    }
+    await loadMuxer();
+    const M = window.Mp4Muxer, muxer = new M.Muxer(Object.assign({ target: new M.ArrayBufferTarget(), video: { codec: 'avc', width: w, height: h, frameRate: FPS }, fastStart: 'in-memory', firstTimestampBehavior: 'offset' }, acfg ? { audio: { codec: 'aac', numberOfChannels: 2, sampleRate: 48000 } } : {}));
+    let err = null; const dur = eng.DUR;
+    if (acfg) {
+      step('rec', 'doing', 'الصوت…');
+      const oac = new OfflineAudioContext(2, Math.ceil((dur + .2) * 48000), 48000); startAudio(oac, oac.destination, 0, 0); const ab = await oac.startRendering();
+      const ae = new AudioEncoder({ output: (c, m) => muxer.addAudioChunk(c, m), error: e => { err = e; } }); ae.configure(acfg);
+      const L = ab.getChannelData(0), R = ab.getChannelData(1), n = ab.length, CH = 4800;
+      for (let i = 0; i < n; i += CH) { const m = Math.min(CH, n - i), data = new Float32Array(m * 2); data.set(L.subarray(i, i + m), 0); data.set(R.subarray(i, i + m), m);
+        const ad = new AudioData({ format: 'f32-planar', sampleRate: 48000, numberOfFrames: m, numberOfChannels: 2, timestamp: Math.round(i / 48000 * 1e6), data }); ae.encode(ad); ad.close(); }
+      await ae.flush(); ae.close(); if (err) throw err;
+    }
+    const ve = new VideoEncoder({ output: (c, m) => muxer.addVideoChunk(c, m), error: e => { err = e; } }); ve.configure(vcfg);
+    const nF = Math.ceil(dur * FPS);
+    for (let f = 0; f < nF; f++) {
+      if (err) throw err;
+      eng.render(f / FPS);
+      const vf = new VideoFrame(cv, { timestamp: Math.round(f * 1e6 / FPS), duration: Math.round(1e6 / FPS) }); ve.encode(vf, { keyFrame: f % 60 === 0 }); vf.close();
+      while (ve.encodeQueueSize > 6) await yieldUI();
+      if (f % 6 === 0) { const pc = f / nF * 100; $('sBar').style.width = pc + '%'; step('rec', 'doing', Math.round(pc) + '%'); await yieldUI(); }
+    }
+    await ve.flush(); ve.close(); if (err) throw err;
+    muxer.finalize();
+    return new Blob([muxer.target.buffer], { type: 'video/mp4' });
+  }
   async function record(ac) {
     if (!eng || recording) return;
-    if (!window.MediaRecorder || !cv.captureStream) return msg('sRecMsg', '⚠️ هذا المتصفح ما يدعم تسجيل الفيديو. جرّب Chrome.', 'warn');
-    stopPlay(); recording = true; step('rec', 'doing', 'يسجّل…');
-    ac = ac && ac.state !== 'closed' ? ac : new (window.AudioContext || window.webkitAudioContext)(); ac.resume();
-    const btn = $('sRec'), old = btn.innerHTML; btn.disabled = true; btn.innerHTML = '🔴 يسجّل…'; $('sProg').classList.remove('hidden'); msg('sRecMsg', '');
+    stopPlay(); recording = true; step('rec', 'doing', 'يجهّز…');
+    const btn = $('sRec'), old = btn.innerHTML; btn.disabled = true; btn.innerHTML = '🔴 يجهّز الفيديو…'; $('sProg').classList.remove('hidden'); msg('sRecMsg', '');
+    let how = '';
     try {
       await fontsReady;
-      const H = +$('sQual').value; cv.width = Math.round(H * 16 / 9); cv.height = H; eng.render(0);
-      const dest = ac.createMediaStreamDestination(), stream = cv.captureStream(30); dest.stream.getAudioTracks().forEach(t => stream.addTrack(t));
-      const mime = ['video/mp4;codecs=avc1.640028,mp4a.40.2', 'video/mp4;codecs=avc1,mp4a', 'video/mp4', 'video/webm;codecs=vp9,opus', 'video/webm'].find(t => MediaRecorder.isTypeSupported(t)) || '';
-      const rec = new MediaRecorder(stream, Object.assign({ videoBitsPerSecond: H >= 1080 ? 10e6 : 5e6, audioBitsPerSecond: 192e3 }, mime ? { mimeType: mime } : {}));
-      const chunks = []; rec.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data); }; const stopped = new Promise(r => { rec.onstop = r; });
-      rec.start(1000); const t0 = ac.currentTime + .2; startAudio(ac, dest, t0, 0);
-      await new Promise(res => { const loop = () => { const t = ac.currentTime - t0; eng.render(Math.max(0, t)); $('sBar').style.width = Math.min(100, Math.max(0, t / eng.DUR * 100)) + '%'; if (t >= eng.DUR + .3) return res(); requestAnimationFrame(loop); }; loop(); });
-      rec.stop(); await stopped;
-      const type = rec.mimeType || mime || 'video/webm', ext = /mp4/.test(type) ? 'mp4' : 'webm', blob = new Blob(chunks, { type }), url = URL.createObjectURL(blob);
-      const name = ((PLAN && PLAN.title && PLAN.title.ar) || 'فيديو').replace(/[\\/:*?"<>|]/g, '').trim() + '.' + ext;
+      const H = +$('sQual').value, vert = isVert(); cv.width = vert ? H : Math.round(H * 16 / 9); cv.height = vert ? Math.round(H * 16 / 9) : H; eng.render(0);
+      let blob = null;
+      if (store.get('studio-export') !== 'rt') { try { blob = await exportOffline(); if (blob) how = 'fast'; } catch (e) { console.warn('offline export failed, recording in real time', e); blob = null; } }
+      if (!blob) {
+        if (!window.MediaRecorder || !cv.captureStream) throw new Error('هذا المتصفح ما يدعم تسجيل الفيديو. جرّب Chrome.');
+        btn.innerHTML = '🔴 يسجّل…'; step('rec', 'doing', 'يسجّل…'); eng.render(0);
+        ac = ac && ac.state !== 'closed' ? ac : new (window.AudioContext || window.webkitAudioContext)(); ac.resume();
+        const dest = ac.createMediaStreamDestination(), stream = cv.captureStream(30); dest.stream.getAudioTracks().forEach(t => stream.addTrack(t));
+        const mime = ['video/mp4;codecs=avc1.640028,mp4a.40.2', 'video/mp4;codecs=avc1,mp4a', 'video/mp4', 'video/webm;codecs=vp9,opus', 'video/webm'].find(t => MediaRecorder.isTypeSupported(t)) || '';
+        const rec = new MediaRecorder(stream, Object.assign({ videoBitsPerSecond: H >= 1080 ? 10e6 : 5e6, audioBitsPerSecond: 192e3 }, mime ? { mimeType: mime } : {}));
+        const chunks = []; rec.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data); }; const stopped = new Promise(r => { rec.onstop = r; });
+        rec.start(1000); const t0 = ac.currentTime + .2; startAudio(ac, dest, t0, 0);
+        await new Promise(res => { const loop = () => { const t = ac.currentTime - t0; eng.render(Math.max(0, t)); $('sBar').style.width = Math.min(100, Math.max(0, t / eng.DUR * 100)) + '%'; if (t >= eng.DUR + .3) return res(); requestAnimationFrame(loop); }; loop(); });
+        rec.stop(); await stopped;
+        blob = new Blob(chunks, { type: rec.mimeType || mime || 'video/webm' }); how = 'rt';
+      }
+      const ext = /mp4/.test(blob.type) ? 'mp4' : 'webm', url = URL.createObjectURL(blob);
+      const name = ((PROJ && PROJ.title && PROJ.title.ar) || (PLAN && PLAN.title && PLAN.title.ar) || 'فيديو').replace(/[\\/:*?"<>|]/g, '').trim() + '.' + ext;
       const a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
-      msg('sRecMsg', `✓ جاهز: <a href="${url}" download="${esc(name)}">${esc(name)}</a> (${(blob.size / 1048576).toFixed(1)} MB)`); step('rec', 'done', ext.toUpperCase());
+      msg('sRecMsg', `✓ جاهز: <a href="${url}" download="${esc(name)}">${esc(name)}</a> (${(blob.size / 1048576).toFixed(1)} MB)`); step('rec', 'done', ext.toUpperCase() + (how === 'fast' ? ' ⚡' : ''));
     } catch (err) { msg('sRecMsg', `⚠️ تعذّر التسجيل: ${esc(err.message)}`, 'warn'); step('rec', 'fail'); }
-    finally { try { ac.close(); } catch (e) {} recording = false; btn.disabled = false; btn.innerHTML = old; $('sProg').classList.add('hidden'); cv.width = 1280; cv.height = 720; draw(+$('sSeek').value); }
+    finally { try { ac && ac.close(); } catch (e) {} recording = false; btn.disabled = false; btn.innerHTML = old; $('sProg').classList.add('hidden'); previewSize(); draw(+$('sSeek').value); }
   }
   $('sRec').onclick = () => record(null);
   $('sWav').onclick = () => { if (!VOICE) return; const a = document.createElement('a'); a.href = URL.createObjectURL(VOICE.wav); a.download = ((PLAN && PLAN.title && PLAN.title.ar) || 'صوت') + '.wav'; document.body.appendChild(a); a.click(); a.remove(); };
 
   function formValues() { const o = {}; FIELDS.forEach(f => o[f] = $(f).value); return o; }
+  const promoSpec = (P2 = PROJ) => ({ kind: 'promo', aspect: P2.aspect, brand: Object.assign({}, P2.brand, { logo: P2.logoIm || null }), title: P2.title, credit: P2.credit, textMode: P2.textMode, scenes: P2.plan.scenes, voiceDur: P2.voiceDur, music: P2.music || {} });
   function buildVideo() {
+    if (PROJ.kind === 'promo') {
+      eng = VideoEngine.create(cv, promoSpec()); previewSize(); music = PROJ.music ? eng.music() : null;
+      $('sSeek').max = eng.DUR; $('sEmpty').classList.add('hidden'); draw(Math.min(4.5, eng.DUR));
+      $('sReMusic').classList.toggle('hidden', !PROJ.music); $('sWav').classList.toggle('hidden', !VOICE); $('sReLook').classList.add('hidden');
+      $('sScript').classList.remove('hidden');
+      const TY = { logo: '✨ الشعار', title: '🔤 عنوان', typing: '⌨️ كتابة', checklist: '✅ خطوات', cards: '🃏 بطاقات', chips: '🏷️ مزايا', phone: '📱 جوال', outro: '🎬 الخاتمة' };
+      $('sSceneList').innerHTML = eng.T.scenes.map((x, i) => `<div class="scene"><b>${i + 1}. ${TY[x.type] || ''} · ${esc(String(x.heading || '').replace(/\*/g, ''))}</b>${esc(x.say || '')}</div>`).join('');
+      return;
+    }
     if (PROJ.kind === 'cartoon') {
       eng = VideoEngine.create(cv, Object.assign({}, PROJ.card, { media: { image: CARDIMG }, voiceDur: PROJ.voiceDur, music: PROJ.music || {}, credit: PROJ.credit }));
       music = PROJ.music ? eng.music() : null;
@@ -387,7 +744,7 @@ Rules:
       $('sReMusic').classList.toggle('hidden', !PROJ.music); $('sWav').classList.toggle('hidden', !VOICE);
       $('sScript').classList.remove('hidden');
       const n = PROJ.narr || { intro: '', steps: [], outro: '' };
-      $('sScenes').innerHTML = [['👋 البداية', n.intro], ...(n.steps || []).map((t, i) => [`${i + 1}. ${esc((PROJ.plan.scenes[i] || {}).heading || '')}`, t]), ['🎉 النهاية', n.outro]].map(([h, t]) => `<div class="scene"><b>${h}</b>${esc(t || '')}</div>`).join('');
+      $('sSceneList').innerHTML = [['👋 البداية', n.intro], ...(n.steps || []).map((t, i) => [`${i + 1}. ${esc((PROJ.plan.scenes[i] || {}).heading || '')}`, t]), ['🎉 النهاية', n.outro]].map(([h, t]) => `<div class="scene"><b>${h}</b>${esc(t || '')}</div>`).join('');
       return;
     }
     const spec = { kind: 'explainer', title: PROJ.title, credit: PROJ.credit, textMode: PROJ.textMode, music: PROJ.music || {}, presenter: PROJ.presenter || null, cinematic: !!PROJ.cinematic, look: PROJ.look || {},
@@ -396,7 +753,7 @@ Rules:
     $('sSeek').max = eng.DUR; $('sEmpty').classList.add('hidden'); draw(Math.min(3, eng.DUR));
     $('sReMusic').classList.toggle('hidden', !PROJ.music); $('sWav').classList.toggle('hidden', !VOICE); $('sReLook').classList.toggle('hidden', !!PROJ.cinematic);
     $('sScript').classList.remove('hidden');
-    $('sScenes').innerHTML = PROJ.plan.scenes.map((x, i) => `<div class="scene"><b>${i + 1}. ${esc(x.emoji || '')} ${esc(x.heading || x.text || '')}</b>${esc(x.narration || '')}</div>`).join('');
+    $('sSceneList').innerHTML = PROJ.plan.scenes.map((x, i) => `<div class="scene"><b>${i + 1}. ${esc(x.emoji || '')} ${esc(x.heading || x.text || '')}</b>${esc(x.narration || '')}</div>`).join('');
   }
   // another piece of music for the same video (no API needed)
   $('sReLook').onclick = () => { if (!PROJ || PROJ.kind === 'cartoon') return; stopPlay(); PROJ.look = { seed: (Date.now() ^ Math.floor(Math.random() * 1e9)) >>> 0 }; const t = +$('sSeek').value; buildVideo(); draw(t); updateProject(); msg('sRecMsg', '🎨 تغيّرت الخلفيات والألوان.'); };
@@ -407,14 +764,19 @@ Rules:
   const hLoad = () => { try { const a = JSON.parse(store.get(HKEY) || '[]'); return Array.isArray(a) ? a : []; } catch (e) { return []; } };
   function hStore(list) { for (let i = list.length - 1; i >= -1; i--) { try { localStorage.setItem(HKEY, JSON.stringify(list)); return true; } catch (e) { if (i >= 0) list[i].thumb = ''; } } return false; }
   const hDate = ms => new Date(ms).toLocaleDateString('ar-u-ca-gregory-nu-arab', { day: 'numeric', month: 'long', year: 'numeric' });
-  function thumb() { if (PROJ && PROJ.kind === 'cartoon') { try { const c = document.createElement('canvas'); c.width = 384; c.height = 216; const e = VideoEngine.create(c, Object.assign({}, PROJ.card, { media: { image: CARDIMG }, voiceDur: PROJ.voiceDur })); e.render(e.T.steps[0] ? e.T.steps[0].ts + 3 : 4); return c.toDataURL('image/jpeg', .72); } catch (e) { return ''; } }
+  function thumb() {
+    if (PROJ && PROJ.kind === 'promo') { try { const c = document.createElement('canvas'), v = PROJ.aspect === '9:16'; c.width = v ? 216 : 384; c.height = v ? 384 : 216; const e = VideoEngine.create(c, promoSpec()); e.render(Math.min(5.2, e.T.scenes[0].b - .3));
+      if (!v) return c.toDataURL('image/jpeg', .72);
+      const o = document.createElement('canvas'); o.width = 384; o.height = 216; o.getContext('2d').drawImage(c, 0, 95, 216, 121.5, 0, 0, 384, 216); return o.toDataURL('image/jpeg', .72); } catch (e) { return ''; } }
+    if (PROJ && PROJ.kind === 'cartoon') { try { const c = document.createElement('canvas'); c.width = 384; c.height = 216; const e = VideoEngine.create(c, Object.assign({}, PROJ.card, { media: { image: CARDIMG }, voiceDur: PROJ.voiceDur })); e.render(e.T.steps[0] ? e.T.steps[0].ts + 3 : 4); return c.toDataURL('image/jpeg', .72); } catch (e) { return ''; } }
     try { const c = document.createElement('canvas'); c.width = 384; c.height = 216; const e = VideoEngine.create(c, eng.S && Object.assign({}, { kind: 'explainer', title: PROJ.title, textMode: PROJ.textMode, cinematic: !!PROJ.cinematic, look: PROJ.look || {}, presenter: PROJ.presenter || null, scenes: PROJ.plan.scenes.map((s, i) => Object.assign({}, s, { img: PICS[i] || null })), voice: VOICE ? VOICE.info : null })); const sc = e.T.scenes[Math.min(1, e.T.scenes.length - 1)]; e.render(sc.a + Math.min(2, (sc.b - sc.a) / 2)); return c.toDataURL('image/jpeg', .72); } catch (e) { return ''; } }
-  const meta = () => ({ id: PROJ.id, kind: PROJ.kind || 'explainer', cinematic: PROJ.cinematic, look: PROJ.look, created: PROJ.created, updated: Date.now(), title: PROJ.title, plan: PROJ.plan, card: PROJ.card, narr: PROJ.narr, voiceDur: PROJ.voiceDur, presenter: PROJ.presenter, voiceEnv: PROJ.voiceEnv, textMode: PROJ.textMode, credit: PROJ.credit, music: PROJ.music, voiceInfo: PROJ.voiceInfo, settings: PROJ.settings, nPics: PICBLOBS.filter(Boolean).length });
+  const meta = () => ({ id: PROJ.id, kind: PROJ.kind || 'explainer', cinematic: PROJ.cinematic, look: PROJ.look, created: PROJ.created, updated: Date.now(), title: PROJ.title, plan: PROJ.plan, card: PROJ.card, narr: PROJ.narr, voiceDur: PROJ.voiceDur, presenter: PROJ.presenter, voiceEnv: PROJ.voiceEnv, textMode: PROJ.textMode, credit: PROJ.credit, music: PROJ.music, voiceInfo: PROJ.voiceInfo, settings: PROJ.settings, brand: PROJ.brand, aspect: PROJ.aspect, nPics: PICBLOBS.filter(Boolean).length });
   async function saveProject() {
     if (!PROJ) return;
     if (VOICE) await IDB.set('voice:' + PROJ.id, VOICE.wav);
     for (let i = 0; i < PICBLOBS.length; i++) if (PICBLOBS[i]) await IDB.set('pic:' + PROJ.id + ':' + i, PICBLOBS[i]);
     if (IMG) await IDB.set('input:' + PROJ.id, IMG);
+    if (PROJ.kind === 'promo' && PROJ.logoBlob) await IDB.set('logo:' + PROJ.id, PROJ.logoBlob);
     const list = hLoad().filter(x => x.id !== PROJ.id); list.unshift(Object.assign(meta(), { thumb: thumb() })); if (list.length > 60) list.length = 60;
     msg('hMsg', hStore(list) ? '' : '⚠️ ذاكرة المتصفح ممتلئة. احذف أعمال قديمة من السجل.', 'warn'); hRender();
   }
@@ -422,15 +784,16 @@ Rules:
   function hRender() {
     const list = hLoad(); $('hCount').textContent = list.length ? `(${list.length})` : '';
     $('hList').innerHTML = list.length ? list.map(x => `<div class="hItem${PROJ && x.id === PROJ.id ? ' cur' : ''}">${x.thumb ? `<img src="${x.thumb}" alt="">` : '<img alt="">'}
-      <div class="hBody"><b>${esc((x.title && x.title.ar) || 'بدون عنوان')}</b><small>${hDate(x.updated || x.created)} · ${x.kind === 'cartoon' ? '🧒 كرتون' : x.plan.scenes.length + ' مشاهد'}${x.voiceInfo ? ' · بصوت' : ''}${x.nPics ? ' · صور' : ''}</small>
+      <div class="hBody"><b>${esc((x.title && x.title.ar) || 'بدون عنوان')}</b><small>${hDate(x.updated || x.created)} · ${x.kind === 'cartoon' ? '🧒 كرتون' : x.kind === 'promo' ? '🚀 إعلان' + (x.aspect === '9:16' ? ' طولي' : '') : x.plan.scenes.length + ' مشاهد'}${x.voiceInfo ? ' · بصوت' : ''}${x.nPics ? ' · صور' : ''}</small>
       <div class="hBtns"><button type="button" class="primary small" data-open="${x.id}">🎬 افتح</button><button type="button" class="ghost small" data-del="${x.id}" title="احذف">🗑️</button></div></div></div>`).join('')
       : '<div class="where" style="padding:16px;text-align:center">السجل فاضي. أول فيديو تصنعه بيظهر هنا.</div>';
   }
   async function openProject(id) {
     const x = hLoad().find(i => i.id === id); if (!x) return;
     stopPlay(); clearPreview();
-    PROJ = { id: x.id, kind: x.kind, cinematic: x.cinematic, look: x.look, created: x.created, title: x.title, plan: x.plan, card: x.card, narr: x.narr, voiceDur: x.voiceDur, presenter: x.presenter, voiceEnv: x.voiceEnv, textMode: x.textMode, credit: x.credit, music: x.music, voiceInfo: x.voiceInfo, settings: x.settings };
-    if (x.settings) { FIELDS.forEach(f => { if (x.settings[f] != null && f !== 'sVoice') $(f).value = x.settings[f]; }); voiceUI(); if (x.settings.sVoice) $('sVoice').value = x.settings.sVoice; }
+    PROJ = { id: x.id, kind: x.kind, cinematic: x.cinematic, look: x.look, created: x.created, title: x.title, plan: x.plan, card: x.card, narr: x.narr, voiceDur: x.voiceDur, presenter: x.presenter, voiceEnv: x.voiceEnv, textMode: x.textMode, credit: x.credit, music: x.music, voiceInfo: x.voiceInfo, settings: x.settings, brand: x.brand, aspect: x.aspect };
+    if (x.kind === 'promo') { const lb = await IDB.get('logo:' + x.id); if (lb) { const im = new Image(); im.src = URL.createObjectURL(lb); try { await im.decode(); PROJ.logoIm = im; PROJ.logoBlob = lb; } catch (e) {} } }
+    if (x.settings) { FIELDS.forEach(f => { if (x.settings[f] != null && f !== 'sVoice') $(f).value = x.settings[f]; }); voiceUI(); if (x.settings.sVoice) $('sVoice').value = x.settings.sVoice; promoUI(); }
     PLAN = x.plan; PICS = []; PICBLOBS = []; VOICE = null;
     for (let i = 0; i < x.plan.scenes.length; i++) { const b = await IDB.get('pic:' + x.id + ':' + i); if (b) { const im = new Image(); im.src = URL.createObjectURL(b); try { await im.decode(); PICS[i] = im; PICBLOBS[i] = b; } catch (e) {} } }
     const w = await IDB.get('voice:' + x.id);
@@ -445,10 +808,10 @@ Rules:
     const b = e.target.closest('button'); if (!b) return;
     if (b.dataset.open) return openProject(b.dataset.open);
     if (b.dataset.del) { const x = hLoad().find(i => i.id === b.dataset.del); if (!x || !confirm(`تحذف «${(x.title && x.title.ar) || ''}» من السجل؟`)) return;
-      hStore(hLoad().filter(i => i.id !== x.id)); IDB.del('voice:' + x.id); IDB.del('input:' + x.id); for (let i = 0; i < 8; i++) IDB.del('pic:' + x.id + ':' + i); hRender(); }
+      hStore(hLoad().filter(i => i.id !== x.id)); IDB.del('voice:' + x.id); IDB.del('input:' + x.id); IDB.del('logo:' + x.id); for (let i = 0; i < 8; i++) IDB.del('pic:' + x.id + ':' + i); hRender(); }
   });
   // ── new idea: clear everything except the settings and the key ──
-  function clearPreview() { eng = null; music = null; cv.getContext('2d').clearRect(0, 0, cv.width, cv.height); $('sEmpty').classList.remove('hidden'); $('sTime').textContent = '0:00 / 0:00'; $('sSeek').value = 0; $('sScript').classList.add('hidden'); $('sWav').classList.add('hidden'); $('sReMusic').classList.add('hidden'); msg('sRecMsg', ''); ['plan', 'voice', 'pics', 'video', 'rec'].forEach(k => step(k, '')); }
+  function clearPreview() { eng = null; music = null; previewSize(); cv.getContext('2d').clearRect(0, 0, cv.width, cv.height); $('sEmpty').classList.remove('hidden'); $('sTime').textContent = '0:00 / 0:00'; $('sSeek').value = 0; $('sScript').classList.add('hidden'); $('sWav').classList.add('hidden'); $('sReMusic').classList.add('hidden'); msg('sRecMsg', ''); ['plan', 'voice', 'pics', 'video', 'rec'].forEach(k => step(k, '')); }
   $('sClear').onclick = () => {
     if (($('sIdea').value.trim() || PROJ) && !confirm('تبدأ فكرة جديدة؟ (الفيديو الحالي محفوظ في السجل)')) return;
     stopPlay(); clearPreview(); PROJ = null; PLAN = null; VOICE = null; PICS = []; PICBLOBS = [];
@@ -469,14 +832,31 @@ Rules:
     const c = ['pictures', 'cinematic'].includes($('sStyle').value) ? SERVER.points.pictures : SERVER.points.motion;
     el.innerHTML = `هذا الفيديو يكلّف <b>${c}</b> ${c === 1 ? 'نقطة' : 'نقاط'} · رصيدك <b>${ME.points}</b>`;
   }
+  const costNow = () => SERVER ? (['pictures', 'cinematic'].includes($('sStyle').value) ? SERVER.points.pictures : SERVER.points.motion) : 0;
+  const ptsTxt = n => n === 1 ? 'نقطة واحدة' : n === 2 ? 'نقطتين' : n >= 3 && n <= 10 ? n + ' نقاط' : n + ' نقطة';
+  function goLabel() { const go = $('sGo'); if (go.disabled) return; const c = useProxy() && ME ? costNow() : 0; go.innerHTML = '🎬 اصنع الفيديو' + (c ? ` <small>· ${ptsTxt(c)}</small>` : ''); }
+  function askCost() {
+    const c = costNow(), have = ME.points, ok = have >= c, styleName = $('sStyle').selectedOptions[0].textContent.replace(/\s*\(.*\)\s*$/, '');
+    $('caIc').textContent = ok ? '⭐' : '🪫';
+    $('caT').textContent = ok ? `هذا الفيديو بيصرف ${ptsTxt(c)}` : 'رصيدك ما يكفي لهذا الفيديو';
+    $('caTable').innerHTML = `<tr><td>نوع الفيديو</td><td>${esc(styleName)}</td></tr><tr><td>تكلفة الفيديو</td><td>${ptsTxt(c)}</td></tr><tr><td>رصيدك الحين</td><td>${ptsTxt(have)}</td></tr>` + (ok ? `<tr class="after"><td>رصيدك بعد الفيديو</td><td>${ptsTxt(have - c)}</td></tr>` : `<tr class="after"><td style="color:var(--red)">ينقصك</td><td style="color:var(--red)">${ptsTxt(c - have)}</td></tr>`);
+    $('caNote').textContent = ok ? 'إذا فشل الفيديو قبل ما يتولّد الصوت أو الصور، ترجع نقاطك تلقائيًا.' : 'اشحن نقاطك من تبويب «النقاط والأسعار»، أو اختر أسلوب «موشن جرافيك» الأرخص.';
+    $('caGo').textContent = ok ? `🎬 اصنع الفيديو (${ptsTxt(c)})` : '💳 اشحن نقاطك';
+    $('caGo').onclick = () => { $('costAsk').classList.add('hidden'); if (ok) $('sGo').onclick(null, true); else { showTab('points'); history.replaceState(null, '', '#points'); window.scrollTo({ top: 0, behavior: 'smooth' }); } };
+    $('costAsk').classList.remove('hidden'); $('caGo').focus();
+  }
+  $('caNo').onclick = () => $('costAsk').classList.add('hidden');
+  $('costAsk').addEventListener('click', e => { if (e.target === $('costAsk')) $('costAsk').classList.add('hidden'); });
   $('sStyle').addEventListener('change', costUI);
+  $('sStyle').addEventListener('change', goLabel);
   const loadGIS = () => new Promise(res => { if (window.google && google.accounts && google.accounts.id) return res(); const sc = document.createElement('script'); sc.src = 'https://accounts.google.com/gsi/client'; sc.async = true; sc.onload = res; sc.onerror = res; document.head.appendChild(sc); });
   async function login(body) { try { ME = (await api('login', body)).user; acctRender(); msg('sMsg', `✓ أهلاً ${esc(ME.name || ME.email)}! رصيدك ${ME.points} نقاط.`); } catch (e) { msg('sMsg', '⚠️ ' + esc(e.message), 'warn'); } }
   async function acctRender() {
     const box = $('acct');
     $('kTitle').innerHTML = SERVER ? '🔑 مفتاحك الخاص <small>(اختياري)</small>' : '🔑 مفتاح Gemini <small>(مرة وحدة بس)</small>';
     $('kProxyNote').classList.toggle('hidden', !SERVER);
-    $('adminCard').classList.toggle('hidden', !(ME && ME.admin));
+    setTimeout(goLabel, 0); $('adminCard').classList.toggle('hidden', !(ME && ME.admin)); $('pAdmin').classList.toggle('hidden', !(ME && ME.admin));
+    if (SERVER) document.querySelectorAll('.pc').forEach(e => { const v = e.dataset.k === 'welcome' ? SERVER.welcome : SERVER.points[e.dataset.k]; if (v != null) e.textContent = v; });
     costUI();
     if (!SERVER) return box.classList.add('hidden');
     box.classList.remove('hidden');
@@ -504,6 +884,24 @@ Rules:
   }
   $('aUsers').addEventListener('click', e => { const tr = e.target.closest('tr[data-email]'); if (tr) { $('aEmail').value = tr.dataset.email; $('aPts').focus(); } });
   $('aRefresh').onclick = adminLoad;
+  document.querySelectorAll('.aQuick').forEach(b => b.onclick = () => { $('aPts').value = b.dataset.n; if ($('aEmail').value.trim()) $('aAdd').click(); else { msg('aMsg', '⚠️ اكتب إيميل المستخدم أو اضغط عليه في الجدول.', 'warn'); $('aEmail').focus(); } });
+  // ── top-up request on WhatsApp with the package and the account email ready ──
+  const WA = '966564444664';
+  document.querySelectorAll('.copyBtn').forEach(b => b.onclick = async () => {
+    try { await navigator.clipboard.writeText(b.dataset.copy); } catch (e) { const t = document.createElement('textarea'); t.value = b.dataset.copy; document.body.appendChild(t); t.select(); try { document.execCommand('copy'); } catch (e2) {} t.remove(); }
+    const o = b.textContent; b.textContent = '✓ تم النسخ'; setTimeout(() => { b.textContent = o; }, 1500);
+  });
+  const closeAsk = () => $('loginAsk').classList.add('hidden');
+  $('laNo').onclick = closeAsk;
+  $('loginAsk').addEventListener('click', e => { if (e.target === $('loginAsk')) closeAsk(); });
+  $('laGo').onclick = () => { closeAsk(); window.scrollTo({ top: 0, behavior: 'smooth' }); const a = $('acct'); a.classList.remove('pulse'); void a.offsetWidth; a.classList.add('pulse'); };
+  document.querySelectorAll('.waBtn').forEach(b => b.onclick = () => {
+    const pk = b.dataset.pts ? `باقة ${b.dataset.pts} نقطة (${b.dataset.price} ريال)` : 'نقاط';
+    if (SERVER && !ME) return $('loginAsk').classList.remove('hidden');
+    const text = `السلام عليكم، أبغى أشحن ${pk} في الاستوديو الآلي.${ME ? '\nإيميل حسابي: ' + ME.email : ''}\nحوّلت المبلغ، وهذا إيصال التحويل:`;
+    const a = document.createElement('a'); a.href = 'https://wa.me/' + WA + '?text=' + encodeURIComponent(text); a.target = '_blank'; a.rel = 'noopener';
+    document.body.appendChild(a); a.click(); a.remove();
+  });
   $('aAdd').onclick = async () => {
     const email = $('aEmail').value.trim(), delta = parseInt($('aPts').value, 10);
     if (!email || !delta) return msg('aMsg', '⚠️ اكتب الإيميل وعدد النقاط.', 'warn');
@@ -517,7 +915,7 @@ Rules:
     acctRender();
   })();
   // a personal key switches between «points» and «my key»
-  ['kSave', 'kDel'].forEach(id => $(id).addEventListener('click', () => setTimeout(costUI, 0)));
+  ['kSave', 'kDel'].forEach(id => $(id).addEventListener('click', () => setTimeout(() => { costUI(); goLabel(); }, 0)));
 
   // ── cartoon style: analyse an activity / workout card, narrate each step ──
   const CARD_PROMPT = "Read the attached card image. It may be a children's activity card, an exercise / workout card, or any other instructional card (cooking, hygiene, science, crafts, safety…). Reply with ONLY a JSON object (no code fences, no extra text) in exactly this shape:\n{\"template\":\"\",\"animatable\":true,\"setting\":\"\",\"title\":{\"ar\":\"\",\"en\":\"\"},\"desc\":{\"ar\":\"\",\"en\":\"\"},\"level\":{\"ar\":\"\",\"en\":\"\"},\"help\":{\"ar\":\"\",\"en\":\"\"},\n\"characters\":[{\"role\":\"main\",\"age\":\"\",\"gender\":\"\",\"hairStyle\":\"\",\"hijab\":false,\"hair\":\"#000000\",\"scarf\":\"#000000\",\"skin\":\"#000000\",\"top\":\"#000000\",\"bottom\":\"#000000\",\"shoes\":\"#000000\",\"sleeves\":\"\"}],\n\"setup\":{\"surface\":\"\",\"item\":\"\",\"target\":\"\",\"tongs\":false,\"helper\":false},\n\"steps\":[{\"ar\":\"\",\"en\":\"\",\"capAr\":\"\",\"capEn\":\"\",\"action\":\"\",\"box\":[0,0,0,0]}],\n\"exercises\":[{\"ar\":\"\",\"en\":\"\",\"move\":\"\",\"reps\":{\"ar\":\"\",\"en\":\"\"},\"target\":{\"ar\":\"\",\"en\":\"\"},\"hold\":false,\"box\":[0,0,0,0]}],\n\"tools\":[{\"ar\":\"\",\"en\":\"\",\"kind\":\"\",\"box\":[0,0,0,0]}],\n\"benefits\":[{\"ar\":\"\",\"en\":\"\",\"icon\":\"\"}]}\nRules:\n- template: \"activity\" = a children's motor / balance activity with equipment; \"workout\" = a list of exercises with reps, sets or time; \"other\" = any other subject.\n- Copy the Arabic text exactly as written on the card (title, desc, level, step titles \"ar\" and their sentences \"capAr\", exercise names, reps, targets, tools, benefits, and any safety / adult-help note as \"help\"). Add short, simple English translations in every \"en\" and \"capEn\".\n- box = where the PICTURE (illustration or photo) of that step / exercise / tool is on the card, as [ymin, xmin, ymax, xmax] on a 0–1000 scale. Only the picture, not its text or arrows. Use [] if it has no picture.\n- characters: the people in the pictures. \"main\" = the one doing it; add a second item with \"role\":\"helper\" if an adult helps. age: child | teen | adult. gender: male | female. hairStyle: short | ponytail | long | bun | pigtails. hijab: true if wearing a headscarf (then \"scarf\" is its colour). Colours are hex codes taken from the pictures. sleeves: long | short | none.\n- setting: \"kids_gym\" for children's activities, \"fitness_studio\" for workouts and adults.\n- template \"activity\": fill \"steps\" (action = ready, balance, squat, pick, stand, place, throw, repeat, walk, jump, oneleg, or other) and \"setup\" (surface: board | beam | floor; item: disc | bag | ball; target: cone | hoop | basket; tongs; helper).\n- template \"workout\": fill \"exercises\" in order (move = plank, leg_raise, crunch, bicycle, russian_twist, mountain_climber, push_up, glute_bridge, squat, lunge, superman, flutter, jumping_jack, high_knees, stretch, or other; reps = the reps / sets / time text; target = the muscle or benefit text; hold = true for positions held for time) and leave \"steps\" [].\n- template \"other\": fill \"steps\" (action \"other\") with their pictures' boxes, and leave \"exercises\" [].\n- animatable: true only if EVERY step / exercise uses one of the listed actions or moves (none is \"other\"), otherwise false.\n- tools[].kind: board, beam, discs, cone, tongs, mat, bags, hoop, ball, basket, table, helper, other. benefits[].icon: balance, weight, eye, focus, heart, brain, hand, star.\n- Use \"\" or [] for anything that is not on the card.";
@@ -558,7 +956,7 @@ Items: ${JSON.stringify(items)}`;
     card.narration = { intro: clean[0], steps: clean.slice(1, 1 + nSteps), outro: clean[clean.length - 1] };
     step('plan', 'done', `${nSteps} خطوات`);
     $('sScript').classList.remove('hidden');
-    $('sScenes').innerHTML = [['👋 البداية', card.narration.intro], ...card.narration.steps.map((t, i) => [`${i + 1}. ${esc(((card.template === 'workout' ? card.exercises : card.steps)[i] || {}).ar || '')}`, t]), ['🎉 النهاية', card.narration.outro]].map(([h, t]) => `<div class="scene"><b>${h}</b>${esc(t)}</div>`).join('');
+    $('sSceneList').innerHTML = [['👋 البداية', card.narration.intro], ...card.narration.steps.map((t, i) => [`${i + 1}. ${esc(((card.template === 'workout' ? card.exercises : card.steps)[i] || {}).ar || '')}`, t]), ['🎉 النهاية', card.narration.outro]].map(([h, t]) => `<div class="scene"><b>${h}</b>${esc(t)}</div>`).join('');
     // voice: one clip per part
     let clips = null;
     if (gender !== 'none') {
@@ -583,12 +981,64 @@ Items: ${JSON.stringify(items)}`;
     return { buf, wav: wavBlob(pcm, rate), info: { duration: total / rate, at, durs: clips.map(c => c.pcm.length / rate) } };
   }
 
+  // ── 🚀 promo: plan (Gemini or offline template) → optional voice per scene → promo engine ──
+  async function runPromo(o, gender, voiceName, imgRef) {
+    const brand = brandValues(); let plan = null, tm = null, offline = false;
+    step('plan', 'doing', 'Gemini يكتب الإعلان…');
+    try {
+      if (!useProxy() && !validKey(KEY())) throw new Error('بدون مفتاح');
+      tm = await pick('text'); if (!tm) throw new Error('ما لقيت موديل نصوص');
+      const parts = (imgRef ? [{ inlineData: { mimeType: imgRef.mime, data: imgRef.b64 } }] : []).concat({ text: promoPrompt(Object.assign({ voice: gender !== 'none' }, o), brand) });
+      let j; try { j = await gapi(`models/${tm}:generateContent`, { contents: [{ parts }], generationConfig: { responseMimeType: 'application/json' } }); } catch (e) { if (e.status !== 400) throw e; j = await gapi(`models/${tm}:generateContent`, { contents: [{ parts }] }); }
+      const raw = partText(j); plan = JSON.parse(raw.slice(raw.indexOf('{'), raw.lastIndexOf('}') + 1));
+      if (!Array.isArray(plan.scenes) || plan.scenes.length < 2) throw new Error('الخطة رجعت فاضية');
+    } catch (e) {
+      plan = promoTemplate(o, brand); offline = true;
+      msg('sMsg', `ℹ️ ${e.message === 'بدون مفتاح' ? 'ما فيه مفتاح Gemini' : 'ما قدرت أوصل لـ Gemini (' + esc(e.message) + ')'}، فسويت الإعلان من قالب جاهز بنفس الحركة والمؤثرات.`);
+    }
+    if (o.scenes) plan.scenes = plan.scenes.slice(0, Math.max(o.scenes, 2));
+    const N0 = plan.scenes.map(x => String(x.narration || '').trim());
+    let narr = N0.slice();
+    if (!offline && gender !== 'none' && N0.some(Boolean)) { step('plan', 'doing', 'أراجع النص المنطوق…'); narr = await cleanNarr(tm, N0, o.lang); }
+    plan.scenes.forEach((x, i) => { x.narration = narr[i] || ''; });
+    step('plan', 'done', `${plan.scenes.length} مشاهد${offline ? ' · قالب' : ''}`);
+    // voice: one clip per scene
+    let clips = null;
+    if (gender === 'none' || offline || !narr.some(Boolean)) step('voice', 'done', 'موسيقى فقط');
+    else {
+      step('voice', 'doing', '…');
+      try { const vm = await pick('tts'); if (!vm) throw new Error('ما لقيت موديل صوت (TTS)'); clips = [];
+        for (let i = 0; i < narr.length; i++) { step('voice', 'doing', `${i + 1} / ${narr.length}`); clips.push(narr[i] ? await sayScene(vm, narr[i], voiceName, '', AC) : { pcm: new Float32Array(0), rate: 24000 }); }
+        step('voice', 'done', '');
+      } catch (e) { clips = null; step('voice', 'fail', 'بدون صوت'); msg('sMsg', `⚠️ الصوت: ${esc(e.message)} — كملت بالموسيقى فقط.`, 'warn'); }
+    }
+    step('pics', 'done', LOGO ? 'شعارك' : 'بدون شعار');
+    step('video', 'doing'); await fontsReady;
+    const pb = plan.brand || {};
+    PLAN = { title: plan.title && plan.title.ar ? plan.title : { ar: brand.name || pb.name || '', en: '' }, scenes: plan.scenes };
+    PICS = []; PICBLOBS = [];
+    PROJ = { kind: 'promo', id: 's' + Date.now().toString(36), created: Date.now(), title: { ar: brand.name || pb.name || PLAN.title.ar, en: (plan.title && plan.title.en) || '' }, plan: PLAN, aspect: $('pAspect').value,
+      brand: { name: brand.name || pb.name || '', tagline: pb.tagline || '', color: brand.color, url: brand.url, phone: brand.phone }, logoIm: LOGO ? LOGO.im : null, logoBlob: LOGO ? LOGO.blob : null,
+      textMode: o.textMode, credit: $('sCredit').value.trim(), music: musicChoice(), voiceDur: clips ? clips.map(c => c.pcm.length / c.rate) : null, settings: Object.assign(formValues(), { idea: $('sIdea').value }) };
+    eng = VideoEngine.create(cv, promoSpec());
+    VOICE = null;
+    if (clips) {    // each clip where its scene starts speaking
+      const T = eng.T, rate = (clips.find(c => c.pcm.length) || { rate: 24000 }).rate, total = Math.ceil(T.DUR * rate), pcm = new Float32Array(total), at = T.scenes.map(s => s.a + s.vAt);
+      clips.forEach((c, i) => { const p = Math.round((at[i] || 0) * rate); if (c.pcm.length && p < total) pcm.set(c.pcm.subarray(0, Math.max(0, total - p)), p); });
+      const buf = AC.createBuffer(1, total, rate); buf.copyToChannel(pcm, 0);
+      VOICE = { buf, wav: wavBlob(pcm, rate), info: { duration: total / rate, at, durs: PROJ.voiceDur } }; PROJ.voiceInfo = VOICE.info;
+    }
+    buildVideo();
+    step('video', 'done', fmt(eng.DUR));
+    return offline;
+  }
+
   // ── the one button ──
-  $('sGo').onclick = async () => {
+  $('sGo').onclick = async (ev, confirmed) => {
     const idea = $('sIdea').value.trim();
     if (!idea && !IMG) return msg('sMsg', '⚠️ اكتب فكرتك أو ارفع صورة.', 'warn');
-    if (useProxy()) { if (!ME) { $('acct').scrollIntoView({ behavior: 'smooth', block: 'center' }); return msg('sMsg', '⚠️ سجّل دخولك بحساب Google أولاً (الزر فوق).', 'warn'); } }
-    else if (!validKey(KEY())) { $('kBox').open = true; keyUI(true); return msg('sMsg', '⚠️ تحتاج مفتاح Gemini أول مرة. الصقه في المربع اللي انفتح تحت.', 'warn'); }
+    if (useProxy()) { if (!ME) { $('acct').scrollIntoView({ behavior: 'smooth', block: 'center' }); return msg('sMsg', '⚠️ سجّل دخولك بحساب Google أولاً (الزر فوق).', 'warn'); } if (!confirmed) return askCost(); }
+    else if (!validKey(KEY()) && $('sStyle').value !== 'promo') { $('kBox').open = true; keyUI(true); return msg('sMsg', '⚠️ تحتاج مفتاح Gemini أول مرة. الصقه في المربع اللي انفتح تحت.', 'warn'); }
     stopPlay(); AC = new (window.AudioContext || window.webkitAudioContext)(); AC.resume();   // created on the click, reused for auto-recording
     const go = $('sGo'), oldTxt = go.innerHTML; go.disabled = true; go.innerHTML = '<span class="spin">⏳</span> يشتغل…';
     ['plan', 'voice', 'pics', 'video', 'rec'].forEach(k => step(k, '')); msg('sMsg', ''); msg('sRecMsg', ''); $('sWav').classList.add('hidden'); PICBLOBS = [];
@@ -601,6 +1051,13 @@ Items: ${JSON.stringify(items)}`;
         const jj = await r.json().catch(() => ({}));
         if (!r.ok) throw new Error(((jj.error && jj.error.message) || 'تعذّر بدء الفيديو') + (jj.error && jj.error.code === 'no_points' ? ' — اشحن نقاطك أو تواصل معنا.' : ''));
         JOB = jj.job; setPoints(jj.points);
+      }
+      if (style === 'promo') {
+        const imgRef = IMG ? { mime: IMG.type || 'image/png', b64: await fileB64(IMG) } : null;
+        const offline = await runPromo(Object.assign({}, o, { idea: idea || o.idea }), gender, voiceName, imgRef);
+        await saveProject(); await finishJob(!offline);
+        if ($('sAuto').checked) await record(AC); else { step('rec', '', 'اضغط «نزّل الفيديو»'); try { AC.close(); } catch (e) {} }
+        return;
       }
       // 1. script + scenes
       step('plan', 'doing', 'Gemini يكتب…');
@@ -642,7 +1099,7 @@ Items: ${JSON.stringify(items)}`;
       }
       step('plan', 'done', `${PLAN.scenes.length} مشاهد`);
       $('sScript').classList.remove('hidden');
-      $('sScenes').innerHTML = PLAN.scenes.map((s, i) => `<div class="scene"><b>${i + 1}. ${esc(s.emoji || '')} ${esc(s.heading || s.text || '')}</b>${esc(s.narration || '')}</div>`).join('');
+      $('sSceneList').innerHTML = PLAN.scenes.map((s, i) => `<div class="scene"><b>${i + 1}. ${esc(s.emoji || '')} ${esc(s.heading || s.text || '')}</b>${esc(s.narration || '')}</div>`).join('');
       // 2 + 3. voice and pictures in parallel
       const voiceJob = (async () => {
         if (gender === 'none') { step('voice', 'done', 'موسيقى فقط'); return null; }
