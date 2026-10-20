@@ -116,6 +116,53 @@
   .tab[aria-selected="true"]{background:var(--navy);border-color:var(--navy);color:#fff;box-shadow:0 4px 0 rgba(0,0,0,.18)}
   :root[data-theme="dark"] .tab[aria-selected="true"]{background:var(--orange);border-color:var(--orange)}
   @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .tab[aria-selected="true"]{background:var(--orange);border-color:var(--orange)}}
+
+  /* ── النقاط والأسعار ── */
+  .ptsPage{display:flex;flex-direction:column;gap:20px}
+  .ptsHero{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:24px 26px;border-radius:24px;color:#fff;background:linear-gradient(120deg,#1d2a6e,#3b2a8f 55%,#ff7a1a)}
+  .ptsHero h2{margin:0 0 6px;font-size:28px;font-weight:900}
+  .ptsHero p{margin:0;opacity:.9;font-size:15.5px;max-width:520px}
+  .ptsBal{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);border-radius:18px;padding:12px 22px;text-align:center;min-width:150px}
+  .ptsBal small{display:block;font-size:13px;opacity:.85}
+  .ptsBal b{display:block;font-size:34px;font-weight:900;line-height:1.2}
+  .ptsH{margin:0 0 14px;font-size:20px;font-weight:900}
+  .pk3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;align-items:stretch}
+  .pk{position:relative;background:var(--card);border:1px solid var(--line);border-radius:22px;padding:22px 20px 18px;display:flex;flex-direction:column;box-shadow:0 6px 0 rgba(29,42,110,.06)}
+  .pk.best{border:2px solid var(--orange);box-shadow:0 10px 30px rgba(255,122,26,.18)}
+  .pkTag{position:absolute;top:-13px;inset-inline-start:20px;background:var(--orange);color:#fff;font-weight:800;font-size:13px;padding:4px 12px;border-radius:999px}
+  .pkTop{display:flex;align-items:baseline;gap:6px}
+  .pkN{font-size:40px;font-weight:900;line-height:1}
+  .pkU{color:var(--muted);font-weight:700}
+  .pkPrice{font-size:30px;font-weight:900;color:var(--orange);margin-top:10px}
+  .pkPrice small{font-size:16px}
+  .pkPer{color:var(--muted);font-size:13.5px;font-weight:700;margin-top:2px}
+  .pk ul{list-style:none;margin:14px 0 4px;padding:14px 0 0;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:8px;flex:1}
+  .pk li{display:flex;gap:8px;align-items:center;font-size:15px}
+  .pk li svg,.ptsNotes svg{width:18px;height:18px;flex:none;color:var(--green)}
+  .pk .waBtn{font-size:15px;padding:11px 12px;border-radius:14px;margin-top:14px}
+  .ptsTwo{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
+  .costList{display:flex;flex-direction:column}
+  .cRow{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+  .cRow:last-child{border-bottom:0}
+  .cIc{width:42px;height:42px;flex:none;border-radius:12px;display:flex;align-items:center;justify-content:center;color:var(--c);background:color-mix(in srgb,var(--c) 14%,transparent)}
+  .cIc svg{width:22px;height:22px}
+  .cT{flex:1;display:flex;flex-direction:column;min-width:0}
+  .cT b{font-size:15.5px}
+  .cT small{color:var(--muted);font-size:13px}
+  .cP{font-weight:900;color:var(--orange);white-space:nowrap;font-size:16px}
+  .ptsNotes{list-style:none;margin:14px 0 0;padding:14px;border-radius:16px;background:var(--field);display:flex;flex-direction:column;gap:8px;font-size:14.5px}
+  .ptsNotes li{display:flex;gap:8px;align-items:flex-start}
+  .ptsNotes svg{margin-top:3px}
+  .ptsSteps{list-style:none;margin:0 0 14px;padding:0;counter-reset:st;display:flex;flex-direction:column;gap:12px}
+  .ptsSteps li{counter-increment:st;display:grid;grid-template-columns:34px 1fr;column-gap:12px}
+  .ptsSteps li::before{content:counter(st);grid-row:span 2;width:34px;height:34px;border-radius:50%;background:var(--navy);color:#fff;font-weight:900;display:flex;align-items:center;justify-content:center}
+  .ptsSteps b{font-size:15.5px}
+  .ptsSteps span{color:var(--muted);font-size:14px}
+  .ptsKey{display:flex;align-items:center;gap:16px}
+  .ptsKey p{margin:0;color:var(--muted);font-size:14.5px}
+  .ptsKey .keyLink{white-space:nowrap;text-decoration:none;border-radius:14px;padding:10px 16px;font-weight:700}
+  @media (max-width:980px){.pk3{grid-template-columns:1fr;max-width:520px;margin:0 auto;width:100%}.pk.best{order:-1}.ptsTwo{grid-template-columns:1fr}}
+  @media (max-width:640px){.ptsHero{padding:20px;border-radius:20px}.ptsHero h2{font-size:23px}.ptsBal{width:100%;display:flex;align-items:center;justify-content:space-between;text-align:start;padding:10px 16px}.ptsBal b{font-size:26px}.ptsKey{flex-direction:column;align-items:flex-start}.ptsKey .keyLink{white-space:normal}.pkN{font-size:34px}}
   .pGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(340px,100%),1fr));gap:20px;align-items:start}
   .pTable{width:100%;border-collapse:collapse;font-size:15px}
   .pTable td{border-bottom:1px solid var(--line);padding:8px 6px}
@@ -292,66 +339,80 @@
     <div style="overflow:auto"><table class="atable" id="aUsers"></table></div>
   </section>
   </div>
-  <div data-pane="points" class="hidden">
-    <div class="pGrid">
+  <div data-pane="points" class="hidden ptsPage">
+    <section class="ptsHero">
+      <div class="ptsHeroT">
+        <h2>النقاط والأسعار</h2>
+        <p>ادفع على قد استخدامك: كل فيديو له نقاطه، وما فيه اشتراك شهري ولا رسوم مخفية.</p>
+      </div>
+      <div class="ptsBal"><small>رصيدك</small><b><span id="ptsBalN">—</span></b><small id="ptsBalU">سجّل دخولك عشان يبان رصيدك</small></div>
+    </section>
+
+    <section class="ptsSec" aria-labelledby="pkT">
+      <h3 id="pkT" class="ptsH">باقات النقاط</h3>
+      <div class="pk3">
+        <div class="pk"><div class="pkTop"><span class="pkN">10</span><span class="pkU">نقاط</span></div><div class="pkPrice">19 <small>ريال</small></div><div class="pkPer">1.90 ريال للنقطة</div>
+          <ul><li><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M5 12l5 5L20 7"/></svg>10 فيديو موشن أو إعلان</li><li><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M5 12l5 5L20 7"/></svg>أو 3 فيديوهات بالصور</li><li><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M5 12l5 5L20 7"/></svg>مناسبة للتجربة</li></ul>
+          <button type="button" class="waBtn" data-pts="10" data-price="19"><svg class="waIc" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 1.8a8.2 8.2 0 1 1-4.3 15.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 0 1 12 3.8z"/><path fill="currentColor" d="M8.6 7.4c.2-.5.5-.5.8-.5h.6c.2 0 .4 0 .6.5l.8 1.9c.1.2.1.4 0 .6l-.5.7c-.1.2-.2.3 0 .6.5.8 1.1 1.5 1.9 2 .3.2.5.2.6 0l.7-.8c.2-.2.4-.2.6-.1l1.8.9c.3.1.4.3.4.5 0 .8-.6 1.9-1.6 2-.9.1-1.8 0-3.7-.9-2.1-1-3.5-3.1-3.8-3.5-.3-.4-.9-1.5-.9-2.6s.4-1.6.7-1.9z"/></svg>اطلبها على واتساب</button></div>
+        <div class="pk best"><span class="pkTag">الأكثر طلبًا</span><div class="pkTop"><span class="pkN">30</span><span class="pkU">نقطة</span></div><div class="pkPrice">49 <small>ريال</small></div><div class="pkPer">1.63 ريال للنقطة · وفّر 14%</div>
+          <ul><li><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M5 12l5 5L20 7"/></svg>30 فيديو موشن أو إعلان</li><li><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M5 12l5 5L20 7"/></svg>أو 10 فيديوهات بالصور</li><li><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M5 12l5 5L20 7"/></svg>للمسوّقين والمعلمين</li></ul>
+          <button type="button" class="waBtn" data-pts="30" data-price="49"><svg class="waIc" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 1.8a8.2 8.2 0 1 1-4.3 15.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 0 1 12 3.8z"/><path fill="currentColor" d="M8.6 7.4c.2-.5.5-.5.8-.5h.6c.2 0 .4 0 .6.5l.8 1.9c.1.2.1.4 0 .6l-.5.7c-.1.2-.2.3 0 .6.5.8 1.1 1.5 1.9 2 .3.2.5.2.6 0l.7-.8c.2-.2.4-.2.6-.1l1.8.9c.3.1.4.3.4.5 0 .8-.6 1.9-1.6 2-.9.1-1.8 0-3.7-.9-2.1-1-3.5-3.1-3.8-3.5-.3-.4-.9-1.5-.9-2.6s.4-1.6.7-1.9z"/></svg>اطلبها على واتساب</button></div>
+        <div class="pk"><div class="pkTop"><span class="pkN">100</span><span class="pkU">نقطة</span></div><div class="pkPrice">149 <small>ريال</small></div><div class="pkPer">1.49 ريال للنقطة · وفّر 22%</div>
+          <ul><li><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M5 12l5 5L20 7"/></svg>100 فيديو موشن أو إعلان</li><li><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M5 12l5 5L20 7"/></svg>أو 33 فيديو بالصور</li><li><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M5 12l5 5L20 7"/></svg>للمدارس والشركات</li></ul>
+          <button type="button" class="waBtn" data-pts="100" data-price="149"><svg class="waIc" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 1.8a8.2 8.2 0 1 1-4.3 15.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 0 1 12 3.8z"/><path fill="currentColor" d="M8.6 7.4c.2-.5.5-.5.8-.5h.6c.2 0 .4 0 .6.5l.8 1.9c.1.2.1.4 0 .6l-.5.7c-.1.2-.2.3 0 .6.5.8 1.1 1.5 1.9 2 .3.2.5.2.6 0l.7-.8c.2-.2.4-.2.6-.1l1.8.9c.3.1.4.3.4.5 0 .8-.6 1.9-1.6 2-.9.1-1.8 0-3.7-.9-2.1-1-3.5-3.1-3.8-3.5-.3-.4-.9-1.5-.9-2.6s.4-1.6.7-1.9z"/></svg>اطلبها على واتساب</button></div>
+      </div>
+    </section>
+
+    <div class="ptsTwo">
       <section class="card" aria-labelledby="p1">
-        <h2 id="p1"><span class="dot" style="background:var(--orange)"></span>⭐ كيف تنحسب النقاط</h2>
-        <table class="pTable">
-          <tr><td>✨ موشن جرافيك (مع المقدّم أو بدونه)</td><td><span class="pc" data-k="motion">1</span> نقطة</td></tr>
-          <tr><td>🧒 شخصيات كرتونية</td><td><span class="pc" data-k="motion">1</span> نقطة</td></tr>
-          <tr><td>🚀 إعلان موشن احترافي (بصوت أو بدونه)</td><td><span class="pc" data-k="motion">1</span> نقطة</td></tr>
-          <tr><td>🎨 صور بالذكاء الاصطناعي / 🎬 سينمائي</td><td><span class="pc" data-k="pictures">3</span> نقاط</td></tr>
-        </table>
-        <ul class="pList" style="margin-top:12px">
-          <li>النقاط تنحجز أول ما تضغط «اصنع الفيديو».</li>
-          <li>إذا فشل الفيديو قبل ما يتولّد أي صوت أو صورة، ترجع نقاطك تلقائيًا.</li>
-          <li>كل حساب جديد يدخل بـ Google ياخذ <b><span class="pc" data-k="welcome">3</span> نقاط هدية</b>.</li>
-          <li>فتح أي فيديو من «سجل الأعمال» وتغيير موسيقاه أو تنزيله من جديد مجاني.</li>
+        <h3 id="p1" class="ptsH">كم يكلّف كل فيديو؟</h3>
+        <div class="costList">
+          <div class="cRow"><span class="cIc" style="--c:var(--blue)"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M4 5h16v11H4zM8 20h8M10 9l4 2-4 2z"/></svg></span><span class="cT"><b>موشن جرافيك</b><small>مع المقدّم الكرتوني أو بدونه</small></span><span class="cP"><span class="pc" data-k="motion">1</span> نقطة</span></div>
+          <div class="cRow"><span class="cIc" style="--c:var(--green)"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM6 22v-6l-2-4 5-2h6l5 2-2 4v6"/></svg></span><span class="cT"><b>شخصيات كرتونية</b><small>لبطاقات الأنشطة والتمارين</small></span><span class="cP"><span class="pc" data-k="motion">1</span> نقطة</span></div>
+          <div class="cRow"><span class="cIc" style="--c:var(--orange)"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M3 11l14-6v14L3 13zM17 8a4 4 0 0 1 0 8M7 13l1 6h3l-1-5"/></svg></span><span class="cT"><b>إعلان موشن احترافي</b><small>بصورك أنت أو بدون صور</small></span><span class="cP"><span class="pc" data-k="motion">1</span> نقطة</span></div>
+          <div class="cRow"><span class="cIc" style="--c:var(--purple)"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M4 4h16v16H4zM4 15l5-5 4 4 3-3 4 4M15 8.5h.01"/></svg></span><span class="cT"><b>إعلان مع صور مرسومة بالذكاء</b><small>صور إعلانية حقيقية لمنتجاتك. إذا ما احتاج رسم، يرجع لك الفرق</small></span><span class="cP"><span class="pc" data-k="pictures">3</span> نقاط</span></div>
+          <div class="cRow"><span class="cIc" style="--c:var(--red)"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M3 6h18v13H3zM3 15l5-5 5 5 3-3 5 5M16 9.5h.01"/></svg></span><span class="cT"><b>صور بالذكاء الاصطناعي أو سينمائي</b><small>صورة مرسومة لكل مشهد</small></span><span class="cP"><span class="pc" data-k="pictures">3</span> نقاط</span></div>
+        </div>
+        <ul class="ptsNotes">
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg><span>إذا فشل الفيديو قبل ما يتولّد الصوت أو الصور، <b>ترجع نقاطك تلقائيًا</b>.</span></li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M5 12l5 5L20 7"/></svg><span>كل حساب جديد يدخل بـ Google ياخذ <b><span class="pc" data-k="welcome">3</span> نقاط هدية</b>.</span></li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M5 12l5 5L20 7"/></svg><span>فتح أي فيديو من «سجل الأعمال» وتغيير موسيقاه أو تنزيله من جديد <b>مجاني</b>.</span></li>
         </ul>
       </section>
+
       <section class="card" aria-labelledby="p2">
-        <h2 id="p2"><span class="dot" style="background:var(--green)"></span>💳 باقات النقاط</h2>
-        <div class="packs">
-          <div class="pack"><b>10</b><small>نقاط</small><span>19 ريال</span><small>10 فيديو موشن</small><button type="button" class="waBtn" data-pts="10" data-price="19"><svg class="waIc" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 1.8a8.2 8.2 0 1 1-4.3 15.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 0 1 12 3.8z"/><path fill="currentColor" d="M8.6 7.4c.2-.5.5-.5.8-.5h.6c.2 0 .4 0 .6.5l.8 1.9c.1.2.1.4 0 .6l-.5.7c-.1.2-.2.3 0 .6.5.8 1.1 1.5 1.9 2 .3.2.5.2.6 0l.7-.8c.2-.2.4-.2.6-.1l1.8.9c.3.1.4.3.4.5 0 .8-.6 1.9-1.6 2-.9.1-1.8 0-3.7-.9-2.1-1-3.5-3.1-3.8-3.5-.3-.4-.9-1.5-.9-2.6s.4-1.6.7-1.9z"/></svg>اطلبها</button></div>
-          <div class="pack best"><b>30</b><small>نقطة · الأوفر ⭐</small><span>49 ريال</span><small>30 موشن أو 10 بالصور</small><button type="button" class="waBtn" data-pts="30" data-price="49"><svg class="waIc" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 1.8a8.2 8.2 0 1 1-4.3 15.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 0 1 12 3.8z"/><path fill="currentColor" d="M8.6 7.4c.2-.5.5-.5.8-.5h.6c.2 0 .4 0 .6.5l.8 1.9c.1.2.1.4 0 .6l-.5.7c-.1.2-.2.3 0 .6.5.8 1.1 1.5 1.9 2 .3.2.5.2.6 0l.7-.8c.2-.2.4-.2.6-.1l1.8.9c.3.1.4.3.4.5 0 .8-.6 1.9-1.6 2-.9.1-1.8 0-3.7-.9-2.1-1-3.5-3.1-3.8-3.5-.3-.4-.9-1.5-.9-2.6s.4-1.6.7-1.9z"/></svg>اطلبها</button></div>
-          <div class="pack"><b>100</b><small>نقطة</small><span>149 ريال</span><small>للمدارس والشركات</small><button type="button" class="waBtn" data-pts="100" data-price="149"><svg class="waIc" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 1.8a8.2 8.2 0 1 1-4.3 15.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 0 1 12 3.8z"/><path fill="currentColor" d="M8.6 7.4c.2-.5.5-.5.8-.5h.6c.2 0 .4 0 .6.5l.8 1.9c.1.2.1.4 0 .6l-.5.7c-.1.2-.2.3 0 .6.5.8 1.1 1.5 1.9 2 .3.2.5.2.6 0l.7-.8c.2-.2.4-.2.6-.1l1.8.9c.3.1.4.3.4.5 0 .8-.6 1.9-1.6 2-.9.1-1.8 0-3.7-.9-2.1-1-3.5-3.1-3.8-3.5-.3-.4-.9-1.5-.9-2.6s.4-1.6.7-1.9z"/></svg>اطلبها</button></div>
-        </div>
+        <h3 id="p2" class="ptsH">طريقة الشحن</h3>
+        <ol class="ptsSteps">
+          <li><b>سجّل دخولك</b><span>بحساب Google من الزر فوق.</span></li>
+          <li><b>حوّل قيمة الباقة</b><span>على STC Pay أو الراجحي برقم الجوال.</span></li>
+          <li><b>اضغط «اطلبها على واتساب»</b><span>تنفتح محادثة فيها الباقة وإيميل حسابك جاهزة. أرفق صورة الإيصال وأرسلها.</span></li>
+          <li><b>تنضاف النقاط لحسابك</b><span>وتظهر لك بعد تحديث الصفحة.</span></li>
+        </ol>
         <div class="payBox">
-          <h3>🏦 حوّل قيمة الباقة على</h3>
-          <div class="payRow"><span class="payLogo" style="background:#4f008c">STC<br>Pay</span><span class="pt"><b>STC Pay <small>· تحويل لرقم الجوال</small></b><span class="payNum">0564444664</span></span><button type="button" class="ghost copyBtn" data-copy="0564444664">📋 نسخ</button></div>
-          <div class="payRow"><span class="payLogo" style="background:#0a3b8f">الراجحي</span><span class="pt"><b>مصرف الراجحي <small>· تحويل فوري برقم الجوال</small></b><span class="payNum">0564444664</span></span><button type="button" class="ghost copyBtn" data-copy="0564444664">📋 نسخ</button></div>
+          <div class="payRow"><span class="payLogo" style="background:#4f008c">STC<br>Pay</span><span class="pt"><b>STC Pay <small>· تحويل لرقم الجوال</small></b><span class="payNum">0564444664</span></span><button type="button" class="ghost copyBtn" data-copy="0564444664">نسخ</button></div>
+          <div class="payRow"><span class="payLogo" style="background:#0a3b8f">الراجحي</span><span class="pt"><b>مصرف الراجحي <small>· تحويل فوري برقم الجوال</small></b><span class="payNum">0564444664</span></span><button type="button" class="ghost copyBtn" data-copy="0564444664">نسخ</button></div>
         </div>
-        <h2 style="font-size:17px;margin:18px 0 6px">طريقة الشحن</h2>
-        <ol class="pList">
-          <li>سجّل دخولك بحساب Google (الزر فوق).</li>
-          <li>حوّل قيمة الباقة على STC Pay أو الراجحي برقم الجوال <b style="direction:ltr;display:inline-block">0564444664</b>.</li>
-          <li>اضغط زر «اطلبها» الأخضر تحت الباقة: تنفتح محادثة واتساب فيها الباقة و<b>إيميل حسابك</b> جاهزة، أرفق صورة إيصال التحويل وأرسلها.</li>
-          <li>تنضاف النقاط لحسابك، وتظهر لك بعد تحديث الصفحة.</li>
-        </ol>
         <button type="button" class="waBig waBtn" data-pts="" data-price=""><svg class="waIc" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 1.8a8.2 8.2 0 1 1-4.3 15.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 0 1 12 3.8z"/><path fill="currentColor" d="M8.6 7.4c.2-.5.5-.5.8-.5h.6c.2 0 .4 0 .6.5l.8 1.9c.1.2.1.4 0 .6l-.5.7c-.1.2-.2.3 0 .6.5.8 1.1 1.5 1.9 2 .3.2.5.2.6 0l.7-.8c.2-.2.4-.2.6-.1l1.8.9c.3.1.4.3.4.5 0 .8-.6 1.9-1.6 2-.9.1-1.8 0-3.7-.9-2.1-1-3.5-3.1-3.8-3.5-.3-.4-.9-1.5-.9-2.6s.4-1.6.7-1.9z"/></svg><span class="waT"><b>تواصل معنا على واتساب</b><span>+966 56 444 4664</span></span></button>
-        <div class="note info" style="font-size:13px">الشحن حاليًا يدوي، والدفع الإلكتروني المباشر قريبًا.</div>
-      </section>
-      <section class="card" aria-labelledby="p3">
-        <h2 id="p3"><span class="dot" style="background:var(--blue)"></span>🔑 عندك مفتاح Gemini خاص؟</h2>
-        <ul class="pList">
-          <li>حطّه في صندوق «🔑 مفتاحك الخاص» تحت زر «اصنع الفيديو».</li>
-          <li><b>ما ينخصم منك ولا نقطة</b>: الطلبات تروح من متصفحك إلى Google مباشرة، والتكلفة على حسابك في Google.</li>
-          <li>المفتاح ينحفظ في متصفحك فقط، ما يوصل لنا أبدًا.</li>
-          <li>إذا مسحت المفتاح، يرجع الاستوديو يشتغل بنقاطك.</li>
-        </ul>
-        <div class="btns"><a class="ghost" href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" style="text-decoration:none;border-radius:14px;padding:8px 16px;font-weight:700">طلّع مفتاحك من Google AI Studio ↗</a></div>
-      </section>
-      <section id="pAdmin" class="card hidden" aria-labelledby="p4">
-        <h2 id="p4"><span class="dot" style="background:var(--red)"></span>🛠️ للمدير: التفعيل اليدوي</h2>
-        <ol class="pList">
-          <li>العميل يحوّل ويرسل لك إيميل حسابه في Google.</li>
-          <li>روح تبويب «🎬 الاستوديو» ← «لوحة المدير» تحت الصفحة.</li>
-          <li>اكتب إيميله وعدد النقاط ← «➕ أضف النقاط». (رقم بالسالب = خصم)</li>
-          <li>الجدول يعرض كل المستخدمين ونقاطهم وعدد فيديوهاتهم.</li>
-        </ol>
-        <p class="where" style="margin-top:10px">التكلفة علينا تقريبًا: موشن ≈ 0.2 ريال · بالصور ≈ 1.7 ريال للدقيقة.</p>
+        <p class="where" style="margin:10px 0 0;font-size:13px;text-align:center">الشحن حاليًا يدوي، والدفع الإلكتروني المباشر قريبًا.</p>
       </section>
     </div>
+
+    <section class="card ptsKey" aria-labelledby="p3">
+      <span class="cIc" style="--c:var(--navy)"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M15 7a4 4 0 1 1-3.9 5H3v3h3v3h3v-3h2.1A4 4 0 0 1 15 7zM16 10h.01"/></svg></span>
+      <div><h3 id="p3" class="ptsH" style="margin:0 0 4px">عندك مفتاح Gemini خاص؟</h3>
+        <p>حطّه في صندوق «مفتاحك الخاص» تحت زر «اصنع الفيديو»، و<b>ما ينخصم منك ولا نقطة</b>: الطلبات تروح من متصفحك إلى Google مباشرة والتكلفة على حسابك هناك. المفتاح ينحفظ في متصفحك فقط وما يوصل لنا، وإذا مسحته يرجع الاستوديو يشتغل بنقاطك.</p></div>
+      <a class="ghost keyLink" href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">طلّع مفتاحك من Google AI Studio ↗</a>
+    </section>
+
+    <section id="pAdmin" class="card hidden" aria-labelledby="p4">
+      <h3 id="p4" class="ptsH">للمدير: التفعيل اليدوي</h3>
+      <ol class="pList">
+        <li>العميل يحوّل ويرسل لك إيميل حسابه في Google.</li>
+        <li>روح تبويب «الاستوديو» ← «لوحة المدير» تحت الصفحة.</li>
+        <li>اكتب إيميله، واختر «أضف أو اخصم» أو «حدّد المجموع الجديد»، وأكّد في نافذة «متأكد؟». وتقدر تتراجع بعدها.</li>
+      </ol>
+      <p class="where" style="margin-top:10px">التكلفة علينا تقريبًا: موشن ≈ 0.2 ريال · بالصور ≈ 1.7 ريال للدقيقة · صورة إعلان مرسومة ≈ 0.15 ريال.</p>
+    </section>
   </div>
 </div>
 <div id="loginAsk" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="laT"><div class="box">
@@ -898,7 +959,9 @@ Pictures (shown big and professional instead of an emoji, on "title" scenes and 
     const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error((j.error && j.error.message) || ('HTTP ' + r.status)); return j;
   }
   async function finishJob(ok) { if (!JOB) return; const id = JOB; JOB = null; try { const j = await api('job/' + id + '/finish', { ok }); setPoints(j.points); if (j.status === 'refunded') msg('sRecMsg', '↩️ رجعت نقاطك لأن الفيديو ما اكتمل.'); else if (j.back) msg('sRecMsg', `↩️ الإعلان ما احتاج رسم صور، فرجع لك ${ptsTxt(j.back)}.`); } catch (e) {} }
-  function setPoints(p) { if (!ME || p == null) return; ME.points = p; const n = $('ptsN'); if (n) n.textContent = p; costUI(); }
+  // the balance on «النقاط والأسعار»
+  function balUI() { const n = $('ptsBalN'), u = $('ptsBalU'); if (!n) return; n.textContent = ME ? ME.points : '—'; u.textContent = ME ? (ME.points === 1 ? 'نقطة' : ME.points === 2 ? 'نقطتين' : ME.points >= 3 && ME.points <= 10 ? 'نقاط' : 'نقطة') : (SERVER ? 'سجّل دخولك عشان يبان رصيدك' : 'تستخدم مفتاحك الخاص'); }
+  function setPoints(p) { if (!ME || p == null) return; ME.points = p; balUI(); const n = $('ptsN'); if (n) n.textContent = p; costUI(); }
   function costUI() {
     const el = $('sCost'), on = useProxy() && ME && SERVER;
     el.classList.toggle('hidden', !on); if (!on) return;
@@ -931,7 +994,7 @@ Pictures (shown big and professional instead of an emoji, on "title" scenes and 
     $('kProxyNote').classList.toggle('hidden', !SERVER);
     setTimeout(goLabel, 0); $('adminCard').classList.toggle('hidden', !(ME && ME.admin)); $('pAdmin').classList.toggle('hidden', !(ME && ME.admin));
     if (SERVER) document.querySelectorAll('.pc').forEach(e => { const v = e.dataset.k === 'welcome' ? SERVER.welcome : SERVER.points[e.dataset.k]; if (v != null) e.textContent = v; });
-    costUI();
+    costUI(); balUI();
     if (!SERVER) return box.classList.add('hidden');
     box.classList.remove('hidden');
     if (ME) {
