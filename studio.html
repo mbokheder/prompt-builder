@@ -190,6 +190,7 @@
       <textarea id="sIdea" placeholder="مثال: فيديو يشرح للأطفال ليش لازم نشرب ماء كل يوم، بأسلوب مرح"></textarea>
       <label>صورة <small>(اختياري: بطاقة نشاط، صورة منتج، شعار…)</small></label>
       <div id="sDrop" class="drop" tabindex="0" role="button"><input type="file" id="sImg" accept="image/*" hidden><div id="sDropTxt">🖼️ اسحب صورة أو <u>اضغط للاختيار</u></div><img id="sImgPrev" class="hidden" alt=""><button type="button" id="sImgDel" class="ghost small hidden">إزالة الصورة</button></div>
+      <div id="sKindRow" class="hidden"><label for="sImgKind">الصورة المرفقة هي <small>(عشان أعرف وش أسوي فيها)</small></label><select id="sImgKind"><option value="auto">🤖 تلقائي: أتعرّف عليها بنفسي</option><option value="logo">🏷️ شعار: يظهر في البداية والنهاية بس</option><option value="card">🃏 بطاقة نشاط أو تمارين: الفيديو يشرحها</option><option value="product">📦 منتج أو صورة: تظهر في المشاهد اللي تخصها</option><option value="style">🎨 مرجع للشكل والألوان بس</option></select></div>
       <div class="row">
         <div><label for="sAud">الجمهور</label><select id="sAud"><option value="kids">أطفال</option><option value="teachers">معلمات وتربويين</option><option value="marketing">تسويق وإعلان</option><option value="product">شرح منتج أو خدمة</option><option value="general">عام</option></select></div>
         <div><label for="sLang">اللهجة</label><select id="sLang"><option value="Saudi Arabic (اللهجة السعودية البيضاء)">السعودية</option><option value="Gulf Arabic (اللهجة الخليجية)">الخليجية</option><option value="Modern Standard Arabic (الفصحى)">الفصحى</option><option value="Egyptian Arabic (اللهجة المصرية)">المصرية</option><option value="English">English</option></select></div>
@@ -200,7 +201,7 @@
       </div>
       <div class="row">
         <div><label for="sLen">المدة</label><select id="sLen"><option value="30">قصير (حوالي ٣٠ ثانية)</option><option value="60" selected>متوسط (حوالي دقيقة)</option><option value="90">طويل (دقيقة ونص)</option></select></div>
-        <div><label for="sStyle">الأسلوب</label><select id="sStyle"><option value="cartoon">🧒 شخصيات كرتونية متحركة (لبطاقات الأنشطة والتمارين)</option><option value="cinematic">🎬 سينمائي (صور ثلاثية الأبعاد بإضاءة أفلام)</option><option value="pictures">🎨 صور مرسومة بالذكاء الاصطناعي</option><option value="motion">✨ موشن جرافيك مع مقدّم كرتوني</option><option value="promo">🚀 إعلان موشن احترافي (شعارك وحركة ومؤثرات)</option></select></div>
+        <div><label for="sStyle">الأسلوب</label><select id="sStyle"><option value="cartoon">🧒 شخصيات كرتونية متحركة (لبطاقات الأنشطة والتمارين)</option><option value="cinematic">🎬 سينمائي (صور ثلاثية الأبعاد بإضاءة أفلام)</option><option value="pictures">🎨 صور مرسومة بالذكاء الاصطناعي</option><option value="motion">✨ موشن جرافيك (نصوص وأشكال وحركة)</option><option value="promo">🚀 إعلان موشن احترافي (شعارك وحركة ومؤثرات)</option></select></div>
       </div>
       <div id="promoBox" class="promoBox hidden">
         <p class="where" style="margin:0">🚀 إعلان بمستوى احترافي: شعارك يظهر بإضاءة ولمعة، عناوين تتحرك كلمة كلمة، كتابة وضغط زر، خطوات بعلامات صح، بطاقات، جوال، وخاتمة فيها رابطك. وكل حركة لها صوتها مع الموسيقى.</p>
@@ -411,7 +412,7 @@
   function voiceUI() { const g = $('sGender').value; $('sVoice').disabled = g === 'none'; $('sVoice').innerHTML = g === 'none' ? '<option>—</option>' : VOICES[g].map(([v, l]) => `<option value="${v}">${l}</option>`).join(''); }
   $('sGender').addEventListener('change', () => { voiceUI(); save(); }); voiceUI();
   // remember the choices
-  const FIELDS = ['sIdea', 'sAud', 'sLang', 'sGender', 'sVoice', 'sLen', 'sScenes', 'sPlace', 'sStyle', 'sText', 'sMusic'];
+  const FIELDS = ['sIdea', 'sAud', 'sLang', 'sGender', 'sVoice', 'sLen', 'sScenes', 'sPlace', 'sStyle', 'sText', 'sMusic', 'sImgKind'];
   function save() { const o = {}; FIELDS.forEach(f => o[f] = $(f).value); o.sAuto = $('sAuto').checked; store.set('studio-form', JSON.stringify(o)); }
   try { const o = JSON.parse(store.get('studio-form') || '{}'); FIELDS.forEach(f => { if (o[f] != null && f !== 'sVoice') $(f).value = o[f]; }); voiceUI(); if (o.sVoice) $('sVoice').value = o.sVoice; if (o.sAuto === false) $('sAuto').checked = false; } catch (e) {}
   if (!$('sMusic').value) $('sMusic').value = 'auto';
@@ -422,13 +423,13 @@
   // ── optional picture ──
   let IMG = null;
   const fileB64 = f => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result).split(',')[1]); r.onerror = rej; r.readAsDataURL(f); });
-  function setImg(f) { if (!f || !f.type.startsWith('image/')) return; IMG = f; $('sImgPrev').src = URL.createObjectURL(f); $('sImgPrev').classList.remove('hidden'); $('sImgDel').classList.remove('hidden'); $('sDropTxt').classList.add('hidden'); }
+  function setImg(f) { if (!f || !f.type.startsWith('image/')) return; IMG = f; $('sImgPrev').src = URL.createObjectURL(f); $('sImgPrev').classList.remove('hidden'); $('sImgDel').classList.remove('hidden'); $('sDropTxt').classList.add('hidden'); $('sKindRow').classList.remove('hidden'); }
   $('sDrop').addEventListener('click', e => { if (e.target.id !== 'sImgDel') $('sImg').click(); });
   $('sImg').addEventListener('change', e => setImg(e.target.files[0]));
   ['dragenter', 'dragover'].forEach(ev => $('sDrop').addEventListener(ev, e => { e.preventDefault(); $('sDrop').classList.add('over'); }));
   ['dragleave', 'drop'].forEach(ev => $('sDrop').addEventListener(ev, e => { e.preventDefault(); $('sDrop').classList.remove('over'); }));
   $('sDrop').addEventListener('drop', e => setImg(e.dataTransfer.files[0]));
-  $('sImgDel').onclick = e => { e.stopPropagation(); IMG = null; $('sImg').value = ''; $('sImgPrev').classList.add('hidden'); $('sImgDel').classList.add('hidden'); $('sDropTxt').classList.remove('hidden'); };
+  $('sImgDel').onclick = e => { e.stopPropagation(); IMG = null; $('sImg').value = ''; $('sImgPrev').classList.add('hidden'); $('sImgDel').classList.add('hidden'); $('sDropTxt').classList.remove('hidden'); $('sKindRow').classList.add('hidden'); };
 
   // ── Gemini API ──
   const G = 'https://generativelanguage.googleapis.com/v1beta/';
@@ -456,21 +457,25 @@
 
   const AUD = { kids: 'young children (ages 4–10) and their teachers — playful, simple words, positive', teachers: 'teachers and educators — clear, practical, encouraging', marketing: 'potential customers — persuasive, energetic, with a clear call to action at the end', product: 'customers learning how a product or service works — clear benefits, simple steps, friendly', general: 'a general audience — clear and engaging' };
   const LOOK = { kids: 'bright cheerful flat vector cartoon illustration for children, rounded shapes, soft shadows', teachers: 'friendly flat vector illustration, warm classroom colours', marketing: 'clean modern flat illustration, bold brand-friendly colours, professional', product: 'clean modern product illustration, soft studio lighting, minimal background', general: 'friendly modern flat vector illustration' };
+  const ART = ['bright flat vector illustration, bold shapes, soft shadows', 'paper-cut collage illustration, layered paper textures, soft depth', 'isometric 3D illustration, clean pastel colours, tiny detailed world', 'soft watercolour and ink illustration, gentle textures', 'cute claymation style, handmade plasticine look, studio lighting', 'modern gouache painting style, rich colours, visible brush strokes', 'retro mid-century poster illustration, limited palette, grain', 'glossy 3D render, soft studio light, rounded toy-like shapes', 'bold comic-book illustration, clean ink lines, halftone shading', 'minimal line art with flat colour blocks, lots of white space'];
   function planPrompt(o) {
     const words = Math.round(o.len * 2.3);
     return `You are a creative director making a short explainer video of about ${o.len} seconds for ${AUD[o.aud]}.
-Topic / idea from the client: """${o.idea}"""${o.img ? '\nThe attached picture belongs to this topic (an activity card, a product, a logo…). Use what it shows.' : ''}
+Topic / idea from the client: """${o.idea}"""${o.imgKind === 'card' ? '\nThe attached picture is the instructional card this video explains. Use what it shows.' : o.imgKind === 'product' ? '\nThe attached picture shows the product / subject. Use what it shows.' : o.imgKind === 'style' ? '\nThe attached picture is ONLY a visual style reference: ignore its content.' : ''}${o.imgKind === 'logo' ? '\nThe client has a brand logo: it is shown automatically at the start and the end. Do NOT write about the logo or describe it, and never put it in the scenes or the pictures.' : ''}
 Narration language: ${o.lang}. Reply with ONLY a JSON object, no code fences, in exactly this shape:
-{"title":{"ar":"","en":""},"voiceStyle":"","character":"","presenter":{"hijab":false,"hair":"#000000","scarf":"#000000","skin":"#000000","top":"#000000","bottom":"#000000"},"scenes":[{"type":"","emoji":"","heading":"","headingEn":"","text":"","textEn":"","number":"","items":[{"emoji":"","text":"","en":"","side":"good"}],"narration":"","image":""}]}
+{"concept":"","title":{"ar":"","en":""},"voiceStyle":"","character":"","scenes":[{"type":"","emoji":"","heading":"","headingEn":"","text":"","textEn":"","number":"","items":[{"emoji":"","text":"","en":"","side":"good"}],"narration":"","image":"","showImage":false}]}
 Rules:
-- ${o.scenes ? 'EXACTLY ' + o.scenes + ' scenes' : '4 to 8 scenes'}; the first one introduces the topic (type "title"); the last one wraps up${o.aud === 'marketing' || o.aud === 'product' ? ' with a call to action' : ''}.
+- concept: first invent ONE fresh creative concept that fits THIS idea and audience, and build every scene on it. Examples (pick or invent, never always the same): a mini story with a character and a twist, myth vs fact, a surprising question and its answer, a countdown / top 3, before and after, a day in the life, a challenge for the viewer, a comparison, a chain of "did you know" facts, a problem → solution → result. Do NOT default to a plain list of steps. Write the concept in one English sentence.
+- The video is about the client's idea only. Do not turn it into an activity card or a children's lesson unless the idea itself is that.
+- ${o.scenes ? 'EXACTLY ' + o.scenes + ' scenes' : '4 to 8 scenes'}; the first scene is a strong hook (a surprising question, fact or bold statement: type "question", "kinetic" or "title"); the last one wraps up${o.aud === 'marketing' || o.aud === 'product' ? ' with a clear call to action' : ' memorably'}.
+- Variety: use at least 4 different scene types, never the same type twice in a row, at most one "steps" and at most one "list". Use "steps" only when the idea is really a procedure. Avoid generic filler sentences.
 - narration: what the voice says in that scene, natural ${o.lang}, about ${words} words in total for all scenes. Written for text-to-speech: short sentences, numbers written as words, add Arabic diacritics on words that could be misread. It must contain ONLY the exact words to be spoken: no tone or delivery instructions, no stage directions, nothing in brackets or parentheses, no speaker labels such as "الراوي:".${/English/.test(o.lang) ? '' : ' Use Arabic letters only (no Latin letters): write English or foreign words, brands, apps and technical terms the way Arabic speakers pronounce them, for example ويندوز، واي فاي، رام.'}
 - On-screen text summarises the narration and is SHORT: heading at most 6 words, text at most 14 words, items at most 5 words. Write it in ${/English/.test(o.lang) ? 'English' : 'Arabic (foreign terms in Arabic letters too)'}.
-- type: "title", "icon_text" (one idea + one emoji), "list" (2–4 items), "steps" (2–4 ordered steps), "number" (a key number in "number"), "compare" (do vs don't, items with side "good"/"bad"), "quote" (advice or conclusion). Pick what explains each scene best; vary them.
+- type: "title" (bold headline + emoji), "question" (a hook question in heading, a short teaser in text), "kinetic" (2 to 4 punchy words in heading that appear one by one), "icon_text" (one idea + one emoji), "list" (2–4 items), "steps" (2–4 ordered steps), "number" (a key number in "number"), "compare" (do vs don't, items with side "good"/"bad"), "quote" (advice or conclusion). Pick what tells the concept best.
 - emoji: one fitting emoji per scene and per item.
 - character: ONE English description of the main character(s) to keep identical in every picture (age, gender, skin, hair, clothes colours; modest clothing and hijab for adult women when the audience is Arabic), or "" when no people are needed (for example a product).
 - image: an English prompt describing the illustration for that scene (what is shown, action, setting${$('sStyle').value === 'cinematic' ? ', and the camera shot: vary wide, medium and close-up shots like a film' : ''}). No text or letters in the picture.
-- presenter: the look of a friendly cartoon ${$('sGender').value === 'male' ? 'man' : 'woman'} who presents the video, fitting the audience (hijab true for a woman when the audience is Arabic; clothes colours as hex codes).
+- showImage: true only for scenes that should show the attached product / subject picture${o.imgKind === 'product' ? '' : ' (no product picture here: always false)'}.
 - voiceStyle: a short English description of the speaking tone (for example "warm, cheerful teacher").
 - ${o.textMode === 'bi' ? 'Fill title.en, headingEn, textEn and items[].en with short simple English.' : 'Leave every English field empty.'}`;
   }
@@ -752,7 +757,7 @@ Rules:
       $('sSceneList').innerHTML = [['👋 البداية', n.intro], ...(n.steps || []).map((t, i) => [`${i + 1}. ${esc((PROJ.plan.scenes[i] || {}).heading || '')}`, t]), ['🎉 النهاية', n.outro]].map(([h, t]) => `<div class="scene"><b>${h}</b>${esc(t || '')}</div>`).join('');
       return;
     }
-    const spec = { kind: 'explainer', title: PROJ.title, credit: PROJ.credit, textMode: PROJ.textMode, music: PROJ.music || {}, presenter: PROJ.presenter || null, cinematic: !!PROJ.cinematic, look: PROJ.look || {},
+    const spec = { kind: 'explainer', title: PROJ.title, credit: PROJ.credit, textMode: PROJ.textMode, music: PROJ.music || {}, presenter: PROJ.presenter || null, logo: PROJ.logoIm || null, cinematic: !!PROJ.cinematic, look: PROJ.look || {},
       scenes: PROJ.plan.scenes.map((s, i) => Object.assign({}, s, { say: s.narration || '', img: PICS[i] || null })), voice: VOICE ? Object.assign({}, VOICE.info, { env: VOICE.env || PROJ.voiceEnv || null }) : null };
     eng = VideoEngine.create(cv, spec); music = PROJ.music ? eng.music() : null;
     $('sSeek').max = eng.DUR; $('sEmpty').classList.add('hidden'); draw(Math.min(3, eng.DUR));
@@ -781,7 +786,7 @@ Rules:
     if (VOICE) await IDB.set('voice:' + PROJ.id, VOICE.wav);
     for (let i = 0; i < PICBLOBS.length; i++) if (PICBLOBS[i]) await IDB.set('pic:' + PROJ.id + ':' + i, PICBLOBS[i]);
     if (IMG) await IDB.set('input:' + PROJ.id, IMG);
-    if (PROJ.kind === 'promo' && PROJ.logoBlob) await IDB.set('logo:' + PROJ.id, PROJ.logoBlob);
+    if (PROJ.logoBlob) await IDB.set('logo:' + PROJ.id, PROJ.logoBlob);
     const list = hLoad().filter(x => x.id !== PROJ.id); list.unshift(Object.assign(meta(), { thumb: thumb() })); if (list.length > 60) list.length = 60;
     msg('hMsg', hStore(list) ? '' : '⚠️ ذاكرة المتصفح ممتلئة. احذف أعمال قديمة من السجل.', 'warn'); hRender();
   }
@@ -797,7 +802,7 @@ Rules:
     const x = hLoad().find(i => i.id === id); if (!x) return;
     stopPlay(); clearPreview();
     PROJ = { id: x.id, kind: x.kind, cinematic: x.cinematic, look: x.look, created: x.created, title: x.title, plan: x.plan, card: x.card, narr: x.narr, voiceDur: x.voiceDur, presenter: x.presenter, voiceEnv: x.voiceEnv, textMode: x.textMode, credit: x.credit, music: x.music, voiceInfo: x.voiceInfo, settings: x.settings, brand: x.brand, aspect: x.aspect };
-    if (x.kind === 'promo') { const lb = await IDB.get('logo:' + x.id); if (lb) { const im = new Image(); im.src = URL.createObjectURL(lb); try { await im.decode(); PROJ.logoIm = im; PROJ.logoBlob = lb; } catch (e) {} } }
+    { const lb = await IDB.get('logo:' + x.id); if (lb) { const im = new Image(); im.src = URL.createObjectURL(lb); try { await im.decode(); PROJ.logoIm = im; PROJ.logoBlob = lb; } catch (e) {} } }
     if (x.settings) { FIELDS.forEach(f => { if (x.settings[f] != null && f !== 'sVoice') $(f).value = x.settings[f]; }); voiceUI(); if (x.settings.sVoice) $('sVoice').value = x.settings.sVoice; promoUI(); }
     PLAN = x.plan; PICS = []; PICBLOBS = []; VOICE = null;
     for (let i = 0; i < x.plan.scenes.length; i++) { const b = await IDB.get('pic:' + x.id + ':' + i); if (b) { const im = new Image(); im.src = URL.createObjectURL(b); try { await im.decode(); PICS[i] = im; PICBLOBS[i] = b; } catch (e) {} } }
@@ -1023,6 +1028,14 @@ Items: ${JSON.stringify(items)}`;
   }
 
   // ── 🚀 promo: plan (Gemini or offline template) → optional voice per scene → promo engine ──
+  // what is the attached image? (the user's choice, or Gemini decides)
+  async function imageKind(imgRef, tm) {
+    const v = $('sImgKind').value; if (v !== 'auto' || !imgRef) return v === 'auto' ? null : v;
+    try {
+      const j = await gapi(`models/${tm}:generateContent`, { contents: [{ parts: [{ inlineData: { mimeType: imgRef.mime, data: imgRef.b64 } }, { text: 'What is this image? Reply with ONLY one word: logo (a brand logo, icon, emblem or wordmark), card (an instructional card, worksheet, poster or flyer with steps or text), product (a product, object, food, place or people photo).' }] }] });
+      const w = (partText(j).toLowerCase().match(/logo|card|product/) || ['product'])[0]; return w;
+    } catch (e) { return 'product'; }
+  }
   async function runPromo(o, gender, voiceName, imgRef) {
     const brand = brandValues(); let plan = null, tm = null, offline = false;
     step('plan', 'doing', 'Gemini يكتب الإعلان…');
@@ -1094,7 +1107,9 @@ Items: ${JSON.stringify(items)}`;
         JOB = jj.job; setPoints(jj.points);
       }
       if (style === 'promo') {
-        const imgRef = IMG ? { mime: IMG.type || 'image/png', b64: await fileB64(IMG) } : null;
+        let imgRef = IMG ? { mime: IMG.type || 'image/png', b64: await fileB64(IMG) } : null;
+        if (imgRef) { let ik = $('sImgKind').value; if (ik === 'auto') { const tq = (useProxy() || validKey(KEY())) ? await pick('text').catch(() => null) : null; ik = tq ? await imageKind(imgRef, tq) : 'logo'; }
+          if (ik === 'logo') { if (!LOGO) await setLogo(IMG, true); imgRef = null; } }
         const offline = await runPromo(Object.assign({}, o, { idea: idea || o.idea }), gender, voiceName, imgRef);
         await saveProject(); await finishJob(!offline);
         if ($('sAuto').checked) await record(AC); else { step('rec', '', 'اضغط «نزّل الفيديو»'); try { AC.close(); } catch (e) {} }
@@ -1105,7 +1120,11 @@ Items: ${JSON.stringify(items)}`;
       const tm = await pick('text'); if (!tm) throw new Error('ما لقيت موديل نصوص في حسابك');
       const imgRef = IMG ? { mime: IMG.type || 'image/png', b64: await fileB64(IMG) } : null;
       const cine = style === 'cinematic'; if (cine) style = 'pictures';
-      if (style === 'cartoon' && !imgRef) { style = 'motion'; msg('sMsg', 'ℹ️ أسلوب الشخصيات الكرتونية يحتاج صورة بطاقة نشاط أو تمارين، فسويت موشن جرافيك مع مقدّم كرتوني.'); }
+      const ik = imgRef ? await imageKind(imgRef, tm) : null; o.imgKind = ik; o.img = !!imgRef && ik !== 'logo';
+      let logoIm = null, logoBlob = null;
+      if (ik === 'logo') { try { const r = await cleanLogo(IMG, true); logoIm = r.im; logoBlob = r.blob; } catch (e) {} }
+      const contentRef = ik === 'logo' ? null : imgRef;
+      if (style === 'cartoon' && (!imgRef || ik === 'logo')) { style = 'motion'; msg('sMsg', ik === 'logo' ? 'ℹ️ الصورة شعار، والشخصيات الكرتونية تحتاج بطاقة نشاط أو تمارين، فسويت موشن جرافيك والشعار يظهر في البداية والنهاية.' : 'ℹ️ أسلوب الشخصيات الكرتونية يحتاج صورة بطاقة نشاط أو تمارين، فسويت موشن جرافيك.'); }
       if (style === 'cartoon') {
         const { card, clips } = await runCartoon(o, gender, voiceName, imgRef, tm);
         step('video', 'doing'); await fontsReady;
@@ -1122,8 +1141,8 @@ Items: ${JSON.stringify(items)}`;
         if ($('sAuto').checked) await record(AC); else { step('rec', '', 'اضغط «نزّل الفيديو»'); try { AC.close(); } catch (e) {} }
         return;
       }
-      const parts = (imgRef ? [{ inlineData: { mimeType: imgRef.mime, data: imgRef.b64 } }] : []).concat({ text: planPrompt(o) });
-      let j; try { j = await gapi(`models/${tm}:generateContent`, { contents: [{ parts }], generationConfig: { responseMimeType: 'application/json' } }); } catch (e) { if (e.status !== 400) throw e; j = await gapi(`models/${tm}:generateContent`, { contents: [{ parts }] }); }
+      const parts = (contentRef ? [{ inlineData: { mimeType: contentRef.mime, data: contentRef.b64 } }] : []).concat({ text: planPrompt(o) });
+      let j; try { j = await gapi(`models/${tm}:generateContent`, { contents: [{ parts }], generationConfig: { responseMimeType: 'application/json', temperature: 1.1 } }); } catch (e) { if (e.status !== 400) throw e; j = await gapi(`models/${tm}:generateContent`, { contents: [{ parts }] }); }
       const raw = partText(j), a = raw.indexOf('{'), b = raw.lastIndexOf('}');
       PLAN = JSON.parse(raw.slice(a, b + 1)); if (!Array.isArray(PLAN.scenes) || !PLAN.scenes.length) throw new Error('السيناريو رجع فاضي');
       PLAN.scenes = PLAN.scenes.slice(0, o.scenes || 8);
@@ -1162,12 +1181,13 @@ Items: ${JSON.stringify(items)}`;
         if (style !== 'pictures') { step('pics', 'done', 'موشن جرافيك'); return []; }
         step('pics', 'doing', '…');
         const im = await pick('image'); if (!im) throw new Error('ما لقيت موديل صور في حسابك');
-        const out = [], refs = imgRef ? [imgRef] : [];
+        const out = [], keep = [], art = ART[Math.floor(Math.random() * ART.length)];
         for (let i = 0; i < PLAN.scenes.length; i++) {
           step('pics', 'doing', `${i + 1} / ${PLAN.scenes.length}`);
           const s = PLAN.scenes[i];
-          const prompt = `${s.image || s.heading || o.idea}. Style: ${cine ? 'cinematic 3D animated film still in the style of a modern family animation movie, expressive characters, dramatic soft lighting, volumetric light, shallow depth of field, rich warm colours' : LOOK[o.aud]}.${PLAN.character ? ' Main character, identical in every picture: ' + PLAN.character + '.' : ''}${imgRef ? ' Keep the product / items from the reference picture exactly as they look.' : ''} Wide 16:9 composition, no text, no letters, no numbers, no watermark.`;
-          try { const r = await drawScene(im, prompt, refs.slice(0, 2)); out[i] = r.im; PICBLOBS[i] = r.blob; if (refs.length < 2) refs.push(r.ref); } catch (e) { out[i] = null; }
+          const useRef = contentRef && (ik === 'style' || ik === 'card' || (ik === 'product' && s.showImage));
+          const prompt = `${s.image || s.heading || o.idea}. Style: ${cine ? 'cinematic 3D animated film still in the style of a modern family animation movie, expressive characters, dramatic soft lighting, volumetric light, shallow depth of field, rich warm colours' : art + ', made for ' + AUD[o.aud].split(' —')[0]}.${PLAN.character ? ' Main character, identical in every picture: ' + PLAN.character + '.' : ''}${useRef && ik === 'style' ? ' Match only the art style and colours of the first reference picture, not its content.' : useRef ? ' Show the product / items from the first reference picture exactly as they look.' : ''} Never draw logos, brand marks or badges. Wide 16:9 composition, no text, no letters, no numbers, no watermark.`;
+          try { const r = await drawScene(im, prompt, [...(useRef ? [contentRef] : []), ...keep].slice(0, 2)); out[i] = r.im; PICBLOBS[i] = r.blob; if (!keep.length) keep.push(r.ref); } catch (e) { out[i] = null; }
         }
         const n = out.filter(Boolean).length; step('pics', n ? 'done' : 'fail', `${n} / ${PLAN.scenes.length}`);
         return out;
@@ -1180,7 +1200,7 @@ Items: ${JSON.stringify(items)}`;
       PICS = pics;
       PROJ = { id: 's' + Date.now().toString(36), created: Date.now(), title: PLAN.title || { ar: '', en: '' }, plan: PLAN, textMode: o.textMode, credit: $('sCredit').value.trim(),
         music: musicChoice(), voiceInfo: VOICE ? VOICE.info : null, settings: Object.assign(formValues(), { idea: $('sIdea').value }),
-        presenter: style === 'motion' ? Object.assign({}, PLAN.presenter || {}, { gender: gender === 'male' ? 'male' : 'female' }) : null, voiceEnv: VOICE ? VOICE.env : null,
+        presenter: null, logoIm, logoBlob, imgKind: ik, voiceEnv: VOICE ? VOICE.env : null,
         cinematic: cine, look: { seed: (Date.now() ^ Math.floor(Math.random() * 1e9)) >>> 0 } };
       buildVideo();
       step('video', 'done', fmt(eng.DUR));
