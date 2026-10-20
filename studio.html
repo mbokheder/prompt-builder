@@ -272,8 +272,8 @@
   </section>
   <section id="adminCard" class="card hidden" style="margin-top:20px" aria-labelledby="aTitle">
     <h2 id="aTitle" style="margin:0"><span class="dot" style="background:var(--red)"></span>🛠️ لوحة المدير</h2>
-    <p class="where" style="margin-top:6px">أضف نقاط لأي مستخدم بإيميله (ولو ما دخل للحين). اكتب رقم بالسالب للخصم. اضغط على أي مستخدم في الجدول عشان تعبّي إيميله.</p>
-    <div class="row"><div><label for="aEmail">إيميل المستخدم</label><input type="text" id="aEmail" style="direction:ltr" placeholder="name@gmail.com"></div><div><label for="aPts">النقاط</label><input type="text" id="aPts" value="10" style="direction:ltr"></div></div>
+    <p class="where" style="margin-top:6px">أضف نقاط لأي مستخدم بإيميله (ولو ما دخل للحين)، أو حدّد رصيده الجديد مباشرة. اضغط على أي مستخدم في الجدول عشان تعبّي إيميله. كل تعديل يسألك «متأكد؟» قبل التنفيذ، وتقدر تتراجع عنه بعدها.</p>
+    <div class="row"><div><label for="aEmail">إيميل المستخدم</label><input type="text" id="aEmail" style="direction:ltr" placeholder="name@gmail.com"></div><div><label for="aMode">نوع التعديل</label><select id="aMode"><option value="add">➕ أضف أو اخصم (بالسالب)</option><option value="set">✏️ حدّد المجموع الجديد</option></select></div><div><label for="aPts" id="aPtsL">النقاط</label><input type="text" id="aPts" value="10" style="direction:ltr"></div></div>
     <div class="btns"><button type="button" class="ghost aQuick" style="direction:ltr" data-n="10">+10</button><button type="button" class="ghost aQuick" style="direction:ltr" data-n="30">+30</button><button type="button" class="ghost aQuick" style="direction:ltr" data-n="100">+100</button><button type="button" class="primary" id="aAdd">➕ أضف النقاط</button><button type="button" class="ghost" id="aRefresh">🔄 تحديث القائمة</button></div>
     <div id="aMsg"></div>
     <div style="overflow:auto"><table class="atable" id="aUsers"></table></div>
@@ -351,6 +351,11 @@
   <table class="costT" id="caTable"></table>
   <p id="caNote" style="font-size:13px"></p>
   <div class="btns" style="justify-content:center"><button type="button" class="primary" id="caGo"></button><button type="button" class="ghost" id="caNo">إلغاء</button></div>
+</div></div>
+<div id="ptsAsk" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="paT"><div class="box">
+  <div class="big">⚠️</div><h3 id="paT">متأكد من تعديل النقاط؟</h3>
+  <p id="paBody" style="font-size:15px"></p>
+  <div class="btns" style="justify-content:center"><button type="button" class="primary" id="paGo">نعم، نفّذ</button><button type="button" class="ghost" id="paNo">إلغاء</button></div>
 </div></div>
 <div id="iosAsk" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="ioT"><div class="box">
   <img src="icon-192.png" alt="" width="80" height="80"><h3 id="ioT">ثبّت الاستوديو على جوالك</h3>
@@ -876,15 +881,17 @@ Rules:
       }
     }
   }
+  let USERS = new Map();
   async function adminLoad() {
     try {
       const { users } = await api('admin/users');
+      USERS = new Map(users.map(u => [u.email.toLowerCase(), u.points]));
       $('aUsers').innerHTML = '<tr><th>الإيميل</th><th>الاسم</th><th>النقاط</th><th>الفيديوهات</th><th>آخر دخول</th></tr>' + users.map(u => `<tr data-email="${esc(u.email)}"><td style="direction:ltr;text-align:left">${esc(u.email)}</td><td>${esc(u.name || '')}</td><td><b>${u.points}</b></td><td>${u.videos}</td><td>${u.last_seen ? hDate(u.last_seen) : '—'}</td></tr>`).join('');
     } catch (e) { msg('aMsg', '⚠️ ' + esc(e.message), 'warn'); }
   }
   $('aUsers').addEventListener('click', e => { const tr = e.target.closest('tr[data-email]'); if (tr) { $('aEmail').value = tr.dataset.email; $('aPts').focus(); } });
   $('aRefresh').onclick = adminLoad;
-  document.querySelectorAll('.aQuick').forEach(b => b.onclick = () => { $('aPts').value = b.dataset.n; if ($('aEmail').value.trim()) $('aAdd').click(); else { msg('aMsg', '⚠️ اكتب إيميل المستخدم أو اضغط عليه في الجدول.', 'warn'); $('aEmail').focus(); } });
+  document.querySelectorAll('.aQuick').forEach(b => b.onclick = () => { $('aPts').value = b.dataset.n; if ($('aMode').value !== 'add') { $('aMode').value = 'add'; aModeUI(); } if ($('aEmail').value.trim()) $('aAdd').click(); else { msg('aMsg', '⚠️ اكتب إيميل المستخدم أو اضغط عليه في الجدول.', 'warn'); $('aEmail').focus(); } });
   // ── top-up request on WhatsApp with the package and the account email ready ──
   const WA = '966564444664';
   document.querySelectorAll('.copyBtn').forEach(b => b.onclick = async () => {
@@ -902,10 +909,44 @@ Rules:
     const a = document.createElement('a'); a.href = 'https://wa.me/' + WA + '?text=' + encodeURIComponent(text); a.target = '_blank'; a.rel = 'noopener';
     document.body.appendChild(a); a.click(); a.remove();
   });
+  // every points change asks first and can be undone
+  const aModeUI = () => { const set = $('aMode').value === 'set'; $('aPtsL').textContent = set ? 'المجموع الجديد' : 'النقاط'; $('aAdd').textContent = set ? '✏️ عدّل المجموع' : '➕ أضف النقاط'; };
+  $('aMode').onchange = aModeUI;
+  const ptsAsk = text => new Promise(res => {
+    $('paBody').innerHTML = text; $('ptsAsk').classList.remove('hidden');
+    const done = v => { $('ptsAsk').classList.add('hidden'); $('paGo').onclick = $('paNo').onclick = $('ptsAsk').onclick = null; res(v); };
+    $('paGo').onclick = () => done(true); $('paNo').onclick = () => done(false);
+    $('ptsAsk').onclick = e => { if (e.target === $('ptsAsk')) done(false); };
+    $('paGo').focus();
+  });
+  async function ptsApply(email, delta, before, undo = delta) {
+    const { user } = await api('admin/points', { email, delta });
+    if (ME && user.email === ME.email) setPoints(user.points);
+    msg('aMsg', `✓ رصيد ${esc(user.email)}: <b>${before == null ? '—' : before}</b> ← <b>${user.points}</b> نقطة. <button type="button" class="ghost small" id="aUndo">↩️ تراجع</button>`);
+    $('aUndo').onclick = async () => {
+      $('aUndo').disabled = true;
+      try { const r = await api('admin/points', { email: user.email, delta: -undo }); if (ME && r.user.email === ME.email) setPoints(r.user.points); msg('aMsg', `↩️ تراجعت: رصيد ${esc(r.user.email)} رجع ${r.user.points} نقطة.`); adminLoad(); } catch (e) { $('aUndo').disabled = false; msg('aMsg', '⚠️ ' + esc(e.message), 'warn'); }
+    };
+    adminLoad();
+    return user;
+  }
   $('aAdd').onclick = async () => {
-    const email = $('aEmail').value.trim(), delta = parseInt($('aPts').value, 10);
-    if (!email || !delta) return msg('aMsg', '⚠️ اكتب الإيميل وعدد النقاط.', 'warn');
-    try { const { user } = await api('admin/points', { email, delta }); msg('aMsg', `✓ رصيد ${esc(user.email)} صار ${user.points} نقطة.`); if (ME && user.email === ME.email) setPoints(user.points); adminLoad(); } catch (e) { msg('aMsg', '⚠️ ' + esc(e.message), 'warn'); }
+    const email = $('aEmail').value.trim(), n = parseInt($('aPts').value, 10), set = $('aMode').value === 'set';
+    if (!email || isNaN(n) || (!set && !n)) return msg('aMsg', '⚠️ اكتب الإيميل وعدد النقاط.', 'warn');
+    if (set && n < 0) return msg('aMsg', '⚠️ المجموع ما يكون بالسالب.', 'warn');
+    try { await adminLoad(); } catch (e) {}
+    const before = USERS.has(email.toLowerCase()) ? USERS.get(email.toLowerCase()) : null;
+    const delta = set ? n - (before || 0) : n;
+    if (set && before != null && !delta) return msg('aMsg', `رصيد ${esc(email)} أصلًا ${n} نقطة.`);
+    const after = before == null ? null : before + delta;
+    const what = set ? `تعديل المجموع إلى <b>${n}</b>` : delta > 0 ? `إضافة <b>${delta}</b>` : `خصم <b>${-delta}</b>`;
+    const ok = await ptsAsk(`${what} نقطة لـ<br><b style="direction:ltr;display:inline-block">${esc(email)}</b><br>${before == null ? 'مستخدم جديد ما دخل للحين.' : `الرصيد: <b>${before}</b> ← <b>${after}</b>`}`);
+    if (!ok) return msg('aMsg', 'انلغى، ما تغيّر شي.');
+    try {
+      const user = await ptsApply(email, delta, before);
+      // a new user may start with a welcome gift: correct the total to what was asked
+      if (set && before == null && user.points !== n) await ptsApply(user.email, n - user.points, user.points, n);
+    } catch (e) { msg('aMsg', '⚠️ ' + esc(e.message), 'warn'); }
   };
   (async () => {
     try {
