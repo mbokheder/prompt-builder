@@ -969,7 +969,8 @@ function planExplainer(X) {
   const wts = X.scenes.map(x => Math.max(8, (x.say || [x.heading, x.text, ...x.items.map(i => i.text)].join(' ')).length));
   const T = { X, scenes: [] };
   if (X.voice && Array.isArray(X.voice.marks) && X.voice.marks.length === X.scenes.length) {
-    X.scenes.forEach((x, i) => { const [a, b] = X.voice.marks[i]; T.scenes.push(Object.assign({}, x, { n: i, a: i ? a : 0, b })); });
+    const im = Array.isArray(X.voice.imarks) ? X.voice.imarks : [];
+    X.scenes.forEach((x, i) => { const [a, b] = X.voice.marks[i], a2 = i ? a : 0; T.scenes.push(Object.assign({}, x, { n: i, a: a2, b, itemAt: Array.isArray(im[i]) ? im[i].map(v => v - a2) : null })); });
     const last = T.scenes[T.scenes.length - 1].b; T.outro = [last, Math.max(last + 4.5, X.voice.duration + 1)];
   } else if (X.voice) {
     const v = X.voice, s0 = Math.max(0, v.s0 || 0), s1 = Math.max(s0 + 1, v.s1 || v.duration), tot = wts.reduce((a, b) => a + b, 0);
@@ -1000,7 +1001,7 @@ function planExplainer(X) {
   const first = T.scenes[0];
   Object.assign(T, { S: { benefits: [], steps: [] }, items: false, intro: [0, first.b], tools: [first.b, first.b], gym: [first.b, T.outro[0]], ben: [T.outro[0], T.outro[0]], cardT: [], helpT: null, benT: [],
     steps: T.scenes.slice(1).map(s => ({ ts: s.a })), cheer: T.outro[0], ev: { pops: [], dings: [], bursts: [T.outro[0] + .2] } });
-  T.scenes.forEach(s => s.items.forEach((_, j) => T.ev.pops.push(s.a + .6 + j * Math.min(1.2, (s.b - s.a) * .55 / Math.max(1, s.items.length)))));
+  T.scenes.forEach(s => s.items.forEach((_, j) => T.ev.pops.push(s.a + (s.itemAt && isFinite(s.itemAt[j]) ? Math.max(.3, s.itemAt[j] - .15) + .1 : .6 + j * Math.min(1.2, (s.b - s.a) * .55 / Math.max(1, s.items.length))))));
   return T;
 }
 function wrapText(ctx, s, maxW, size, w = 900) {
@@ -1129,7 +1130,8 @@ function createExplainer(canvas, spec) {
     bgDraw(BGS[s.n % BGS.length], col, tint, t);
     ctx.save(); ctx.globalAlpha = out; ctx.translate(960, 540); ctx.scale(.96 + .04 * out, .96 + .04 * out); ctx.translate(-960, -540);
     if (PRES && !s.img) { ctx.translate(1160, 540); ctx.scale(.79, .79); ctx.translate(-960, -540); }
-    const rev = j => P(lt, .5 + j * Math.min(1.2, d * .55 / Math.max(1, s.items.length)), .5 + j * Math.min(1.2, d * .55 / Math.max(1, s.items.length)) + .45);
+    // an item appears when the voice starts talking about it (its own voice line), else spread over the first half of the scene
+    const rev = j => { const t0 = s.itemAt && isFinite(s.itemAt[j]) ? Math.max(.3, s.itemAt[j] - .15) : .5 + j * Math.min(1.2, d * .55 / Math.max(1, s.items.length)); return P(lt, t0, t0 + .45); };
     const bob = Math.sin(t * 2.2) * 8;
     if (s.img) {
       ctx.restore(); ctx.save();

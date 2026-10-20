@@ -474,10 +474,11 @@
     return `You are a creative director making a short explainer video of about ${o.len} seconds for ${AUD[o.aud]}.
 Topic / idea from the client: """${o.idea}"""${o.img ? '\nThe attached picture belongs to this topic (an activity card, a product, a logo…). Use what it shows.' : ''}
 Narration language: ${o.lang}. Reply with ONLY a JSON object, no code fences, in exactly this shape:
-{"title":{"ar":"","en":""},"voiceStyle":"","character":"","presenter":{"hijab":false,"hair":"#000000","scarf":"#000000","skin":"#000000","top":"#000000","bottom":"#000000"},"scenes":[{"type":"","emoji":"","heading":"","headingEn":"","text":"","textEn":"","number":"","items":[{"emoji":"","text":"","en":"","side":"good"}],"narration":"","image":""}]}
+{"title":{"ar":"","en":""},"voiceStyle":"","character":"","presenter":{"hijab":false,"hair":"#000000","scarf":"#000000","skin":"#000000","top":"#000000","bottom":"#000000"},"scenes":[{"type":"","emoji":"","heading":"","headingEn":"","text":"","textEn":"","number":"","items":[{"emoji":"","text":"","en":"","side":"good","narration":""}],"narration":"","image":""}]}
 Rules:
 - ${o.scenes ? 'EXACTLY ' + o.scenes + ' scenes' : '4 to 8 scenes'}; the first one introduces the topic (type "title"); the last one wraps up${o.aud === 'marketing' || o.aud === 'product' ? ' with a call to action' : ''}.
 - narration: what the voice says in that scene, natural ${o.lang}, about ${words} words in total for all scenes. Written for text-to-speech: short sentences, numbers written as words, add Arabic diacritics on words that could be misread. It must contain ONLY the exact words to be spoken: no tone or delivery instructions, no stage directions, nothing in brackets or parentheses, no speaker labels such as "الراوي:".${/English/.test(o.lang) ? '' : ' Use Arabic letters only (no Latin letters): write English or foreign words, brands, apps and technical terms the way Arabic speakers pronounce them, for example ويندوز، واي فاي، رام.'}
+- The voice follows the screen: in scenes with items (list, steps, compare) the scene narration only introduces the scene (it may be ""), and EACH item gets its own "narration" (a short sentence about that item only), spoken when that item appears, in the same order. In other scenes leave items[].narration "".
 - On-screen text summarises the narration and is SHORT: heading at most 6 words, text at most 14 words, items at most 5 words. Write it in ${/English/.test(o.lang) ? 'English' : 'Arabic (foreign terms in Arabic letters too)'}.
 - type: "title", "icon_text" (one idea + one emoji), "list" (2–4 items), "steps" (2–4 ordered steps), "number" (a key number in "number"), "compare" (do vs don't, items with side "good"/"bad"), "quote" (advice or conclusion). Pick what explains each scene best; vary them.
 - emoji: one fitting emoji per scene and per item.
@@ -1237,16 +1238,13 @@ Items: ${JSON.stringify(items)}`;
       const raw = partText(j), a = raw.indexOf('{'), b = raw.lastIndexOf('}');
       PLAN = JSON.parse(raw.slice(a, b + 1)); if (!Array.isArray(PLAN.scenes) || !PLAN.scenes.length) throw new Error('السيناريو رجع فاضي');
       PLAN.scenes = PLAN.scenes.slice(0, o.scenes || 8);
+      // item lines only where the scene has items to show, one per item (said when it appears)
+      PLAN.scenes.forEach(x => { const its = Array.isArray(x.items) ? x.items : []; if (!['list', 'steps', 'compare'].includes(x.type) || !its.some(i => i && String(i.narration || '').trim())) its.forEach(i => { if (i) i.narration = ''; }); });
       if (!/English/.test(o.lang)) {
         step('plan', 'doing', 'أراجع النص المنطوق…');
-        try {
-          const items = PLAN.scenes.map(x => x.narration || '');
-          const cp = `You prepare narration for an Arabic text-to-speech voice (${o.lang}). For every item in the list: keep ONLY the words that will be spoken. Remove any description of tone, emotion, voice, pace or delivery in any language, any stage direction, bracketed note or speaker label. Write every English or foreign word, brand, app or technical term in Arabic letters the way Arabic speakers say it (Windows → ويندوز, Wi-Fi → واي فاي, RAM → رام). Write numbers as Arabic words. No Latin letters at all. Keep the meaning, the dialect and about the same length. Reply with ONLY a JSON array of strings, same order, same count.
-Items: ${JSON.stringify(items)}`;
-          let cj; try { cj = await gapi(`models/${tm}:generateContent`, { contents: [{ parts: [{ text: cp }] }], generationConfig: { responseMimeType: 'application/json' } }); } catch (e) { if (e.status !== 400) throw e; cj = await gapi(`models/${tm}:generateContent`, { contents: [{ parts: [{ text: cp }] }] }); }
-          const ct = partText(cj), ca = ct.indexOf('['), cb = ct.lastIndexOf(']'), arr = JSON.parse(ct.slice(ca, cb + 1));
-          if (Array.isArray(arr) && arr.length === items.length) arr.forEach((v, i) => { if (typeof v === 'string' && v.trim()) PLAN.scenes[i].narration = v.trim(); });
-        } catch (e) { /* keep the original narration; spokenOnly() still cleans it */ }
+        const lines = []; PLAN.scenes.forEach(x => { lines.push(x); (x.items || []).forEach(i => { if (i && String(i.narration || '').trim()) lines.push(i); }); });
+        const arr = await cleanNarr(tm, lines.map(x => String(x.narration || '')), o.lang);
+        lines.forEach((x, i) => { if (x.narration) x.narration = arr[i] || x.narration; });
       }
       step('plan', 'done', `${PLAN.scenes.length} مشاهد`);
       $('sScript').classList.remove('hidden');
@@ -1257,16 +1255,27 @@ Items: ${JSON.stringify(items)}`;
         step('voice', 'doing', '…');
         const vm = await pick('tts'); if (!vm) throw new Error('ما لقيت موديل صوت (TTS) في حسابك');
         const clips = [];
-        for (let i = 0; i < PLAN.scenes.length; i++) { step('voice', 'doing', `${i + 1} / ${PLAN.scenes.length}`); const t = (PLAN.scenes[i].narration || PLAN.scenes[i].heading || '').trim(); clips.push(t ? await sayScene(vm, t, voiceName, PLAN.voiceStyle, AC) : { pcm: new Float32Array(0), rate: 24000 }); }
+        const nLines = PLAN.scenes.reduce((n, x) => n + 1 + (x.items || []).filter(i => i && i.narration).length, 0); let done = 0;
+        for (let i = 0; i < PLAN.scenes.length; i++) {
+          const x = PLAN.scenes[i], itemLines = (x.items || []).map(it => String((it && it.narration) || '').trim());
+          const t = (x.narration || (itemLines.some(Boolean) ? '' : x.heading) || '').trim();
+          step('voice', 'doing', `${++done} / ${nLines}`); const intro = t ? await sayScene(vm, t, voiceName, PLAN.voiceStyle, AC) : { pcm: new Float32Array(0), rate: 24000 };
+          if (!itemLines.some(Boolean)) { clips.push(intro); continue; }
+          // the scene's voice = intro, then each item's line; sub = where each item's line starts (seconds into the scene's voice)
+          const parts = [intro], sub = []; for (const l of itemLines) { if (l) step('voice', 'doing', `${++done} / ${nLines}`); parts.push(l ? await sayScene(vm, l, voiceName, PLAN.voiceStyle, AC) : { pcm: new Float32Array(0), rate: intro.rate }); }
+          const r = (parts.find(c => c.pcm.length) || intro).rate, g = Math.round(.35 * r), len = parts.reduce((n, c, k) => n + c.pcm.length + (k && c.pcm.length ? g : 0), 0), pcm = new Float32Array(len); let at = 0;
+          parts.forEach((c, k) => { if (k) { if (c.pcm.length && at) at += g; sub.push(at / r); } pcm.set(c.pcm, at); at += c.pcm.length; });
+          clips.push({ pcm, rate: r, sub });
+        }
         const rate = clips.find(c => c.pcm.length) ? clips.find(c => c.pcm.length).rate : 24000, lead = .5, gap = .55;
         const total = Math.ceil((lead + clips.reduce((s, c) => s + c.pcm.length / rate + gap, 0) + .5) * rate), pcm = new Float32Array(total), marks = [];
         let pos = Math.round(lead * rate);
-        clips.forEach(c => { const st = pos / rate; pcm.set(c.pcm.length && c.rate === rate ? c.pcm : c.pcm, pos); pos += c.pcm.length + Math.round(gap * rate); marks.push([st, pos / rate]); });
+        const imarks = []; clips.forEach(c => { const st = pos / rate; pcm.set(c.pcm.length && c.rate === rate ? c.pcm : c.pcm, pos); pos += c.pcm.length + Math.round(gap * rate); marks.push([st, pos / rate]); imarks.push(c.sub ? c.sub.map(v => +(st + v).toFixed(2)) : null); });
         const buf = AC.createBuffer(1, total, rate); buf.copyToChannel(pcm, 0);
         step('voice', 'done', `${Math.round(total / rate)} ثانية`);
         const env = []; const win = Math.round(rate * .04); let mx = 1e-6;
         for (let k = 0; k < total; k += win) { let q = 0; const e2 = Math.min(total, k + win); for (let m = k; m < e2; m += 4) q += pcm[m] * pcm[m]; const v = Math.sqrt(q / Math.max(1, (e2 - k) / 4)); env.push(v); mx = Math.max(mx, v); }
-        return { buf, wav: wavBlob(pcm, rate), info: { duration: total / rate, marks }, env: env.map(v => +(v / mx).toFixed(2)) };
+        return { buf, wav: wavBlob(pcm, rate), info: { duration: total / rate, marks, imarks }, env: env.map(v => +(v / mx).toFixed(2)) };
       })().catch(e => { step('voice', 'fail', 'بدون صوت'); msg('sMsg', `⚠️ الصوت: ${esc(e.message)} — كملت بالموسيقى فقط.`, 'warn'); return null; });
       const picsJob = (async () => {
         if (style !== 'pictures') { step('pics', 'done', 'موشن جرافيك'); return []; }
