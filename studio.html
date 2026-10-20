@@ -160,6 +160,12 @@
   .go small{font-size:15px;font-weight:700;opacity:.9}
   .promoBox{margin-top:14px;border:2px solid var(--orange);border-radius:18px;padding:10px 14px 14px;background:rgba(255,122,26,.06)}
   .promoBox .drop img{max-height:110px;background:repeating-conic-gradient(#ccd 0 25%,#fff 0 50%) 0 0/16px 16px}
+  .pPics{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:10px}
+  .pPic{position:relative;border:1px solid var(--line);border-radius:14px;padding:8px;background:var(--field)}
+  .pPic img{width:100%;height:96px;object-fit:contain;border-radius:10px;display:block;background:repeating-conic-gradient(#ccd 0 25%,#fff 0 50%) 0 0/14px 14px}
+  .pPic .n{position:absolute;top:4px;right:4px;background:var(--orange);color:#fff;font-weight:900;border-radius:999px;min-width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:15px}
+  .pPic .x{position:absolute;top:4px;left:4px;border:0;background:rgba(0,0,0,.55);color:#fff;border-radius:999px;width:28px;height:28px;cursor:pointer;padding:0}
+  .pPic input{margin-top:6px;font-size:14px;padding:6px 8px}
   input[type=color]{width:64px;height:46px;border:2px solid var(--line);border-radius:12px;padding:3px;background:var(--field);cursor:pointer}
   .vStage.vert{aspect-ratio:9/16;max-height:72vh;margin:0 auto}
   .acct.pulse{animation:pulse 1s ease 3}@keyframes pulse{50%{box-shadow:0 0 0 6px rgba(255,122,26,.45);border-color:var(--orange)}}
@@ -207,6 +213,11 @@
         <label>الشعار <small>(اختياري — PNG بخلفية شفافة أفضل)</small></label>
         <div id="pLogoDrop" class="drop" tabindex="0" role="button"><input type="file" id="pLogo" accept="image/*" hidden><div id="pLogoTxt">🏷️ اسحب شعارك أو <u>اضغط للاختيار</u></div><img id="pLogoPrev" class="hidden" alt=""><button type="button" id="pLogoDel" class="ghost small hidden">إزالة الشعار</button></div>
         <label style="font-weight:400;display:flex;gap:8px;align-items:center;margin-top:8px"><input type="checkbox" id="pWhite" checked> شيل الخلفية البيضاء من الشعار تلقائيًا</label>
+        <label style="margin-top:12px">📸 صور المنتجات أو الخدمات <small>(اختياري — لين 8 صور)</small></label>
+        <p class="where" style="margin:0 0 6px;font-size:13px">كل صورة تاخذ رقم، واكتب تحتها اسمها (مثلًا: رمان منعش). وفي الفكرة تقدر تكتب «صورة 1 …» أو اسمها، والإعلان يعرض صورك الحقيقية بدل الرموز.</p>
+        <div id="pPicsDrop" class="drop" tabindex="0" role="button"><input type="file" id="pPics" accept="image/*" multiple hidden>📸 اسحب الصور أو <u>اضغط للاختيار</u></div>
+        <div id="pPicsList" class="pPics"></div>
+        <label style="font-weight:400;display:flex;gap:8px;align-items:flex-start;margin-top:10px"><input type="checkbox" id="pDraw" checked style="margin-top:4px"> <span>🎨 ارسم بالذكاء الاصطناعي صور احترافية للمنتجات اللي ما لها صورة (مثل النكهات والأطباق) بدل الرموز التعبيرية <small>(<span class="pc" data-k="pictures">3</span> نقاط بدل نقطة)</small></span></label>
         <div class="row">
           <div><label for="pName">اسم النشاط أو المنتج</label><input type="text" id="pName" placeholder="مثال: مقهى الورد"></div>
           <div><label for="pColor">اللون الرئيسي <small>(ينأخذ من الشعار)</small></label><input type="color" id="pColor" value="#ff6a13"></div>
@@ -482,13 +493,14 @@ Rules:
 Client idea: """${o.idea}"""
 Brand / business name: ${brand.name ? '"' + brand.name + '"' : '(not given: infer a short name from the idea, or the product name)'}.${brand.url ? ' Website: ' + brand.url + '.' : ''}${brand.phone ? ' Phone / WhatsApp: ' + brand.phone + '.' : ''}${o.img ? '\nThe attached picture belongs to this (a product, a logo, a flyer…). Use what it shows.' : ''}
 The video is built from a fixed kit of animated scenes. Reply with ONLY a JSON object, no code fences, in exactly this shape:
-{"brand":{"name":"","tagline":""},"title":{"ar":"","en":""},"scenes":[{"type":"","emoji":"","heading":"","headingEn":"","text":"","textEn":"","label":"","button":"","items":[{"emoji":"","text":"","en":"","visual":""}],"chips":[{"emoji":"","text":"","en":""}],"narration":""}]}
+{"brand":{"name":"","tagline":""},"title":{"ar":"","en":""},"scenes":[{"type":"","emoji":"","pic":0,"draw":"","heading":"","headingEn":"","text":"","textEn":"","label":"","button":"","items":[{"emoji":"","pic":0,"draw":"","text":"","en":"","visual":""}],"chips":[{"emoji":"","text":"","en":""}],"narration":""}]}
 Scene types:
 - "logo": FIRST scene, the logo reveal. heading = brand name, text = a short tagline (at most 6 words).
 - "title": a bold kinetic headline (at most 6 words), one emoji, text = one short supporting line (at most 12 words).
 - "typing": shows how easy it is. heading = a hook question (at most 6 words), label = the input field label (at most 4 words), text = what the customer types (at most 8 words: an order, a search, a booking, an idea…), button = the button label starting with an emoji (at most 3 words).
 - "checklist": what is done for the customer, step by step. heading (at most 6 words), items = 3 or 4 steps (emoji + at most 3 words), visual for each item = one of: doc (writing, planning, a form), wave (voice, sound, talking, calls), tiles (pictures, products, choices), progress (delivery, preparing, loading, finishing), chart (growth, results, savings).
 - "cards": options / products / features. heading (at most 6 words), items = 2 to 4 cards (emoji + at most 3 words), chips = 0 to 3 short extra perks (emoji + at most 4 words).
+- "showcase": THE most premium scene, like a TV commercial: each product / flavour / dish / service / place gets the whole screen in turn with a big real photo. heading = a short label (at most 4 words), items = 2 to 5 (emoji + the name, at most 3 words, + pic or draw). Whenever the idea has concrete things that can be shown in pictures (attached or drawn), use "showcase" for them rather than "cards".
 - "chips": short benefits. heading (at most 6 words), items = 3 to 6 chips (emoji + at most 3 words).
 - "phone": the app / online ordering / booking / contact on the phone. heading (at most 6 words), text (at most 16 words).
 - "outro": LAST scene. heading = brand name, text = the call to action (at most 7 words).
@@ -497,7 +509,10 @@ Rules:
 - In every heading wrap the ONE or TWO most important words in *asterisks* (they are shown in the brand colour), for example "عندك *فكرة*؟ اكتبها بس".
 - On-screen text in ${en ? 'English' : 'Arabic (' + o.lang + ')'}: punchy, simple, persuasive. Emojis only in the emoji fields, button labels and at the end of a heading.
 - narration: ${o.voice ? `what the voice-over says in that scene, natural ${o.lang}, 6 to 18 words, an energetic friendly ad voice. ONLY the exact spoken words: no tone notes, no brackets, no speaker labels.${en ? '' : ' Arabic letters only: write foreign words and brands the way Arabic speakers say them.'}` : 'leave it "" (music only).'}
-- ${o.textMode === 'bi' ? 'Fill headingEn, textEn and items[].en with short simple English.' : 'Leave every English field empty.'}`;
+- ${o.textMode === 'bi' ? 'Fill headingEn, textEn and items[].en with short simple English.' : 'Leave every English field empty.'}
+Pictures (shown big and professional instead of an emoji, on "title" scenes and on "showcase", "cards" and "checklist" items):
+- ${o.pics && o.pics.length ? `The client attached ${o.pics.length} numbered picture(s), in order, each after its label: ${o.pics.map((t, i) => `Picture ${i + 1}${t ? ' = "' + t + '"' : ''}`).join('; ')}. The idea may name them by number ("صورة 1", "الصورة الثانية") or by name. Set "pic" to the picture number on every title scene / showcase / card / checklist item that shows that thing (one showcase item per product when there are several), and use every picture at least once when it fits. pic = 0 otherwise.` : 'No pictures were attached: pic = 0 everywhere.'}
+- ${o.draw ? 'For every title scene, showcase, card or checklist item that shows a concrete thing (a product, a flavour, a dish, a drink, a device, a place…) and has no attached picture, write "draw": an English description of an immersive, real advertising PHOTOGRAPH of exactly that thing, filling the whole frame with what it is made of or used with: its real ingredients, materials or setting (for example "a tall glass of blueberry juice surrounded by heaps of fresh blueberries with water droplets, a few berries splashing into the juice"). The items of one scene must look like one set (same angle, light and mood). Keep "draw" "" for abstract ideas (speed, quality, price…), where the emoji is better.' : 'Leave every "draw" empty.'}`;
   }
   // offline: a good-looking template from the idea alone (no API)
   function promoTemplate(o, brand) {
@@ -520,6 +535,7 @@ Rules:
       ...(brand.url || brand.phone ? [{ type: 'phone', heading: 'اطلب *من جوالك* 📲', text: 'كل شيء صار أسهل: تواصل معنا الحين واستمتع بالتجربة.' }] : []),
       { type: 'outro', heading: name, text: 'تواصل معنا اليوم!' },
     ];
+    if (o.pics && o.pics.length) S.splice(2, 0, { type: 'showcase', heading: en ? 'Our products' : 'منتجاتنا', items: o.pics.slice(0, 5).map((t, i) => ({ emoji: '✨', text: t || (en ? 'Product ' : 'منتج ') + (i + 1), pic: i + 1 })) });
     return { brand: { name, tagline: S[0].text }, title: { ar: name, en: '' }, scenes: S.map(s => Object.assign({ narration: '' }, s)) };
   }
 
@@ -550,9 +566,9 @@ Rules:
     return new Blob([b], { type: 'audio/wav' });
   }
   // ── pictures ──
-  async function drawScene(model, prompt, refs) {
+  async function drawScene(model, prompt, refs, aspect = '16:9') {
     const parts = refs.map(r => ({ inlineData: { mimeType: r.mime, data: r.b64 } })).concat({ text: prompt });
-    const body = cfg => ({ contents: [{ parts }], generationConfig: Object.assign({ responseModalities: ['TEXT', 'IMAGE'] }, cfg ? { imageConfig: { aspectRatio: '16:9' } } : {}) });
+    const body = cfg => ({ contents: [{ parts }], generationConfig: Object.assign({ responseModalities: ['TEXT', 'IMAGE'] }, cfg ? { imageConfig: { aspectRatio: aspect } } : {}) });
     let j; try { j = await gapi(`models/${model}:generateContent`, body(true)); } catch (e) { if (e.status !== 400) throw e; j = await gapi(`models/${model}:generateContent`, body(false)); }
     const d = partData(j); if (!d) throw new Error('ما رجعت صورة');
     const blob = await (await fetch(`data:${d.mimeType || d.mime_type || 'image/png'};base64,${d.data}`)).blob();
@@ -586,14 +602,14 @@ Rules:
     const k = Math.min(1, 720 / Math.max(im0.naturalWidth, im0.naturalHeight)), w = Math.max(1, Math.round(im0.naturalWidth * k)), h = Math.max(1, Math.round(im0.naturalHeight * k));
     const c = document.createElement('canvas'); c.width = w; c.height = h; const x = c.getContext('2d'); x.drawImage(im0, 0, 0, w, h);
     const d = x.getImageData(0, 0, w, h), a = d.data, N = w * h;
-    let transparent = false; for (let i = 0; i < N; i += 7) if (a[i * 4 + 3] < 200) { transparent = true; break; }
+    let transparent = false, cut = 0; for (let i = 0; i < N; i += 7) if (a[i * 4 + 3] < 200) { transparent = true; break; }
     if (white && !transparent) {
       const near = i => Math.min(a[i * 4], a[i * 4 + 1], a[i * 4 + 2]) > 222 && Math.max(a[i * 4], a[i * 4 + 1], a[i * 4 + 2]) - Math.min(a[i * 4], a[i * 4 + 1], a[i * 4 + 2]) < 34;
       const bg = new Uint8Array(N), st = []; const push = i => { if (!bg[i] && near(i)) { bg[i] = 1; st.push(i); } };
       for (let px = 0; px < w; px++) { push(px); push((h - 1) * w + px); } for (let py = 0; py < h; py++) { push(py * w); push(py * w + w - 1); }
       while (st.length) { const i = st.pop(), px = i % w; if (px > 0) push(i - 1); if (px < w - 1) push(i + 1); if (i >= w) push(i - w); if (i < N - w) push(i + w); }
       for (let i = 0; i < N; i++) {
-        if (bg[i]) { a[i * 4 + 3] = 0; continue; }
+        if (bg[i]) { a[i * 4 + 3] = 0; cut++; continue; }
         const px = i % w; const edge = (px > 0 && bg[i - 1]) || (px < w - 1 && bg[i + 1]) || (i >= w && bg[i - w]) || (i < N - w && bg[i + w]);
         if (edge) a[i * 4 + 3] = Math.min(255, Math.round((255 - Math.min(a[i * 4], a[i * 4 + 1], a[i * 4 + 2])) * 3.5));
       }
@@ -609,7 +625,7 @@ Rules:
     const o2 = document.createElement('canvas'); o2.width = cw; o2.height = ch; o2.getContext('2d').drawImage(c, x0 - pad, y0 - pad, cw, ch, 0, 0, cw, ch);
     const best = Object.values(hist).sort((p, q) => q.n - p.n)[0], hex = best ? '#' + [best.r, best.g, best.b].map(v => Math.round(v / best.n).toString(16).padStart(2, '0')).join('') : null;
     const blob = await new Promise(r => o2.toBlob(r, 'image/png')); const im = new Image(); im.src = URL.createObjectURL(blob); await im.decode();
-    return { blob, im, color: hex };
+    return { blob, im, color: hex, cut: transparent || cut > N * .02 };
   }
   function logoUI() { const on = !!LOGO; $('pLogoPrev').classList.toggle('hidden', !on); $('pLogoDel').classList.toggle('hidden', !on); $('pLogoTxt').classList.toggle('hidden', on); if (on) $('pLogoPrev').src = LOGO.im.src; }
   let LOGOFILE = null;
@@ -627,6 +643,38 @@ Rules:
   $('pWhite').addEventListener('change', () => { if (LOGOFILE) setLogo(LOGOFILE, false); });
   IDB.get('promo-logo').then(f => { if (f && !LOGO) setLogo(f, false); });
   const brandValues = () => ({ name: $('pName').value.trim(), color: $('pColor').value, url: $('pUrl').value.trim(), phone: $('pPhone').value.trim() });
+  // ── 🚀 promo: numbered product pictures with a name each («صورة 1: رمان منعش») ──
+  let PPICS = [];                                    // [{ file, tag, url }]
+  const ppSave = () => IDB.set('promo-pics', PPICS.map(p => ({ file: p.file, tag: p.tag })));
+  function ppRender() {
+    $('pPicsList').innerHTML = PPICS.map((p, i) => `<div class="pPic"><span class="n">${i + 1}</span><button type="button" class="x" data-i="${i}" title="احذف الصورة">✕</button><img src="${p.url}" alt=""><input type="text" data-i="${i}" value="${esc(p.tag)}" placeholder="اسمها: مثلًا رمان منعش"></div>`).join('');
+  }
+  function ppAdd(files) {
+    const fs = [...(files || [])].filter(f => /^image\//.test(f.type || ''));
+    if (PPICS.length + fs.length > 8) msg('sMsg', '⚠️ أقصى شي 8 صور، أخذت أول ' + (8 - PPICS.length) + '.', 'warn');
+    fs.slice(0, 8 - PPICS.length).forEach(f => PPICS.push({ file: f, tag: (f.name || '').replace(/\.[^.]+$/, '').replace(/^(IMG|DSC|PXL|Screenshot)[\w-]*$/i, '').replace(/[_-]+/g, ' ').trim(), url: URL.createObjectURL(f) }));
+    ppRender(); ppSave();
+  }
+  $('pPicsDrop').addEventListener('click', () => $('pPics').click());
+  $('pPics').addEventListener('change', e => { ppAdd(e.target.files); e.target.value = ''; });
+  ['dragenter', 'dragover'].forEach(ev => $('pPicsDrop').addEventListener(ev, e => { e.preventDefault(); $('pPicsDrop').classList.add('over'); }));
+  ['dragleave', 'drop'].forEach(ev => $('pPicsDrop').addEventListener(ev, e => { e.preventDefault(); $('pPicsDrop').classList.remove('over'); }));
+  $('pPicsDrop').addEventListener('drop', e => ppAdd(e.dataTransfer.files));
+  $('pPicsList').addEventListener('input', e => { const i = e.target.dataset.i; if (i != null && PPICS[i]) { PPICS[i].tag = e.target.value; ppSave(); } });
+  $('pPicsList').addEventListener('click', e => { const b = e.target.closest('.x'); if (!b) return; PPICS.splice(+b.dataset.i, 1); ppRender(); ppSave(); });
+  IDB.get('promo-pics').then(a => { if (Array.isArray(a) && !PPICS.length) { PPICS = a.filter(p => p && p.file).slice(0, 8).map(p => ({ file: p.file, tag: p.tag || '', url: URL.createObjectURL(p.file) })); ppRender(); } });
+  try { if (store.get('studio-pdraw') === '0') $('pDraw').checked = false; } catch (e) {}
+  $('pDraw').addEventListener('change', () => { store.set('studio-pdraw', $('pDraw').checked ? '1' : '0'); costUI(); goLabel(); });
+  // a small JPEG for Gemini to look at
+  async function smallJpeg(file, max = 768) {
+    const im = new Image(); im.src = URL.createObjectURL(file); await im.decode();
+    const k = Math.min(1, max / Math.max(im.naturalWidth, im.naturalHeight)), c = document.createElement('canvas'); c.width = Math.round(im.naturalWidth * k); c.height = Math.round(im.naturalHeight * k);
+    const x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); x.drawImage(im, 0, 0, c.width, c.height);
+    return { mime: 'image/jpeg', b64: c.toDataURL('image/jpeg', .85).split(',')[1] };
+  }
+  // the pictures used in a promo: scene / item { ix } → PROJ.pimgs[ix] = { im, blob, cut }
+  const withPics = (scenes, pimgs) => (pimgs && pimgs.length ? scenes.map(x => Object.assign({}, x, x.ix != null && pimgs[x.ix] ? { img: pimgs[x.ix].im, cut: pimgs[x.ix].cut } : {},
+    { items: (x.items || []).map(i => i.ix != null && pimgs[i.ix] ? Object.assign({}, i, { img: pimgs[i.ix].im, cut: pimgs[i.ix].cut }) : i) })) : scenes);
 
   // ── progress list ──
   function step(k, state, note) { const li = document.querySelector(`#sSteps li[data-k="${k}"]`); li.classList.remove('doing', 'done', 'fail'); if (state) li.classList.add(state); li.querySelector('.ic').textContent = state === 'doing' ? '⏳' : state === 'done' ? '✅' : state === 'fail' ? '⚠️' : ({ plan: '📝', voice: '🎙️', pics: '🎨', video: '🎬', rec: '⬇️' })[k]; li.querySelector('small').textContent = note || ''; }
@@ -731,7 +779,7 @@ Rules:
   $('sWav').onclick = () => { if (!VOICE) return; const a = document.createElement('a'); a.href = URL.createObjectURL(VOICE.wav); a.download = ((PLAN && PLAN.title && PLAN.title.ar) || 'صوت') + '.wav'; document.body.appendChild(a); a.click(); a.remove(); };
 
   function formValues() { const o = {}; FIELDS.forEach(f => o[f] = $(f).value); return o; }
-  const promoSpec = (P2 = PROJ) => ({ kind: 'promo', aspect: P2.aspect, brand: Object.assign({}, P2.brand, { logo: P2.logoIm || null }), title: P2.title, credit: P2.credit, textMode: P2.textMode, scenes: P2.plan.scenes, voiceDur: P2.voiceDur, music: P2.music || {} });
+  const promoSpec = (P2 = PROJ) => ({ kind: 'promo', aspect: P2.aspect, brand: Object.assign({}, P2.brand, { logo: P2.logoIm || null }), title: P2.title, credit: P2.credit, textMode: P2.textMode, scenes: withPics(P2.plan.scenes, P2.pimgs), voiceDur: P2.voiceDur, music: P2.music || {} });
   function buildVideo() {
     if (PROJ.kind === 'promo') {
       eng = VideoEngine.create(cv, promoSpec()); previewSize(); music = PROJ.music ? eng.music() : null;
@@ -775,13 +823,14 @@ Rules:
       const o = document.createElement('canvas'); o.width = 384; o.height = 216; o.getContext('2d').drawImage(c, 0, 95, 216, 121.5, 0, 0, 384, 216); return o.toDataURL('image/jpeg', .72); } catch (e) { return ''; } }
     if (PROJ && PROJ.kind === 'cartoon') { try { const c = document.createElement('canvas'); c.width = 384; c.height = 216; const e = VideoEngine.create(c, Object.assign({}, PROJ.card, { media: { image: CARDIMG }, voiceDur: PROJ.voiceDur })); e.render(e.T.steps[0] ? e.T.steps[0].ts + 3 : 4); return c.toDataURL('image/jpeg', .72); } catch (e) { return ''; } }
     try { const c = document.createElement('canvas'); c.width = 384; c.height = 216; const e = VideoEngine.create(c, eng.S && Object.assign({}, { kind: 'explainer', title: PROJ.title, textMode: PROJ.textMode, cinematic: !!PROJ.cinematic, look: PROJ.look || {}, presenter: PROJ.presenter || null, scenes: PROJ.plan.scenes.map((s, i) => Object.assign({}, s, { img: PICS[i] || null })), voice: VOICE ? VOICE.info : null })); const sc = e.T.scenes[Math.min(1, e.T.scenes.length - 1)]; e.render(sc.a + Math.min(2, (sc.b - sc.a) / 2)); return c.toDataURL('image/jpeg', .72); } catch (e) { return ''; } }
-  const meta = () => ({ id: PROJ.id, kind: PROJ.kind || 'explainer', cinematic: PROJ.cinematic, look: PROJ.look, created: PROJ.created, updated: Date.now(), title: PROJ.title, plan: PROJ.plan, card: PROJ.card, narr: PROJ.narr, voiceDur: PROJ.voiceDur, presenter: PROJ.presenter, voiceEnv: PROJ.voiceEnv, textMode: PROJ.textMode, credit: PROJ.credit, music: PROJ.music, voiceInfo: PROJ.voiceInfo, settings: PROJ.settings, brand: PROJ.brand, aspect: PROJ.aspect, nPics: PICBLOBS.filter(Boolean).length });
+  const meta = () => ({ id: PROJ.id, kind: PROJ.kind || 'explainer', cinematic: PROJ.cinematic, look: PROJ.look, created: PROJ.created, updated: Date.now(), title: PROJ.title, plan: PROJ.plan, card: PROJ.card, narr: PROJ.narr, voiceDur: PROJ.voiceDur, presenter: PROJ.presenter, voiceEnv: PROJ.voiceEnv, textMode: PROJ.textMode, credit: PROJ.credit, music: PROJ.music, voiceInfo: PROJ.voiceInfo, settings: PROJ.settings, brand: PROJ.brand, aspect: PROJ.aspect, nPimg: PROJ.nPimg, pimgCut: PROJ.pimgs ? PROJ.pimgs.map(p => p.cut) : undefined, nPics: PICBLOBS.filter(Boolean).length });
   async function saveProject() {
     if (!PROJ) return;
     if (VOICE) await IDB.set('voice:' + PROJ.id, VOICE.wav);
     for (let i = 0; i < PICBLOBS.length; i++) if (PICBLOBS[i]) await IDB.set('pic:' + PROJ.id + ':' + i, PICBLOBS[i]);
     if (IMG) await IDB.set('input:' + PROJ.id, IMG);
     if (PROJ.kind === 'promo' && PROJ.logoBlob) await IDB.set('logo:' + PROJ.id, PROJ.logoBlob);
+    if (PROJ.kind === 'promo' && PROJ.pimgs) for (let i = 0; i < PROJ.pimgs.length; i++) await IDB.set('ppic:' + PROJ.id + ':' + i, PROJ.pimgs[i].blob);
     const list = hLoad().filter(x => x.id !== PROJ.id); list.unshift(Object.assign(meta(), { thumb: thumb() })); if (list.length > 60) list.length = 60;
     msg('hMsg', hStore(list) ? '' : '⚠️ ذاكرة المتصفح ممتلئة. احذف أعمال قديمة من السجل.', 'warn'); hRender();
   }
@@ -797,7 +846,9 @@ Rules:
     const x = hLoad().find(i => i.id === id); if (!x) return;
     stopPlay(); clearPreview();
     PROJ = { id: x.id, kind: x.kind, cinematic: x.cinematic, look: x.look, created: x.created, title: x.title, plan: x.plan, card: x.card, narr: x.narr, voiceDur: x.voiceDur, presenter: x.presenter, voiceEnv: x.voiceEnv, textMode: x.textMode, credit: x.credit, music: x.music, voiceInfo: x.voiceInfo, settings: x.settings, brand: x.brand, aspect: x.aspect };
-    if (x.kind === 'promo') { const lb = await IDB.get('logo:' + x.id); if (lb) { const im = new Image(); im.src = URL.createObjectURL(lb); try { await im.decode(); PROJ.logoIm = im; PROJ.logoBlob = lb; } catch (e) {} } }
+    if (x.kind === 'promo') { const lb = await IDB.get('logo:' + x.id); if (lb) { const im = new Image(); im.src = URL.createObjectURL(lb); try { await im.decode(); PROJ.logoIm = im; PROJ.logoBlob = lb; } catch (e) {} }
+      PROJ.pimgs = []; PROJ.nPimg = x.nPimg || 0;
+      for (let i = 0; i < PROJ.nPimg; i++) { const b = await IDB.get('ppic:' + x.id + ':' + i), im = new Image(); if (!b) { PROJ.pimgs[i] = null; continue; } im.src = URL.createObjectURL(b); try { await im.decode(); PROJ.pimgs[i] = { im, blob: b, cut: !!(x.pimgCut && x.pimgCut[i]) }; } catch (e) { PROJ.pimgs[i] = null; } } }
     if (x.settings) { FIELDS.forEach(f => { if (x.settings[f] != null && f !== 'sVoice') $(f).value = x.settings[f]; }); voiceUI(); if (x.settings.sVoice) $('sVoice').value = x.settings.sVoice; promoUI(); }
     PLAN = x.plan; PICS = []; PICBLOBS = []; VOICE = null;
     for (let i = 0; i < x.plan.scenes.length; i++) { const b = await IDB.get('pic:' + x.id + ':' + i); if (b) { const im = new Image(); im.src = URL.createObjectURL(b); try { await im.decode(); PICS[i] = im; PICBLOBS[i] = b; } catch (e) {} } }
@@ -813,7 +864,7 @@ Rules:
     const b = e.target.closest('button'); if (!b) return;
     if (b.dataset.open) return openProject(b.dataset.open);
     if (b.dataset.del) { const x = hLoad().find(i => i.id === b.dataset.del); if (!x || !confirm(`تحذف «${(x.title && x.title.ar) || ''}» من السجل؟`)) return;
-      hStore(hLoad().filter(i => i.id !== x.id)); IDB.del('voice:' + x.id); IDB.del('input:' + x.id); IDB.del('logo:' + x.id); for (let i = 0; i < 8; i++) IDB.del('pic:' + x.id + ':' + i); hRender(); }
+      hStore(hLoad().filter(i => i.id !== x.id)); IDB.del('voice:' + x.id); IDB.del('input:' + x.id); IDB.del('logo:' + x.id); for (let i = 0; i < 8; i++) IDB.del('pic:' + x.id + ':' + i); for (let i = 0; i < (x.nPimg || 0); i++) IDB.del('ppic:' + x.id + ':' + i); hRender(); }
   });
   // ── new idea: clear everything except the settings and the key ──
   function clearPreview() { eng = null; music = null; previewSize(); cv.getContext('2d').clearRect(0, 0, cv.width, cv.height); $('sEmpty').classList.remove('hidden'); $('sTime').textContent = '0:00 / 0:00'; $('sSeek').value = 0; $('sScript').classList.add('hidden'); $('sWav').classList.add('hidden'); $('sReMusic').classList.add('hidden'); msg('sRecMsg', ''); ['plan', 'voice', 'pics', 'video', 'rec'].forEach(k => step(k, '')); }
@@ -829,15 +880,16 @@ Rules:
     const r = await fetch('/api/' + path, body ? { method: 'POST', headers: { 'content-type': 'application/json' }, credentials: 'same-origin', body: JSON.stringify(body) } : { credentials: 'same-origin' });
     const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error((j.error && j.error.message) || ('HTTP ' + r.status)); return j;
   }
-  async function finishJob(ok) { if (!JOB) return; const id = JOB; JOB = null; try { const j = await api('job/' + id + '/finish', { ok }); setPoints(j.points); if (j.status === 'refunded') msg('sRecMsg', '↩️ رجعت نقاطك لأن الفيديو ما اكتمل.'); } catch (e) {} }
+  async function finishJob(ok) { if (!JOB) return; const id = JOB; JOB = null; try { const j = await api('job/' + id + '/finish', { ok }); setPoints(j.points); if (j.status === 'refunded') msg('sRecMsg', '↩️ رجعت نقاطك لأن الفيديو ما اكتمل.'); else if (j.back) msg('sRecMsg', `↩️ الإعلان ما احتاج رسم صور، فرجع لك ${ptsTxt(j.back)}.`); } catch (e) {} }
   function setPoints(p) { if (!ME || p == null) return; ME.points = p; const n = $('ptsN'); if (n) n.textContent = p; costUI(); }
   function costUI() {
     const el = $('sCost'), on = useProxy() && ME && SERVER;
     el.classList.toggle('hidden', !on); if (!on) return;
-    const c = ['pictures', 'cinematic'].includes($('sStyle').value) ? SERVER.points.pictures : SERVER.points.motion;
+    const c = costNow();
     el.innerHTML = `هذا الفيديو يكلّف <b>${c}</b> ${c === 1 ? 'نقطة' : 'نقاط'} · رصيدك <b>${ME.points}</b>`;
   }
-  const costNow = () => SERVER ? (['pictures', 'cinematic'].includes($('sStyle').value) ? SERVER.points.pictures : SERVER.points.motion) : 0;
+  const jobStyle = () => { const v = $('sStyle').value; return v === 'pictures' || v === 'cinematic' ? 'pictures' : v === 'promo' && $('pDraw').checked ? 'promo_pics' : 'motion'; };
+  const costNow = () => SERVER ? (jobStyle() === 'motion' ? SERVER.points.motion : SERVER.points.pictures) : 0;
   const ptsTxt = n => n === 1 ? 'نقطة واحدة' : n === 2 ? 'نقطتين' : n >= 3 && n <= 10 ? n + ' نقاط' : n + ' نقطة';
   function goLabel() { const go = $('sGo'); if (go.disabled) return; const c = useProxy() && ME ? costNow() : 0; go.innerHTML = '🎬 اصنع الفيديو' + (c ? ` <small>· ${ptsTxt(c)}</small>` : ''); }
   function askCost() {
@@ -1022,14 +1074,48 @@ Items: ${JSON.stringify(items)}`;
     return { buf, wav: wavBlob(pcm, rate), info: { duration: total / rate, at, durs: clips.map(c => c.pcm.length / rate) } };
   }
 
+  // ── 🚀 promo pictures: the client's numbered pictures (cut out when on white) and AI-drawn product pictures for the rest ──
+  async function promoPics(plan, pics, draw) {
+    const pimgs = [], byPic = {}, byDraw = {}, slots = [];
+    const wide = new Set();
+    plan.scenes.forEach(x => { if (x.type === 'title') { slots.push(x); wide.add(x); } else if (['showcase', 'cards', 'checklist'].includes(x.type)) (x.items || []).forEach(i => { slots.push(i); if (x.type === 'showcase') wide.add(i); }); });
+    for (const sl of slots) {
+      const n = parseInt(sl.pic, 10);
+      if (n >= 1 && n <= pics.length) {
+        if (byPic[n] == null) { try { const r = await cleanLogo(pics[n - 1].file, true); byPic[n] = pimgs.push({ im: r.im, blob: r.blob, cut: r.cut }) - 1; } catch (e) { byPic[n] = -1; } }
+        if (byPic[n] >= 0) { sl.ix = byPic[n]; continue; }
+      }
+      const d = String(sl.draw || '').trim(); if (d && draw) (byDraw[d] = byDraw[d] || []).push(sl);
+    }
+    const todo = Object.keys(byDraw).slice(0, 8);
+    if (todo.length) {
+      let im = null; try { im = await pick('image'); } catch (e) {}
+      let ok = 0, err = '';
+      for (let k = 0; k < todo.length && im; k++) {
+        step('pics', 'doing', `أرسم صور المنتجات ${k + 1} / ${todo.length}`);
+        try {
+          const big = byDraw[todo[k]].some(sl => wide.has(sl)), ar = !big ? '1:1' : $('pAspect').value === '9:16' ? '9:16' : '16:9';
+          const r = await drawScene(im, `Hyper-realistic premium advertising photograph: ${todo[k]}. Immersive close-up that fills the whole frame, surrounded by what it is made of or used with (no plain or empty background), fresh natural textures, glistening water droplets, a gentle splash, cinematic studio lighting with a soft rim light, shallow depth of field, rich vivid natural colours, shot with a high-end macro lens for a luxury brand campaign. Real photography: NOT an illustration, NOT a cartoon, NOT an emoji, NOT 3D clipart. No text, no letters, no numbers, no logo, no watermark.`, [], ar);
+          const ix = pimgs.push({ im: r.im, blob: r.blob, cut: false }) - 1; byDraw[todo[k]].forEach(sl => { sl.ix = ix; }); ok++;
+        } catch (e) { err = e.message; if (e.status === 429 || e.status === 402) break; }
+      }
+      if (ok < todo.length) msg('sMsg', `ℹ️ ما قدرت أرسم ${todo.length - ok} من الصور${err ? ' (' + esc(err) + ')' : ''}، فحطيت مكانها رموز.`);
+    }
+    step('pics', 'done', [LOGO ? 'شعارك' : '', pimgs.length ? pimgs.length + ' صور' : ''].filter(Boolean).join(' · ') || 'بدون شعار');
+    return pimgs;
+  }
+
   // ── 🚀 promo: plan (Gemini or offline template) → optional voice per scene → promo engine ──
   async function runPromo(o, gender, voiceName, imgRef) {
-    const brand = brandValues(); let plan = null, tm = null, offline = false;
+    const brand = brandValues(), pics = PPICS.slice(0, 8); let plan = null, tm = null, offline = false;
+    o = Object.assign({}, o, { pics: pics.map(p => p.tag.trim()), draw: $('pDraw').checked });
     step('plan', 'doing', 'Gemini يكتب الإعلان…');
     try {
       if (!useProxy() && !validKey(KEY())) throw new Error('بدون مفتاح');
       tm = await pick('text'); if (!tm) throw new Error('ما لقيت موديل نصوص');
-      const parts = (imgRef ? [{ inlineData: { mimeType: imgRef.mime, data: imgRef.b64 } }] : []).concat({ text: promoPrompt(Object.assign({ voice: gender !== 'none' }, o), brand) });
+      const parts = imgRef ? [{ inlineData: { mimeType: imgRef.mime, data: imgRef.b64 } }] : [];
+      for (let i = 0; i < pics.length; i++) { const r = await smallJpeg(pics[i].file); parts.push({ text: `Picture ${i + 1}${pics[i].tag ? ': ' + pics[i].tag : ''}` }, { inlineData: { mimeType: r.mime, data: r.b64 } }); }
+      parts.push({ text: promoPrompt(Object.assign({ voice: gender !== 'none' }, o), brand) });
       let j; try { j = await gapi(`models/${tm}:generateContent`, { contents: [{ parts }], generationConfig: { responseMimeType: 'application/json' } }); } catch (e) { if (e.status !== 400) throw e; j = await gapi(`models/${tm}:generateContent`, { contents: [{ parts }] }); }
       const raw = partText(j); plan = JSON.parse(raw.slice(raw.indexOf('{'), raw.lastIndexOf('}') + 1));
       if (!Array.isArray(plan.scenes) || plan.scenes.length < 2) throw new Error('الخطة رجعت فاضية');
@@ -1053,13 +1139,13 @@ Items: ${JSON.stringify(items)}`;
         step('voice', 'done', '');
       } catch (e) { clips = null; step('voice', 'fail', 'بدون صوت'); msg('sMsg', `⚠️ الصوت: ${esc(e.message)} — كملت بالموسيقى فقط.`, 'warn'); }
     }
-    step('pics', 'done', LOGO ? 'شعارك' : 'بدون شعار');
+    const pimgs = await promoPics(plan, pics, !offline && o.draw);
     step('video', 'doing'); await fontsReady;
     const pb = plan.brand || {};
     PLAN = { title: plan.title && plan.title.ar ? plan.title : { ar: brand.name || pb.name || '', en: '' }, scenes: plan.scenes };
     PICS = []; PICBLOBS = [];
     PROJ = { kind: 'promo', id: 's' + Date.now().toString(36), created: Date.now(), title: { ar: brand.name || pb.name || PLAN.title.ar, en: (plan.title && plan.title.en) || '' }, plan: PLAN, aspect: $('pAspect').value,
-      brand: { name: brand.name || pb.name || '', tagline: pb.tagline || '', color: brand.color, url: brand.url, phone: brand.phone }, logoIm: LOGO ? LOGO.im : null, logoBlob: LOGO ? LOGO.blob : null,
+      brand: { name: brand.name || pb.name || '', tagline: pb.tagline || '', color: brand.color, url: brand.url, phone: brand.phone }, logoIm: LOGO ? LOGO.im : null, logoBlob: LOGO ? LOGO.blob : null, pimgs, nPimg: pimgs.length,
       textMode: o.textMode, credit: $('sCredit').value.trim(), music: musicChoice(), voiceDur: clips ? clips.map(c => c.pcm.length / c.rate) : null, settings: Object.assign(formValues(), { idea: $('sIdea').value }) };
     eng = VideoEngine.create(cv, promoSpec());
     VOICE = null;
@@ -1088,7 +1174,7 @@ Items: ${JSON.stringify(items)}`;
     JOB = null;
     try {
       if (useProxy()) {
-        const r = await fetch('/api/job', { method: 'POST', headers: { 'content-type': 'application/json' }, credentials: 'same-origin', body: JSON.stringify({ style: style === 'pictures' || style === 'cinematic' ? 'pictures' : 'motion', scenes: o.scenes || 8 }) });
+        const r = await fetch('/api/job', { method: 'POST', headers: { 'content-type': 'application/json' }, credentials: 'same-origin', body: JSON.stringify({ style: jobStyle(), scenes: o.scenes || 8 }) });
         const jj = await r.json().catch(() => ({}));
         if (!r.ok) throw new Error(((jj.error && jj.error.message) || 'تعذّر بدء الفيديو') + (jj.error && jj.error.code === 'no_points' ? ' — اشحن نقاطك أو تواصل معنا.' : ''));
         JOB = jj.job; setPoints(jj.points);
