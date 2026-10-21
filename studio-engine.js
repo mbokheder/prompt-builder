@@ -2690,7 +2690,9 @@ function synthMusic(T, SR = 32000, mo = {}) {
 // spec: { kind:'occasion', occ:'invite'|'wedding'|'baby'|'religious', sub, aspect:'16:9'|'9:16', look:{seed}, credit, music, voice:{marks,duration}|null,
 //         scenes:[{ type, top, title, sub, label, names:[], lines:[], items:[{icon,label,value}], source, quran, say }] }
 // types: open (opening line + big title), names (big names), message (short lines), verse (Quran / dua in a frame), details (date, time, place…), photo (the client's picture), close
-// spec.photo = the client's picture (invitation card, the couple, the baby, the venue…), spec.logo = their logo shown at the top
+// spec.photo = the client's picture (invitation card, the couple, the baby, the venue…), spec.logo = their logo shown at the top,
+// spec.bgs = AI art, one cinematic background per scene (slow zoom and pan, cross-fades);
+// spec.bg = the client's own background picture (fills the screen under a soft veil; the text colour follows how light it is)
 const OTYPES = ['open', 'names', 'message', 'verse', 'details', 'photo', 'close'];
 const OFAM = { deco: "'Aref Ruqaa', 'Amiri', serif", verse: "'Amiri', serif", body: "'Cairo', Tahoma, sans-serif" };
 const OTHEMES = {
@@ -2732,7 +2734,7 @@ function normOccasion(s) {
     source: str(x.source), quran: !!x.quran, say: str(x.say),
   })).filter(x => x.type === 'photo' ? !!s.photo : x.title || x.top || x.names.length || x.lines.length || x.items.length);
   if (!scenes.length) scenes.push({ type: 'open', top: '', title: 'دعوة', sub: '', label: '', names: [], lines: [], items: [], source: '', quran: false, say: '' });
-  return { kind: 'occasion', occ, sub: str(s.sub), vertical: s.aspect === '9:16', look: s.look || {}, credit: str(s.credit), music: s.music || null, scenes, title: pair(s.title), photo: s.photo || null, logo: s.logo || null,
+  return { kind: 'occasion', occ, sub: str(s.sub), vertical: s.aspect === '9:16', look: s.look || {}, credit: str(s.credit), music: s.music || null, scenes, title: pair(s.title), photo: s.photo || null, logo: s.logo || null, bg: s.bg || null, bgs: (Array.isArray(s.bgs) ? s.bgs : []).filter(im => im && (im.naturalWidth || im.width)),
     voice: s.voice && isFinite(s.voice.duration) ? s.voice : null };
 }
 function planOccasion(X) {
@@ -2762,11 +2764,18 @@ function createOccasion(canvas, spec) {
   const W = X.vertical ? 1080 : 1920, H = X.vertical ? 1920 : 1080, CX = W / 2, V = X.vertical;
   const lr = rng(((X.look.seed || 1) >>> 0) || 1);
   const key = X.occ === 'baby' ? 'baby_' + (['boy', 'girl'].includes(X.sub) ? X.sub : 'neutral') : X.occ === 'religious' ? (OTHEMES[X.sub] ? X.sub : 'religious') : X.occ === 'events' ? (OTHEMES['ev_' + X.sub] ? 'ev_' + X.sub : 'invite') : X.occ;
-  const TH = OTHEMES[key][X.look.seed ? Math.floor(lr() * OTHEMES[key].length) : 0];
+  let TH = OTHEMES[key][X.look.seed ? Math.floor(lr() * OTHEMES[key].length) : 0];
+  // the client's own background: how light is it? → dark or light text, and a veil so the text always reads
+  const BGI = X.bg && (X.bg.naturalWidth || X.bg.width) ? X.bg : null;
+  if (BGI) { let lum = .5; try { const c = document.createElement('canvas'); c.width = 24; c.height = 24; const x = c.getContext('2d'); x.drawImage(BGI, 0, 0, 24, 24); const d = x.getImageData(0, 0, 24, 24).data; let sum = 0; for (let i = 0; i < d.length; i += 4) sum += (.2126 * d[i] + .7152 * d[i + 1] + .0722 * d[i + 2]) / 255; lum = sum / (d.length / 4); } catch (e) {}
+    TH = Object.assign({}, TH, lum < .55 ? { dark: true, ink: '#ffffff' } : { dark: false, ink: '#2a2118' }, { mosque: 0, moon: 0, hills: 0, deco: 'sparkle' }); }
+  const BGS = !BGI ? X.bgs : [];
+  if (BGS.length) TH = Object.assign({}, TH, { dark: true, ink: '#ffffff', mosque: 0, moon: 0, hills: 0, deco: 'sparkle' });
   const FR = X.look.seed ? Math.floor(lr() * 3) : 0;                       // frame style
   const RINGS = X.occ === 'wedding' || (X.occ === 'events' && ['milka', 'khutba'].includes(X.sub));
   // ── particles ──
   const N = (n, f) => Array.from({ length: n }, f);
+  const BOK = N(V ? 14 : 16, () => ({ x: lr() * W, y: lr() * H, r: 40 + lr() * 110, v: 6 + lr() * 14, ph: lr() * 6, c: lr() < .6 }));
   const PET = N(V ? 34 : 40, () => ({ x: lr() * W, y: lr() * H, v: 40 + lr() * 70, s: 10 + lr() * 14, r: lr() * 6, vr: (lr() - .5) * 2, sw: 20 + lr() * 50, ph: lr() * 6 }));
   const SPK = N(46, () => ({ x: lr() * W, y: lr() * H, s: 4 + lr() * 12, ph: lr() * 6, f: .6 + lr() * 1.6 }));
   const CONF = N(70, () => ({ x: lr() * W, y: lr() * H, w: 10 + lr() * 16, h: 6 + lr() * 9, v: 60 + lr() * 110, r: lr() * 6, vr: (lr() - .5) * 5, c: lr() }));
@@ -2820,7 +2829,33 @@ function createOccasion(canvas, spec) {
   }
   function cloud(x, y, s, a) { ctx.save(); ctx.globalAlpha = a; ctx.fillStyle = '#ffffff'; ctx.translate(x, y); ctx.scale(s, s); ctx.beginPath(); [[0, 0, 60], [55, -25, 70], [120, 0, 58], [60, 18, 60]].forEach(([cx, cy, r]) => { ctx.moveTo(cx + r, cy); ctx.arc(cx, cy, r, 0, TAU); }); ctx.fill(); ctx.restore(); }
   // ── background (continuous across scenes) ──
+  // soft out-of-focus lights drifting up, and slow light rays from the top: depth on every look
+  function depth(t) {
+    ctx.save(); ctx.globalCompositeOperation = TH.dark ? 'lighter' : 'source-over';
+    BOK.forEach(b => { const y = ((b.y - t * b.v) % (H + 300) + H + 300) % (H + 300) - 150, x = b.x + Math.sin(t * .3 + b.ph) * 40, a = (TH.dark ? .1 : .14) * (.6 + .4 * Math.sin(t * .8 + b.ph));
+      const g = ctx.createRadialGradient(x, y, 0, x, y, b.r); g.addColorStop(0, (b.c ? TH.acc : TH.acc2) + Math.round(a * 255).toString(16).padStart(2, '0')); g.addColorStop(1, (b.c ? TH.acc : TH.acc2) + '00'); ctx.fillStyle = g; ctx.fillRect(x - b.r, y - b.r, b.r * 2, b.r * 2); });
+    if (TH.dark) { ctx.translate(CX, -H * .08); ctx.rotate(Math.sin(t * .15) * .12); for (let i = -3; i <= 3; i++) { ctx.save(); ctx.rotate(i * .2); const g = ctx.createLinearGradient(0, 0, 0, H * 1.2); g.addColorStop(0, 'rgba(255,240,200,.055)'); g.addColorStop(1, 'rgba(255,240,200,0)'); ctx.fillStyle = g; ctx.beginPath(); ctx.moveTo(-14, 0); ctx.lineTo(14, 0); ctx.lineTo(120 + 30 * Math.sin(t * .4 + i), H * 1.2); ctx.lineTo(-120 - 30 * Math.sin(t * .4 + i), H * 1.2); ctx.closePath(); ctx.globalAlpha = .55 + .45 * Math.sin(t * .5 + i * 1.7); ctx.fill(); ctx.restore(); } }
+    ctx.restore();
+  }
+  // AI backgrounds: one per scene, slow zoom and pan, cross-fading at each cut, under a cinematic veil
+  function photoBg(im, k, dir) { const iw = im.naturalWidth || im.width, ih = im.naturalHeight || im.height, z = Math.max(W / iw, H / ih) * (1.06 + .12 * k); ctx.drawImage(im, CX - iw * z / 2 + dir * W * .035 * (k - .5) * 2, H / 2 - ih * z / 2, iw * z, ih * z); }
   function background(t) {
+    if (BGS.length) {
+      let cur = T.scenes[0]; T.scenes.forEach(x => { if (t >= x.a) cur = x; });
+      const kOf = sc => clamp((t - sc.a) / Math.max(1, sc.b - sc.a + 1)), prev = T.scenes[cur.n - 1], f = prev ? E.io(P(t, cur.a, cur.a + 1)) : 1;
+      if (prev && f < 1) { photoBg(BGS[prev.n % BGS.length], kOf(prev), prev.n % 2 ? -1 : 1); }
+      ctx.save(); ctx.globalAlpha = f; photoBg(BGS[cur.n % BGS.length], kOf(cur), cur.n % 2 ? -1 : 1); ctx.restore();
+      const vg = ctx.createRadialGradient(CX, H / 2, Math.min(W, H) * .25, CX, H / 2, Math.max(W, H) * .75); vg.addColorStop(0, 'rgba(0,0,0,.38)'); vg.addColorStop(1, 'rgba(0,0,0,.78)'); ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H);
+      depth(t); SPK.forEach(x => { const a = Math.max(0, Math.sin(t * x.f + x.ph)); if (a > .05) star4(x.x, x.y, x.s * (.6 + a * .6), TH.acc, a * .8); });
+      return;
+    }
+    if (BGI) {
+      const iw = BGI.naturalWidth || BGI.width, ih = BGI.naturalHeight || BGI.height, k = Math.max(W / iw, H / ih) * (1.03 + .05 * clamp(t / T.DUR));
+      ctx.drawImage(BGI, CX - iw * k / 2, H / 2 - ih * k / 2, iw * k, ih * k);
+      ctx.fillStyle = TH.dark ? 'rgba(0,0,0,.42)' : 'rgba(255,255,255,.5)'; ctx.fillRect(0, 0, W, H);
+      depth(t); SPK.forEach(s => { const a = Math.max(0, Math.sin(t * s.f + s.ph)); if (a > .05) star4(s.x, s.y, s.s * (.6 + a * .6), TH.acc, a * .7); });
+      return;
+    }
     const g = ctx.createLinearGradient(0, 0, 0, H); g.addColorStop(0, TH.bg[0]); g.addColorStop(1, TH.bg[1]); ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
     const gl = ctx.createRadialGradient(CX, H * .38, 0, CX, H * .38, Math.max(W, H) * .7); gl.addColorStop(0, TH.acc + (TH.dark ? '30' : '22')); gl.addColorStop(1, TH.acc + '00'); ctx.fillStyle = gl; ctx.fillRect(0, 0, W, H);
     const d = TH.deco;
@@ -2842,6 +2877,7 @@ function createOccasion(canvas, spec) {
       ctx.fillStyle = col; ctx.globalAlpha = .9; ctx.beginPath(); ctx.ellipse(x, y, b.r, b.r * 1.2, 0, 0, TAU); ctx.fill(); ctx.globalAlpha = .45; ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.ellipse(x - b.r * .35, y - b.r * .4, b.r * .22, b.r * .34, -.4, 0, TAU); ctx.fill(); ctx.restore(); });
     if (d === 'fireworks') FW.forEach(f => { const per = 3.2, lt = ((t + f.t0) % per), k = lt / 1.6; if (k > 1) return; const x = f.x * W, y = f.y * H, col = f.c ? TH.acc : TH.acc2;
       for (let i = 0; i < 26; i++) { const a = i / 26 * TAU, r = E.out(k) * 190; ctx.globalAlpha = (1 - k) * .9; ctx.fillStyle = col; ctx.beginPath(); ctx.arc(x + Math.cos(a) * r, y + Math.sin(a) * r + k * k * 40, 4.5 * (1 - k * .5), 0, TAU); ctx.fill(); } ctx.globalAlpha = 1; });
+    depth(t);
   }
   // ornamental frame around the content (drawn in at the start)
   function frame(t) {
@@ -2864,6 +2900,9 @@ function createOccasion(canvas, spec) {
   function rings(x, y, k) { if (k <= 0) return; ctx.save(); ctx.globalAlpha = k; ctx.strokeStyle = TH.acc; ctx.lineWidth = 7; ctx.translate(x, y); ctx.scale(k, k); ctx.beginPath(); ctx.arc(-22, 0, 34, 0, TAU); ctx.stroke(); ctx.beginPath(); ctx.arc(22, 0, 34, 0, TAU); ctx.stroke(); star4(-22, -40, 10, TH.acc2, 1); ctx.restore(); }
   // ── scene content ──
   const CW = V ? 860 : 1360;
+  // a band of light that passes over a big title once it is in
+  function shine(lt, a, w) { const p = P(lt, a + .9, a + 2.3); if (p <= 0 || p >= 1) return TH.ink; const x = lerp(-w * .8, w * .8, E.io(p)), g = ctx.createLinearGradient(x - 170, -80, x + 170, 80);
+    g.addColorStop(0, TH.ink); g.addColorStop(.5, TH.dark ? '#fff4c8' : TH.acc); g.addColorStop(1, TH.ink); return g; }
   function block(rows, cy, alpha) {      // rows: [{h, draw(y)}] centred vertically around cy
     const tot = rows.reduce((a, r) => a + r.h, 0); let y = cy - tot / 2;
     rows.forEach(r => { ctx.save(); ctx.globalAlpha = alpha * (r.k == null ? 1 : clamp(r.k)); r.draw(y + r.h / 2 + (r.k == null ? 0 : (1 - E.out(clamp(r.k))) * 30)); ctx.restore(); y += r.h; });
@@ -2874,14 +2913,14 @@ function createOccasion(canvas, spec) {
     if (s.type === 'open') {
       if (s.top) { const a = nx(); rows.push({ h: V ? 110 : 90, k: ap(lt, a) / 1, draw: y => tx(s.top, CX, y, V ? 54 : 50, OFAM.deco, TH.acc, 'center', CW) }); }
       { const a = nx(); rows.push({ h: 50, k: 1, draw: y => divider(y, P(lt, a, a + .8), V ? 420 : 520) }); }
-      if (s.title) { const a = nx(), f = fitLines(s.title, CW, 2, V ? 150 : 140, OFAM.deco, 60); rows.push({ h: f.ls.length * f.sz * 1.3 + 30, k: ap(lt, a, .8), draw: y => { const sc = .85 + .15 * E.back(P(lt, a, a + .8)); ctx.translate(CX, y); ctx.scale(sc, sc); f.ls.forEach((l, j) => tx(l, 0, (j - (f.ls.length - 1) / 2) * f.sz * 1.3, f.sz, OFAM.deco, TH.ink)); } }); }
+      if (s.title) { const a = nx(), f = fitLines(s.title, CW, 2, V ? 150 : 140, OFAM.deco, 60); rows.push({ h: f.ls.length * f.sz * 1.3 + 30, k: ap(lt, a, .8), draw: y => { const sc = .85 + .15 * E.back(P(lt, a, a + .8)); ctx.translate(CX, y); ctx.scale(sc, sc); f.ls.forEach((l, j) => tx(l, 0, (j - (f.ls.length - 1) / 2) * f.sz * 1.3, f.sz, OFAM.deco, shine(lt, a, CW))); } }); }
       if (s.sub) { const a = nx(), f = fitLines(s.sub, CW, 3, V ? 50 : 46, OFAM.body, 28, '600'); rows.push({ h: f.ls.length * f.sz * 1.5 + 20, k: ap(lt, a), draw: y => f.ls.forEach((l, j) => tx(l, CX, y + (j - (f.ls.length - 1) / 2) * f.sz * 1.5, f.sz, OFAM.body, TH.ink, 'center', CW, '600')) }); }
     } else if (s.type === 'names') {
       if (s.label) { const a = nx(); rows.push({ h: 90, k: ap(lt, a), draw: y => tx(s.label, CX, y, V ? 48 : 44, OFAM.body, TH.acc, 'center', CW, '700') }); }
       s.names.forEach((nm, j) => {
         if (j) { const a = nx(); rows.push({ h: RINGS ? 120 : 80, k: ap(lt, a), draw: y => RINGS ? rings(CX, y, E.back(P(lt, a, a + .6))) : tx('و', CX, y, 70, OFAM.deco, TH.acc) }); }
         const a = nx(), f = fitLines(nm, CW, 2, V ? 170 : 150, OFAM.deco, 70);
-        rows.push({ h: f.ls.length * f.sz * 1.25 + 20, k: ap(lt, a, .8), draw: y => { const sc = .8 + .2 * E.back(P(lt, a, a + .8)); ctx.translate(CX, y); ctx.scale(sc, sc); ctx.shadowColor = TH.acc + '66'; ctx.shadowBlur = 30; f.ls.forEach((l, q) => tx(l, 0, (q - (f.ls.length - 1) / 2) * f.sz * 1.25, f.sz, OFAM.deco, TH.ink)); } });
+        rows.push({ h: f.ls.length * f.sz * 1.25 + 20, k: ap(lt, a, .8), draw: y => { const sc = .8 + .2 * E.back(P(lt, a, a + .8)); ctx.translate(CX, y); ctx.scale(sc, sc); ctx.shadowColor = TH.acc + '66'; ctx.shadowBlur = 30; f.ls.forEach((l, q) => tx(l, 0, (q - (f.ls.length - 1) / 2) * f.sz * 1.25, f.sz, OFAM.deco, shine(lt, a, CW))); } });
       });
       if (s.names.length === 1 && RINGS) { const a = nx(); rows.push({ h: 120, k: ap(lt, a), draw: y => rings(CX, y, E.back(P(lt, a, a + .6))) }); }
       if (s.sub) { const a = nx(), f = fitLines(s.sub, CW, 3, V ? 48 : 44, OFAM.body, 28, '600'); rows.push({ h: f.ls.length * f.sz * 1.5 + 20, k: ap(lt, a), draw: y => f.ls.forEach((l, j) => tx(l, CX, y + (j - (f.ls.length - 1) / 2) * f.sz * 1.5, f.sz, OFAM.body, TH.ink, 'center', CW, '600')) }); }
@@ -2933,8 +2972,10 @@ function createOccasion(canvas, spec) {
     background(t); frame(t);
     let cur = T.scenes[0]; T.scenes.forEach(s => { if (t >= s.a) cur = s; });
     const prev = T.scenes[cur.n - 1], k = prev ? E.io(P(t, cur.a, cur.a + .8)) : 1;
-    if (prev && k < 1) content(prev, t, 1 - k);
-    content(cur, t, cur.n === T.scenes.length - 1 ? k * (1 - P(t, T.DUR - .6, T.DUR)) : k * (1 - P(t, cur.b - .25, cur.b + .3) * 0));
+    const cam = (z, blur, fn) => { ctx.save(); ctx.translate(CX, H / 2); ctx.scale(z, z); ctx.translate(-CX, -H / 2); if (blur > .3) ctx.filter = `blur(${blur.toFixed(1)}px)`; fn(); ctx.restore(); };
+    if (prev && k < 1) cam(1 + .07 * k, k * 6, () => content(prev, t, 1 - k));
+    const drift = 1 + .015 * Math.sin((t - cur.a) * .5);
+    cam((1.06 - .06 * k) * drift, (1 - k) * 8, () => content(cur, t, cur.n === T.scenes.length - 1 ? k * (1 - P(t, T.DUR - .6, T.DUR)) : k));
     // golden shimmer sweep at every cut
     if (prev && t - cur.a < 1) { const q = P(t, cur.a - .1, cur.a + .9), x = lerp(-W * .3, W * 1.3, E.io(q)); ctx.save(); const g = ctx.createLinearGradient(x - 260, 0, x + 260, 0); g.addColorStop(0, TH.acc + '00'); g.addColorStop(.5, TH.acc + '55'); g.addColorStop(1, TH.acc + '00'); ctx.fillStyle = g; ctx.globalCompositeOperation = TH.dark ? 'lighter' : 'source-over'; ctx.fillRect(0, 0, W, H); ctx.restore(); }
     // the client's logo, small at the top centre
