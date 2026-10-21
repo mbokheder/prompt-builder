@@ -2713,10 +2713,18 @@ const OTHEMES = {
   arafa: [{ bg: ['#f9e3b5', '#e39b5a'], ink: '#4a2a0f', acc: '#8a4f12', acc2: '#ffffff', dark: false, deco: 'sun', hills: 1 }],
   hijri: [{ bg: ['#101b3d', '#060a18'], ink: '#f4f7ff', acc: '#d8e1f2', acc2: '#e9c46a', dark: true, deco: 'stars', mosque: 1, moon: 1 }],
   jumuah: [{ bg: ['#0f4a36', '#072619'], ink: '#fffbea', acc: '#e9c46a', acc2: '#9be3c3', dark: true, deco: 'stars', mosque: 1, moon: 1 }, { bg: ['#f5efe2', '#e6d6b5'], ink: '#2f3d2a', acc: '#2f6b4f', acc2: '#c79a3b', dark: false, deco: 'pattern', mosque: 1 }],
+  ev_milka: [{ bg: ['#fbf7ef', '#efe3c6'], ink: '#3e2f1c', acc: '#b8893b', acc2: '#e8d3a0', dark: false, deco: 'sparkle' }, { bg: ['#1d1a14', '#0c0a07'], ink: '#fbf3df', acc: '#d4af37', acc2: '#f3e2b3', dark: true, deco: 'sparkle' }],
+  ev_khutba: [{ bg: ['#fff4f4', '#f6dede'], ink: '#5a2a35', acc: '#c06a7d', acc2: '#e9b872', dark: false, deco: 'petals' }, { bg: ['#3a1424', '#1c0911'], ink: '#fff3f5', acc: '#f2a7b8', acc2: '#e9c46a', dark: true, deco: 'petals' }],
+  ev_taqaddum: [{ bg: ['#2b1d12', '#140c06'], ink: '#fbf1e2', acc: '#c9a15b', acc2: '#e8cf9d', dark: true, deco: 'sparkle' }],
+  ev_home: [{ bg: ['#eef5ec', '#d6e6d2'], ink: '#24402c', acc: '#4f7d4f', acc2: '#c8a165', dark: false, deco: 'confetti' }, { bg: ['#1f3326', '#0e1a12'], ink: '#f3f8ef', acc: '#c8a165', acc2: '#9cc59a', dark: true, deco: 'sparkle' }],
+  ev_grad: [{ bg: ['#101a3a', '#060b1d'], ink: '#ffffff', acc: '#d4af37', acc2: '#7fa7ff', dark: true, deco: 'confetti' }],
+  ev_shifa: [{ bg: ['#eaf6f6', '#ffffff'], ink: '#1f3d3d', acc: '#2a9d8f', acc2: '#e9c46a', dark: false, deco: 'clouds' }],
+  ev_hajj: [{ bg: ['#f5efe2', '#e6d6b5'], ink: '#2f3d2a', acc: '#2f6b4f', acc2: '#c79a3b', dark: false, deco: 'pattern', mosque: 1 }],
+  ev_success: [{ bg: ['#0f3d33', '#06201b'], ink: '#fdf7ea', acc: '#d9b45a', acc2: '#f0d79a', dark: true, deco: 'confetti' }],
   religious: [{ bg: ['#0b1d3a', '#050c18'], ink: '#fff8e6', acc: '#e9c46a', acc2: '#9bc4ff', dark: true, deco: 'stars', mosque: 1, moon: 1 }],
 };
 function normOccasion(s) {
-  const occ = ['invite', 'wedding', 'baby', 'religious'].includes(s.occ) ? s.occ : 'invite';
+  const occ = ['invite', 'wedding', 'events', 'baby', 'religious'].includes(s.occ) ? s.occ : 'invite';
   const scenes = (Array.isArray(s.scenes) ? s.scenes : []).slice(0, 10).map(x => ({
     type: OTYPES.includes(x.type) ? x.type : 'message', top: str(x.top), title: str(x.title), sub: str(x.sub), label: str(x.label),
     names: (Array.isArray(x.names) ? x.names : []).map(str).filter(Boolean).slice(0, 2), lines: (Array.isArray(x.lines) ? x.lines : []).map(str).filter(Boolean).slice(0, 5),
@@ -2753,9 +2761,10 @@ function createOccasion(canvas, spec) {
   const X = normOccasion(spec), T = planOccasion(X), ctx = canvas.getContext('2d');
   const W = X.vertical ? 1080 : 1920, H = X.vertical ? 1920 : 1080, CX = W / 2, V = X.vertical;
   const lr = rng(((X.look.seed || 1) >>> 0) || 1);
-  const key = X.occ === 'baby' ? 'baby_' + (['boy', 'girl'].includes(X.sub) ? X.sub : 'neutral') : X.occ === 'religious' ? (OTHEMES[X.sub] ? X.sub : 'religious') : X.occ;
+  const key = X.occ === 'baby' ? 'baby_' + (['boy', 'girl'].includes(X.sub) ? X.sub : 'neutral') : X.occ === 'religious' ? (OTHEMES[X.sub] ? X.sub : 'religious') : X.occ === 'events' ? (OTHEMES['ev_' + X.sub] ? 'ev_' + X.sub : 'invite') : X.occ;
   const TH = OTHEMES[key][X.look.seed ? Math.floor(lr() * OTHEMES[key].length) : 0];
   const FR = X.look.seed ? Math.floor(lr() * 3) : 0;                       // frame style
+  const RINGS = X.occ === 'wedding' || (X.occ === 'events' && ['milka', 'khutba'].includes(X.sub));
   // ── particles ──
   const N = (n, f) => Array.from({ length: n }, f);
   const PET = N(V ? 34 : 40, () => ({ x: lr() * W, y: lr() * H, v: 40 + lr() * 70, s: 10 + lr() * 14, r: lr() * 6, vr: (lr() - .5) * 2, sw: 20 + lr() * 50, ph: lr() * 6 }));
@@ -2870,11 +2879,11 @@ function createOccasion(canvas, spec) {
     } else if (s.type === 'names') {
       if (s.label) { const a = nx(); rows.push({ h: 90, k: ap(lt, a), draw: y => tx(s.label, CX, y, V ? 48 : 44, OFAM.body, TH.acc, 'center', CW, '700') }); }
       s.names.forEach((nm, j) => {
-        if (j) { const a = nx(); rows.push({ h: X.occ === 'wedding' ? 120 : 80, k: ap(lt, a), draw: y => X.occ === 'wedding' ? rings(CX, y, E.back(P(lt, a, a + .6))) : tx('و', CX, y, 70, OFAM.deco, TH.acc) }); }
+        if (j) { const a = nx(); rows.push({ h: RINGS ? 120 : 80, k: ap(lt, a), draw: y => RINGS ? rings(CX, y, E.back(P(lt, a, a + .6))) : tx('و', CX, y, 70, OFAM.deco, TH.acc) }); }
         const a = nx(), f = fitLines(nm, CW, 2, V ? 170 : 150, OFAM.deco, 70);
         rows.push({ h: f.ls.length * f.sz * 1.25 + 20, k: ap(lt, a, .8), draw: y => { const sc = .8 + .2 * E.back(P(lt, a, a + .8)); ctx.translate(CX, y); ctx.scale(sc, sc); ctx.shadowColor = TH.acc + '66'; ctx.shadowBlur = 30; f.ls.forEach((l, q) => tx(l, 0, (q - (f.ls.length - 1) / 2) * f.sz * 1.25, f.sz, OFAM.deco, TH.ink)); } });
       });
-      if (s.names.length === 1 && X.occ === 'wedding') { const a = nx(); rows.push({ h: 120, k: ap(lt, a), draw: y => rings(CX, y, E.back(P(lt, a, a + .6))) }); }
+      if (s.names.length === 1 && RINGS) { const a = nx(); rows.push({ h: 120, k: ap(lt, a), draw: y => rings(CX, y, E.back(P(lt, a, a + .6))) }); }
       if (s.sub) { const a = nx(), f = fitLines(s.sub, CW, 3, V ? 48 : 44, OFAM.body, 28, '600'); rows.push({ h: f.ls.length * f.sz * 1.5 + 20, k: ap(lt, a), draw: y => f.ls.forEach((l, j) => tx(l, CX, y + (j - (f.ls.length - 1) / 2) * f.sz * 1.5, f.sz, OFAM.body, TH.ink, 'center', CW, '600')) }); }
     } else if (s.type === 'message') {
       if (s.title) { const a = nx(); rows.push({ h: V ? 130 : 110, k: ap(lt, a), draw: y => tx(s.title, CX, y, V ? 84 : 76, OFAM.deco, TH.acc, 'center', CW) }); }

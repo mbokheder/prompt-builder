@@ -266,17 +266,19 @@
     <section class="card" aria-labelledby="t1">
       <h2 id="t1"><span class="dot" style="background:var(--orange)"></span>١. فكرتك</h2>
       <label for="sType">نوع الفيديو</label>
-      <select id="sType"><option value="explain">📚 شرح، تعليم أو تسويق</option><option value="slides">📊 عرض تقديمي من الفكرة</option><option value="invite">💌 دعوة لمناسبة</option><option value="wedding">💍 زواج</option><option value="baby">👶 فرحة مولود</option><option value="religious">🌙 مناسبة دينية</option></select>
+      <select id="sType"><option value="explain">📚 شرح، تعليم أو تسويق</option><option value="slides">📊 عرض تقديمي من الفكرة</option><option value="invite">💌 دعوة لمناسبة</option><option value="wedding">💍 زواج</option><option value="events">🎊 مناسبات (ملكة، خطبة، تقدّم، منزل جديد…)</option><option value="baby">👶 فرحة مولود</option><option value="religious">🌙 مناسبة دينية</option></select>
       <div id="occBox" class="promoBox hidden" style="margin-top:12px">
         <p class="where" id="occHint" style="margin:0"></p>
         <div class="row" data-occ="religious"><div><label for="oSub">المناسبة</label><select id="oSub"><option value="ramadan">🌙 رمضان</option><option value="fitr">🎉 عيد الفطر</option><option value="adha">🐑 عيد الأضحى</option><option value="arafa">🕋 يوم عرفة</option><option value="hijri">📅 رأس السنة الهجرية</option><option value="jumuah">🕌 يوم الجمعة</option><option value="other">✨ مناسبة أخرى</option></select></div><div><label for="oFrom">من <small>(اسم المرسل — اختياري)</small></label><input type="text" id="oFrom" placeholder="مثال: عائلة بوخضر"></div></div>
         <div data-occ="religious-other"><label for="oGreet">التهنئة</label><input type="text" id="oGreet" placeholder="مثال: مبروك النجاح"></div>
         <div class="row" data-occ="baby"><div><label for="oGender">المولود</label><select id="oGender"><option value="boy">👦 ولد</option><option value="girl">👧 بنت</option></select></div><div><label for="oBaby">اسم المولود</label><input type="text" id="oBaby" placeholder="مثال: لين"></div></div>
         <div class="row" data-occ="invite"><div><label for="oEvent">نوع المناسبة</label><input type="text" id="oEvent" placeholder="مثال: حفل تخرج، افتتاح، عزيمة عشاء"></div><div><label for="oHonoree">صاحب المناسبة <small>(اختياري)</small></label><input type="text" id="oHonoree" placeholder="مثال: سارة"></div></div>
+        <div data-occ="events"><label for="oEvt">المناسبة</label><select id="oEvt"><option value="milka">📜 ملكة (عقد قران)</option><option value="khutba">💐 خطبة</option><option value="taqaddum">🤝 تقدّم رسمي (حفل بسيط للرجال)</option><option value="home">🏠 منزل جديد</option><option value="grad">🎓 تخرج</option><option value="shifa">💚 حمدًا لله على السلامة</option><option value="hajj">🕋 عودة من الحج</option><option value="success">🏆 نجاح</option></select></div>
+        <div class="row" data-occ="events"><div><label for="oName1" id="oName1L">اسم العريس</label><input type="text" id="oName1"></div><div data-occ="events-milka events-khutba events-taqaddum events-grad"><label for="oName2" id="oName2L">اسم العروس</label><input type="text" id="oName2"></div></div>
         <div class="row" data-occ="wedding"><div><label for="oGroom">اسم العريس</label><input type="text" id="oGroom" placeholder="مثال: عبدالرحمن"></div><div><label for="oBride">اسم العروس <small>(اختياري: اتركه فاضي إذا ما تبونه يظهر)</small></label><input type="text" id="oBride"></div></div>
-        <div data-occ="invite wedding baby"><label for="oHost">الداعي أو العائلة <small>(اختياري)</small></label><input type="text" id="oHost" placeholder="مثال: يتشرف محمد بن عبدالله الأحمد بدعوتكم / آل الحربي"></div>
-        <div class="row" data-occ="invite wedding baby"><div><label for="oDate">التاريخ</label><input type="text" id="oDate" placeholder="مثال: الخميس ١٢ رجب ١٤٤٨هـ"></div><div><label for="oTime">الوقت <small>(اختياري)</small></label><input type="text" id="oTime" placeholder="مثال: ٨:٣٠ مساءً"></div></div>
-        <div class="row" data-occ="invite wedding baby"><div><label for="oPlace">المكان <small>(اختياري)</small></label><input type="text" id="oPlace" placeholder="مثال: قاعة الياسمين - الرياض"></div><div><label for="oPhone">للتأكيد أو التواصل <small>(اختياري)</small></label><input type="text" id="oPhone" style="direction:ltr" placeholder="05xxxxxxxx"></div></div>
+        <div data-occ="invite wedding baby events"><label for="oHost" id="oHostL">الداعي أو العائلة <small>(اختياري)</small></label><input type="text" id="oHost" placeholder="مثال: يتشرف محمد بن عبدالله الأحمد بدعوتكم / آل الحربي"></div>
+        <div class="row" data-occ="invite wedding baby events"><div><label for="oDate">التاريخ</label><input type="text" id="oDate" placeholder="مثال: الخميس ١٢ رجب ١٤٤٨هـ"></div><div><label for="oTime">الوقت <small>(اختياري)</small></label><input type="text" id="oTime" placeholder="مثال: ٨:٣٠ مساءً"></div></div>
+        <div class="row" data-occ="invite wedding baby events"><div><label for="oPlace">المكان <small>(اختياري)</small></label><input type="text" id="oPlace" placeholder="مثال: قاعة الياسمين - الرياض"></div><div><label for="oPhone">للتأكيد أو التواصل <small>(اختياري)</small></label><input type="text" id="oPhone" style="direction:ltr" placeholder="05xxxxxxxx"></div></div>
         <div data-occ="baby"><label for="oWeight">الوزن <small>(اختياري)</small></label><input type="text" id="oWeight" placeholder="مثال: ٣.٢ كجم"></div>
         <label class="chk" style="align-items:flex-start"><input type="checkbox" id="oDraw" checked style="margin-top:4px"> <span>🎨 إذا ما رفعت صورة، ارسم صورة فنية واقعية بالذكاء الاصطناعي: لقطة مقرّبة جمالية بدون إظهار الوجه كامل (مثل يد المولود، أو أيدي العروسين بالحنا والخواتم) <small>(<span class="pcT" data-k="pictures">3 نقاط</span> بدل <span class="pcT" data-k="motion">نقطة واحدة</span>، ويرجع الفرق إذا ما انرسمت)</small></span></label>
         <label for="oAspect">المقاس</label><select id="oAspect"><option value="9:16">📱 طولي 9:16 (حالة واتساب، ستوري)</option><option value="16:9">🖥️ عرضي 16:9</option></select>
@@ -527,7 +529,7 @@
   function voiceUI() { const g = $('sGender').value; $('sVoice').disabled = g === 'none'; $('sVoice').innerHTML = g === 'none' ? '<option>—</option>' : VOICES[g].map(([v, l]) => `<option value="${v}">${l}</option>`).join(''); }
   $('sGender').addEventListener('change', () => { voiceUI(); save(); }); voiceUI();
   // remember the choices
-  const FIELDS = ['sIdea', 'sAud', 'sLang', 'sGender', 'sVoice', 'sLen', 'sScenes', 'sPlace', 'sStyle', 'sText', 'sMusic', 'sImgKind', 'sType', 'oSub', 'oFrom', 'oGreet', 'oGender', 'oBaby', 'oEvent', 'oHonoree', 'oGroom', 'oBride', 'oHost', 'oDate', 'oTime', 'oPlace', 'oPhone', 'oWeight', 'oAspect'];
+  const FIELDS = ['sIdea', 'sAud', 'sLang', 'sGender', 'sVoice', 'sLen', 'sScenes', 'sPlace', 'sStyle', 'sText', 'sMusic', 'sImgKind', 'sType', 'oSub', 'oFrom', 'oGreet', 'oGender', 'oBaby', 'oEvent', 'oHonoree', 'oGroom', 'oBride', 'oEvt', 'oName1', 'oName2', 'oHost', 'oDate', 'oTime', 'oPlace', 'oPhone', 'oWeight', 'oAspect'];
   function save() { const o = {}; FIELDS.forEach(f => o[f] = $(f).value); o.sAuto = $('sAuto').checked; store.set('studio-form', JSON.stringify(o)); }
   try { const o = JSON.parse(store.get('studio-form') || '{}'); FIELDS.forEach(f => { if (o[f] != null && f !== 'sVoice') $(f).value = o[f]; }); voiceUI(); if (o.sVoice) $('sVoice').value = o.sVoice; if (o.sAuto === false) $('sAuto').checked = false; } catch (e) {}
   if (!$('sMusic').value) $('sMusic').value = 'auto';
@@ -729,13 +731,29 @@ Pictures (shown big and professional instead of an emoji, on "title" scenes and 
   function pSave() { const o = {}; PFIELDS.forEach(f => o[f] = $(f).value); o.pWhite = $('pWhite').checked; store.set('studio-promo', JSON.stringify(o)); }
   try { const o = JSON.parse(store.get('studio-promo') || '{}'); PFIELDS.forEach(f => { if (o[f] != null) $(f).value = o[f]; }); if (o.pWhite === false) $('pWhite').checked = false; } catch (e) {}
   PFIELDS.forEach(f => { $(f).addEventListener('change', pSave); $(f).addEventListener('input', pSave); }); $('pWhite').addEventListener('change', pSave);
-  const OCC = ['invite', 'wedding', 'baby', 'religious'];
+  const OCC = ['invite', 'wedding', 'events', 'baby', 'religious'];
+  // «🎊 مناسبات»: the field labels change with the occasion
+  const EVT = {
+    milka: { n1: 'اسم العريس', n2: 'اسم العروس <small>(اختياري: اتركه فاضي إذا ما تبونه يظهر)</small>', host: 'الداعي أو العائلة' },
+    khutba: { n1: 'اسم الخاطب', n2: 'اسم المخطوبة <small>(اختياري: اتركه فاضي إذا ما تبونه يظهر)</small>', host: 'الداعي أو العائلة' },
+    taqaddum: { n1: 'اسم العريس', n2: 'عائلة العروس <small>(مثال: آل الحربي)</small>', host: 'والد العريس أو عائلته <small>(مثال: عائلة محمد العتيبي)</small>' },
+    home: { n1: 'صاحب المنزل <small>(اختياري)</small>', host: 'الداعي أو العائلة' },
+    grad: { n1: 'اسم الخريج أو الخريجة', n2: 'التخصص أو الجامعة <small>(اختياري)</small>', host: 'الداعي أو العائلة' },
+    shifa: { n1: 'اسم الشخص <small>(اختياري)</small>', host: 'من <small>(اختياري)</small>' },
+    hajj: { n1: 'اسم الحاج أو الحاجة <small>(اختياري)</small>', host: 'الداعي أو العائلة' },
+    success: { n1: 'اسم الناجح أو الناجحة', host: 'من <small>(اختياري)</small>' },
+  };
+  function evtUI() {
+    const e = EVT[$('oEvt').value] || EVT.milka; $('oName1L').innerHTML = e.n1; if (e.n2) $('oName2L').innerHTML = e.n2;
+    $('oHostL').innerHTML = $('sType').value === 'events' ? e.host + (e.host.includes('<small>') ? '' : ' <small>(اختياري)</small>') : 'الداعي أو العائلة <small>(اختياري)</small>';
+  }
   const isOcc = () => OCC.includes($('sType').value), isDeck = () => $('sType').value === 'slides';
-  const OCC_HINT = { invite: '💌 دعوة أنيقة بإطار ذهبي وحركة هادئة: العنوان، صاحب المناسبة، الموعد والمكان، وختام فيه رقم التأكيد. مناسبة لحالة الواتساب.', wedding: '💍 دعوة زواج: البسملة، آية المودة والرحمة، الأسماء بخط الرقعة مع الخاتمين، الموعد والمكان، ودعاء «بارك الله لهما».', baby: '👶 بشارة مولود بألوان ناعمة وبالونات: الاسم، تاريخ الولادة، دعاء المولود، و«شاركونا فرحتنا».', religious: '🌙 تهنئة دينية بالهلال والفوانيس والمساجد، مع آية أو دعاء ثابت ومراجَع (ما يكتبه الذكاء الاصطناعي)، ورسالة تهنئة باسمك.' };
+  const OCC_HINT = { events: '🎊 مناسبات: ملكة، خطبة، تقدّم رسمي، منزل جديد، تخرج، سلامة، عودة من الحج، نجاح. اختر المناسبة، والحقول والنصوص والألوان تتغير معها. الآيات والأدعية ثابتة ومراجَعة.', invite: '💌 دعوة أنيقة بإطار ذهبي وحركة هادئة: العنوان، صاحب المناسبة، الموعد والمكان، وختام فيه رقم التأكيد. مناسبة لحالة الواتساب.', wedding: '💍 دعوة زواج: البسملة، آية المودة والرحمة، الأسماء بخط الرقعة مع الخاتمين، الموعد والمكان، ودعاء «بارك الله لهما».', baby: '👶 بشارة مولود بألوان ناعمة وبالونات: الاسم، تاريخ الولادة، دعاء المولود، و«شاركونا فرحتنا».', religious: '🌙 تهنئة دينية بالهلال والفوانيس والمساجد، مع آية أو دعاء ثابت ومراجَع (ما يكتبه الذكاء الاصطناعي)، ورسالة تهنئة باسمك.' };
   function typeUI() {
     const ty = $('sType').value, occ = isOcc(), deck = isDeck(), sub = $('oSub').value;
     $('occBox').classList.toggle('hidden', !occ);
-    document.querySelectorAll('[data-occ]').forEach(e => { const k = e.dataset.occ.split(' '); e.classList.toggle('hidden', !(k.includes(ty) || (ty === 'religious' && k.includes('religious-' + sub)))); });
+    document.querySelectorAll('[data-occ]').forEach(e => { const k = e.dataset.occ.split(' '); e.classList.toggle('hidden', !(k.includes(ty) || (ty === 'religious' && k.includes('religious-' + sub)) || (ty === 'events' && k.includes('events-' + $('oEvt').value)))); });
+    evtUI();
     if (occ) $('occHint').textContent = OCC_HINT[ty];
     const hide = (el, h) => { if (el) el.classList.toggle('hidden', h); };
     const cell = id => $(id).closest('div');
@@ -749,6 +767,8 @@ Pictures (shown big and professional instead of an emoji, on "title" scenes and 
     if (typeof costUI === 'function') costUI(); if (typeof goLabel === 'function') goLabel();
   }
   $('sType').addEventListener('change', typeUI); $('oSub').addEventListener('change', typeUI);
+  // the formal proposal is a men's gathering: a man's voice unless the client picks another
+  $('oEvt').addEventListener('change', () => { typeUI(); if ($('oEvt').value === 'taqaddum' && $('sGender').value === 'female') { $('sGender').value = 'male'; $('sGender').dispatchEvent(new Event('change')); } });
   $('sType').addEventListener('change', () => setTimeout(goLabel, 0));
   const promoUI = () => { $('promoBox').classList.toggle('hidden', $('sStyle').value !== 'promo' || isOcc() || isDeck()); };
   $('sStyle').addEventListener('change', promoUI); promoUI(); typeUI();
@@ -1362,6 +1382,29 @@ Items: ${JSON.stringify(items)}`;
         ...det('أهلًا بالدنيا', [w && { icon: '⚖️', label: 'الوزن', value: w }].filter(Boolean)), { type: 'verse', lines: [B[0]], source: B[1], quran: false },
         { type: 'close', title: 'شاركونا فرحتنا', lines: [g === 'girl' ? 'اللهم اجعلها من مواليد السعادة' : 'اللهم اجعله من مواليد السعادة'], items: closeItems }];
     }
+    if (ty === 'events') {
+      const ev = $('oEvt').value, n1 = occVal('oName1'), n2 = occVal('oName2'), names = [n1, n2].filter(Boolean), fx = o => Object.assign(o, { fixed: true });
+      if (ev === 'milka') return [{ type: 'open', top: 'بسم الله الرحمن الرحيم', title: 'عقد قران', sub: host }, { type: 'verse', lines: [OCC_TEXT.wedding.verse[0]], source: OCC_TEXT.wedding.verse[1], quran: true },
+        ...(names.length ? [{ type: 'names', label: 'بمناسبة عقد قران', names, sub: '' }] : []), { type: 'message', lines: ['بحضوركم تكتمل فرحتنا', 'ويسعدنا مشاركتكم هذه المناسبة'] }, ...det('الموعد والمكان', noteItem),
+        fx({ type: 'close', title: 'بارك الله لك', lines: ['وبارك عليك، وجمع بينكما في خير'], items: closeItems })];
+      if (ev === 'khutba') return [{ type: 'open', top: 'بكل الحب والفرح', title: 'خطوبة', sub: host }, ...(names.length ? [{ type: 'names', label: 'يسعدنا إعلان خطوبة', names, sub: '' }] : []),
+        { type: 'message', lines: ['خطوة مباركة نحو بيت سعيد', 'شاركونا الفرحة'] }, ...det('الموعد والمكان', noteItem), fx({ type: 'close', title: 'نسأل الله أن يتمم لهما على خير', lines: [], items: closeItems })];
+      if (ev === 'taqaddum') return [{ type: 'open', top: 'بعون الله وتوفيقه', title: 'دعوة تقدّم رسمي', sub: '' },
+        fx({ type: 'message', lines: [`تتشرف ${host || 'عائلة العريس'}`, `بالتقدم رسميًا لخطبة كريمة ${n2 || 'العائلة الكريمة'}`, ...(n1 ? [`لابنها ${n1}`] : [])] }), ...det('الموعد والمكان', noteItem),
+        fx({ type: 'close', title: 'حضوركم يسعدنا', lines: ['الدعوة خاصة بالرجال'], items: closeItems })];
+      if (ev === 'home') return [{ type: 'open', top: 'الحمد لله', title: 'بيتنا الجديد', sub: host || n1 }, { type: 'verse', lines: ['وقل رب أنزلني منزلا مباركا وأنت خير المنزلين'], source: 'سورة المؤمنون: ٢٩', quran: true },
+        { type: 'message', lines: ['يسعدنا تشريفكم', 'لنفرح معًا ببيتنا الجديد'] }, ...det('الموعد والمكان', noteItem), fx({ type: 'close', title: 'اللهم اجعله بيتًا عامرًا بطاعتك', lines: [], items: closeItems })];
+      if (ev === 'grad') return [{ type: 'open', top: 'بكل فخر', title: 'حفل تخرج', sub: host }, ...(n1 ? [{ type: 'names', label: 'نحتفل بتخرج', names: [n1], sub: n2 }] : []),
+        { type: 'message', lines: ['تعب السنين أثمر نجاحًا', 'شاركونا الفرحة'] }, ...det('الموعد والمكان', noteItem), fx({ type: 'close', title: 'ألف مبروك', lines: ['ومنها للأعلى بإذن الله'], items: closeItems })];
+      if (ev === 'shifa') return [{ type: 'open', top: 'الحمد لله', title: 'حمدًا لله على السلامة', sub: '' }, ...(n1 ? [{ type: 'names', label: 'نهنئ بسلامة', names: [n1], sub: '' }] : []),
+        { type: 'verse', lines: ['لا بأس، طهور إن شاء الله'], source: 'من دعاء النبي ﷺ للمريض (رواه البخاري)', quran: false }, ...det('الموعد والمكان', noteItem),
+        fx({ type: 'close', title: 'ما تشوف شر', lines: ['ألبسك الله ثوب الصحة والعافية', ...(host ? ['من ' + host] : [])], items: closeItems })];
+      if (ev === 'hajj') return [{ type: 'open', top: 'حج مبرور وسعي مشكور', title: 'حمدًا لله على السلامة', sub: host }, ...(n1 ? [{ type: 'names', label: 'نهنئ بعودة', names: [n1], sub: '' }] : []),
+        { type: 'verse', lines: ['وأذن في الناس بالحج يأتوك رجالا وعلى كل ضامر يأتين من كل فج عميق'], source: 'سورة الحج: ٢٧', quran: true }, fx({ type: 'message', lines: ['تقبل الله منكم', 'وجعله حجًا مبرورًا وذنبًا مغفورًا'] }),
+        ...det('الموعد والمكان', noteItem), fx({ type: 'close', title: 'حج مبرور', lines: ['وسعي مشكور وذنب مغفور'], items: closeItems })];
+      return [{ type: 'open', top: 'بكل فخر', title: 'مبروك النجاح', sub: '' }, ...(n1 ? [{ type: 'names', label: 'نبارك لـ', names: [n1], sub: '' }] : []),
+        { type: 'message', lines: ['نجاح يستاهل الفرح', 'وعقبال كل نجاح'] }, ...det('موعد الاحتفال', noteItem), fx({ type: 'close', title: 'ألف مبروك', lines: host ? ['من ' + host] : [], items: closeItems })];
+    }
     if (ty === 'religious') {
       const sub = $('oSub').value, from = occVal('oFrom'), R = OCC_TEXT[sub];
       if (!R) { const g = occVal('oGreet') || 'تهنئة'; return [{ type: 'open', top: '', title: g, sub: '' }, ...(note ? [{ type: 'message', lines: [note] }] : []), { type: 'close', title: g, lines: from ? ['من ' + from] : [] }]; }
@@ -1371,7 +1414,7 @@ Items: ${JSON.stringify(items)}`;
     return [{ type: 'open', top: 'يسعدنا دعوتكم', title: ev, sub: host }, ...(hon ? [{ type: 'names', label: 'بمناسبة ' + ev, names: [hon], sub: '' }] : []), { type: 'message', lines: ['شاركونا فرحتنا', 'حضوركم يسعدنا'] }, ...det('الموعد والمكان', noteItem), { type: 'close', title: 'بانتظاركم', lines: phone ? ['نرجو تأكيد الحضور'] : [], items: closeItems }];
   }
   function occasionPrompt(ty, scenes, o, voice) {
-    return `You write the wording for a short animated ${{ invite: 'invitation', wedding: 'wedding invitation', baby: 'newborn announcement', religious: 'religious greeting' }[ty]} video in ${o.lang} for a Gulf / Saudi audience. Warm, elegant, respectful and culturally appropriate.
+    return `You write the wording for a short animated ${({ invite: 'invitation', wedding: 'wedding invitation', baby: 'newborn announcement', religious: 'religious greeting', events: { milka: 'marriage contract (milka) invitation', khutba: 'engagement announcement', taqaddum: 'formal marriage proposal gathering invitation (men only)', home: 'new home (housewarming) invitation', grad: 'graduation celebration', shifa: 'get-well / recovery greeting', hajj: 'welcome back from Hajj greeting', success: 'success congratulation' }[$('oEvt').value] })[ty]} video in ${o.lang} for a Gulf / Saudi audience. Warm, elegant, respectful and culturally appropriate.
 These are the scenes (JSON). Fixed facts (names, dates, times, places, phone numbers) must never be changed or invented. Scenes of type "verse" contain Quran or hadith text: never change them and never write any Quran or hadith yourself.
 ${JSON.stringify(scenes.map(x => ({ type: x.type, top: x.top, title: x.title, label: x.label, names: x.names, lines: x.lines, items: (x.items || []).map(i => i.label + ': ' + i.value) })))}
 Client note: """${o.idea || ''}"""
@@ -1394,13 +1437,14 @@ Reply with ONLY a JSON object: {"message":["",""],"close":"","narration":[""]}
     for (let k = 0; k < total; k += win) { let q = 0; const e2 = Math.min(total, k + win); for (let m = k; m < e2; m += 4) q += pcm[m] * pcm[m]; const v = Math.sqrt(q / Math.max(1, (e2 - k) / 4)); env.push(v); mx = Math.max(mx, v); }
     return { buf, wav: wavBlob(pcm, rate), info: { duration: total / rate, marks }, env: env.map(v => +(v / mx).toFixed(2)) };
   }
-  const OCC_MUSIC = { wedding: { mood: 'inspiring', genre: 'arabic' }, invite: { mood: 'calm', genre: 'cinematic' }, baby: { mood: 'calm', genre: 'pop' }, religious: null };
+  const OCC_MUSIC = { events: null, wedding: { mood: 'inspiring', genre: 'arabic' }, invite: { mood: 'calm', genre: 'cinematic' }, baby: { mood: 'calm', genre: 'pop' }, religious: null };
   // 🎨 occasions without a picture: one tasteful, realistic close-up drawn by AI (never a full face)
   function occArtPrompt(ty) {
     const pick1 = a => a[Math.floor(Math.random() * a.length)], g = $('oGender').value, col = g === 'girl' ? 'soft blush pink and cream' : g === 'boy' ? 'soft powder blue and cream' : 'soft cream and sage';
     const sub = $('oSub').value, ev = occVal('oEvent');
     const idea = ty === 'baby' ? pick1([`a newborn baby's tiny feet resting in a parent's hands`, `a newborn's tiny hand gently holding a parent's finger`, `a sleeping newborn seen from the side so only the tiny nose, lips and cheek show, the eyes and the rest of the face out of frame, wrapped in a knitted blanket`, `a newborn's tiny feet peeking out of a knitted blanket next to a small plush toy`]) + `, colour palette ${col}`
       : ty === 'wedding' ? pick1(['the bride\'s hands with delicate henna holding a bouquet of white roses, the groom\'s hand with a wedding ring resting on hers', 'two wedding rings on an open velvet box among white roses and soft fairy lights', 'the bride\'s hand with henna and a ring placed over the groom\'s hand, elegant traditional sleeve and gold bracelets', 'an elegant wedding table with white flowers, gold candles and Arabic coffee cups, soft bokeh lights'])
+      : ty === 'events' ? ({ milka: 'a marriage contract document with an elegant gold pen and two wedding rings on white silk among white roses', khutba: 'an open ring box with an engagement ring beside white roses and a small cup of Arabic coffee on an elegant tray', taqaddum: 'a traditional Saudi majlis with brass dallah coffee pots, small Arabic coffee cups, dates and an incense burner with soft smoke, no people', home: pick1(['a new house key with a ribbon on an elegant tray with fresh flowers', 'a welcoming home entrance with flowers and warm lights at dusk, no people']), grad: 'a graduation cap and a rolled diploma tied with a ribbon on a desk with flowers', shifa: 'a get-well bouquet of fresh flowers beside a cup of herbal tea by a sunny window', hajj: 'the Kaaba in Makkah at golden hour seen from far away, serene, no faces visible', success: 'a golden trophy with gold confetti and flowers on a desk, celebration' }[$('oEvt').value])
       : ty === 'religious' ? ({ ramadan: 'a glowing Ramadan lantern beside dates and a cup of Arabic coffee, a mosque silhouette softly blurred behind', fitr: 'Eid sweets and Arabic coffee on an elegant tray with a glowing lantern and gift boxes', adha: 'an elegant Eid al-Adha table with Arabic coffee, dates and a glowing lantern', arafa: 'the plain of Arafat at golden sunrise, soft and serene, seen from afar', hijri: 'a thin crescent moon over a softly lit mosque at dusk', jumuah: 'an open Quran on a carved wooden stand beside prayer beads, soft morning light' }[sub] || 'a glowing lantern and prayer beads on an elegant table, soft warm light')
       : `an elegant realistic still life that celebrates ${ev || 'a happy occasion'}: its symbolic objects, flowers and soft festive lights, no people`;
     return `${idea}. Hyper-realistic, tasteful fine-art photograph, macro close-up with a shallow depth of field, soft natural window light, warm elegant mood, culturally appropriate for a Gulf / Saudi audience, modest. Never show a full face: only hands, feet, or at most a small part of a face, the eyes and the rest out of frame. No text, no letters, no logo, no watermark.`;
@@ -1423,8 +1467,8 @@ Reply with ONLY a JSON object: {"message":["",""],"close":"","narration":[""]}
       let j; try { j = await gapi(`models/${tm}:generateContent`, { contents: [{ parts }], generationConfig: { responseMimeType: 'application/json', temperature: .9 } }); } catch (e) { if (e.status !== 400) throw e; j = await gapi(`models/${tm}:generateContent`, { contents: [{ parts }] }); }
       const raw = partText(j), w = JSON.parse(raw.slice(raw.indexOf('{'), raw.lastIndexOf('}') + 1));
       const clean = v => String(v || '').replace(/[﴿﴾«»"]/g, '').trim();
-      const msg = scenes.find(x => x.type === 'message'); if (msg && !o.idea && Array.isArray(w.message) && w.message.filter(Boolean).length) msg.lines = w.message.map(clean).filter(Boolean).slice(0, 3);
-      const cl = scenes[scenes.length - 1]; if (ty !== 'religious' && w.close && cl.type === 'close' && ty !== 'wedding') cl.title = clean(w.close);
+      const msg = scenes.find(x => x.type === 'message'); if (msg && !msg.fixed && !o.idea && Array.isArray(w.message) && w.message.filter(Boolean).length) msg.lines = w.message.map(clean).filter(Boolean).slice(0, 3);
+      const cl = scenes[scenes.length - 1]; if (ty !== 'religious' && w.close && cl.type === 'close' && !cl.fixed && ty !== 'wedding') cl.title = clean(w.close);
       if (Array.isArray(w.narration)) narr = w.narration.map((v, i) => scenes[i] && scenes[i].type === 'verse' ? '' : clean(v));
       offline = false;
     } catch (e) { msg('sMsg', `ℹ️ ${e.message === 'بدون مفتاح' ? 'ما فيه مفتاح Gemini' : 'ما قدرت أوصل لـ Gemini'}، فسويت ${$('sType').selectedOptions[0].textContent.replace(/^\S+\s/, '')} من قالب جاهز.`); }
@@ -1442,9 +1486,10 @@ Reply with ONLY a JSON object: {"message":["",""],"close":"","narration":[""]}
     else step('voice', 'done', gender === 'none' ? 'موسيقى فقط' : 'بدون صوت');
     step('video', 'doing'); await fontsReady; await Promise.all(['700 60px "Aref Ruqaa"', '700 60px Amiri'].map(f => document.fonts.load(f, 'ابت'))).catch(() => {});
     const mv = $('sMusic').value, seed = (Date.now() ^ Math.floor(Math.random() * 1e9)) >>> 0;
-    const music = mv === 'off' ? null : mv === 'auto' ? (OCC_MUSIC[ty] ? Object.assign({ seed }, OCC_MUSIC[ty]) : null) : { mood: mv, seed };
-    const titleTxt = (scenes[0].title || '') + (ty === 'wedding' && occVal('oGroom') ? ' — ' + occVal('oGroom') : ty === 'baby' && occVal('oBaby') ? ' — ' + occVal('oBaby') : '');
-    PROJ = { id: 's' + Date.now().toString(36), created: Date.now(), kind: 'occasion', photoIm, photoBlob, logoIm: LOGO ? LOGO.im : null, logoBlob: LOGO ? LOGO.blob : null, occ: ty, sub: ty === 'baby' ? $('oGender').value : ty === 'religious' ? $('oSub').value : '', aspect: $('oAspect').value,
+    const EVM = { milka: { mood: 'inspiring', genre: 'arabic' }, khutba: { mood: 'inspiring', genre: 'arabic' }, taqaddum: { mood: 'calm', genre: 'arabic' }, home: { mood: 'calm', genre: 'cinematic' }, grad: { mood: 'inspiring', genre: 'cinematic' }, shifa: { mood: 'calm', genre: 'cinematic' }, hajj: null, success: { mood: 'energetic', genre: 'pop' } };
+    const mo = ty === 'events' ? EVM[$('oEvt').value] : OCC_MUSIC[ty], music = mv === 'off' ? null : mv === 'auto' ? (mo ? Object.assign({ seed }, mo) : null) : { mood: mv, seed };
+    const titleTxt = (scenes[0].title || '') + (ty === 'events' && occVal('oName1') ? ' — ' + occVal('oName1') : ty === 'wedding' && occVal('oGroom') ? ' — ' + occVal('oGroom') : ty === 'baby' && occVal('oBaby') ? ' — ' + occVal('oBaby') : '');
+    PROJ = { id: 's' + Date.now().toString(36), created: Date.now(), kind: 'occasion', photoIm, photoBlob, logoIm: LOGO ? LOGO.im : null, logoBlob: LOGO ? LOGO.blob : null, occ: ty, sub: ty === 'baby' ? $('oGender').value : ty === 'religious' ? $('oSub').value : ty === 'events' ? $('oEvt').value : '', aspect: $('oAspect').value,
       title: { ar: titleTxt, en: '' }, plan: { scenes: scenes.map((x, i) => Object.assign({}, x, { narration: narr[i] || '' })) }, credit: $('sCredit').value.trim(), music,
       voiceInfo: VOICE ? VOICE.info : null, settings: Object.assign(formValues(), { idea: $('sIdea').value }), look: { seed: (Date.now() ^ Math.floor(Math.random() * 1e9)) >>> 0 } };
     buildVideo(); step('video', 'done', fmt(eng.DUR));
@@ -1676,6 +1721,7 @@ Reply with ONLY a JSON object: {"message":["",""],"close":"","narration":[""]}
     const OCCASION = isOcc(), DECK = isDeck();
     if (!idea && !IMG && !OCCASION) return msg('sMsg', '⚠️ اكتب فكرتك أو ارفع صورة.', 'warn');
     if ($('sType').value === 'wedding' && !$('oGroom').value.trim() && !$('oHost').value.trim()) return msg('sMsg', '⚠️ اكتب اسم العريس أو الداعي.', 'warn');
+    if ($('sType').value === 'events' && ['milka', 'khutba', 'taqaddum', 'grad', 'success'].includes($('oEvt').value) && !$('oName1').value.trim() && !$('oHost').value.trim()) return msg('sMsg', '⚠️ اكتب الاسم أو الداعي.', 'warn');
     if ($('sType').value === 'invite' && !$('oEvent').value.trim()) return msg('sMsg', '⚠️ اكتب نوع المناسبة (مثل: حفل تخرج).', 'warn');
     if (!confirmed && !OCCASION && $('sReview').checked && (useProxy() ? ME : validKey(KEY()))) return reviewStart();
     if (useProxy()) { if (!ME) { $('acct').scrollIntoView({ behavior: 'smooth', block: 'center' }); return msg('sMsg', '⚠️ سجّل دخولك بحساب Google أولاً (الزر فوق).', 'warn'); } if (!confirmed) return askCost(); }
