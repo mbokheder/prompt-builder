@@ -950,6 +950,14 @@ function iconG(kind, color) {
 }
 
 
+// the client's logo in the top corner of a cartoon video (1920 × 1080), on a soft white plate (explainers show it as a brand mark)
+function logoMark(ctx, im, t) {
+  const iw = im && (im.naturalWidth || im.width), ih = im && (im.naturalHeight || im.height); if (!iw || !ih) return;
+  const k = Math.min(190 / iw, 96 / ih), w = iw * k, h = ih * k, x = 40, y = 32;
+  ctx.save(); ctx.globalAlpha = clamp(t / .8) * .95; ctx.shadowColor = 'rgba(0,0,0,.18)'; ctx.shadowBlur = 16; ctx.fillStyle = 'rgba(255,255,255,.9)';
+  ctx.fill(rrPath(new Path2D(), x - 14, y - 12, w + 28, h + 24, 18)); ctx.shadowColor = 'transparent'; ctx.drawImage(im, x, y, w, h); ctx.restore();
+}
+
 // ───────────── TEXT EXPLAINER: motion graphics from a text (no characters) ─────────────
 const XTYPES = ['title', 'icon_text', 'list', 'steps', 'number', 'compare', 'quote', 'kinetic', 'question'];
 function normExplainer(s) {
@@ -2545,6 +2553,7 @@ function create(canvas, spec) {
     if (!own) drawNode(ctx, ROOT[sc], 1);
     if (sc !== 'gym') { const v = ctx.createRadialGradient(960, 540, 600, 960, 540, 1150); v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, 'rgba(0,0,0,.2)'); ctx.fillStyle = v; ctx.fillRect(0, 0, 1920, 1080); }
     renderOverlays(t);
+    logoMark(ctx, spec.logo, t);
   }
   return { DUR: T.DUR, T, S, render, mode: CARDS ? 'cards' : WK ? 'workout' : 'activity', music: () => synthMusic(T, 32000, spec.music || {}) };
 }

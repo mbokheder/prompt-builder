@@ -208,7 +208,26 @@
   .costT td:first-child{white-space:nowrap;padding-left:14px}
   .go small{font-size:15px;font-weight:700;opacity:.9}
   .promoBox{margin-top:14px;border:2px solid var(--orange);border-radius:18px;padding:10px 14px 14px;background:rgba(255,122,26,.06)}
-  .promoBox .drop img{max-height:110px;background:repeating-conic-gradient(#ccd 0 25%,#fff 0 50%) 0 0/16px 16px}
+  .chk{font-weight:400;display:flex;gap:8px;align-items:center;margin-top:8px}
+  .rv{margin-top:16px;border:2px solid var(--purple);border-radius:20px;padding:16px;background:color-mix(in srgb,var(--purple) 6%,var(--card))}
+  .rv h3{margin:0 0 4px;font-size:19px;font-weight:900}
+  .rv .rvIdea{background:var(--field);border-radius:14px;padding:12px 14px;margin:10px 0;line-height:1.7}
+  .rv .rvTip{display:flex;gap:8px;align-items:flex-start;font-size:14px;margin:6px 0;padding:8px 12px;border-radius:12px}
+  .rv .rvTip.warn{background:color-mix(in srgb,var(--orange) 12%,transparent)}
+  .rv .rvTip.info{background:color-mix(in srgb,var(--blue) 10%,transparent)}
+  .rv .rvSc{border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin:8px 0;background:var(--card)}
+  .rv .rvSc b{display:block;font-size:15px}
+  .rv .rvSc .ty{color:var(--purple);font-size:12.5px;font-weight:800}
+  .rv .rvSc .say{color:var(--muted);font-size:14px;margin-top:4px}
+  .rv .rvSc .say::before{content:"🎙️ "}
+  .rv .rvSc ul{margin:4px 0 0;padding-inline-start:20px;font-size:14px}
+  .rv .rvSc input,.rv .rvSc textarea{margin-top:6px;font-size:14px;padding:7px 10px}
+  .rv .rvSc textarea{min-height:58px}
+  .rv .rvSum{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin:12px 0}
+  .rv .rvSum div{background:var(--field);border-radius:12px;padding:8px 10px;font-size:13px;color:var(--muted)}
+  .rv .rvSum b{display:block;color:var(--text);font-size:15px}
+  .rv .rvGo{width:100%;margin-top:6px}
+  .promoBox .drop img,#pLogoDrop img{max-height:110px;background:repeating-conic-gradient(#ccd 0 25%,#fff 0 50%) 0 0/16px 16px}
   .pPics{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:10px}
   .pPic{position:relative;border:1px solid var(--line);border-radius:14px;padding:8px;background:var(--field)}
   .pPic img{width:100%;height:96px;object-fit:contain;border-radius:10px;display:block;background:repeating-conic-gradient(#ccd 0 25%,#fff 0 50%) 0 0/14px 14px}
@@ -259,9 +278,13 @@
       </div>
       <label for="sIdea" id="sIdeaLab">عن ماذا الفيديو؟ <small>(فكرة، أو نص، أو وصف منتج)</small></label>
       <textarea id="sIdea" placeholder="مثال: فيديو يشرح للأطفال ليش لازم نشرب ماء كل يوم، بأسلوب مرح"></textarea>
-      <label>صورة <small>(اختياري: بطاقة نشاط، صورة منتج، شعار…)</small></label>
+      <label class="chk"><input type="checkbox" id="sVerbatim"> خلّ نصي مثل ما هو (بدون تحسين ولا إعادة صياغة)</label>
+      <label>صورة للفكرة <small>(اختياري: بطاقة نشاط، صورة منتج…)</small></label>
       <div id="sDrop" class="drop" tabindex="0" role="button"><input type="file" id="sImg" accept="image/*" hidden><div id="sDropTxt">🖼️ اسحب صورة أو <u>اضغط للاختيار</u></div><img id="sImgPrev" class="hidden" alt=""><button type="button" id="sImgDel" class="ghost small hidden">إزالة الصورة</button></div>
       <div id="sKindRow" class="hidden"><label for="sImgKind">الصورة المرفقة هي <small>(عشان أعرف وش أسوي فيها)</small></label><select id="sImgKind"><option value="auto">🤖 تلقائي: أتعرّف عليها بنفسي</option><option value="logo">🏷️ شعار: يظهر في البداية والنهاية بس</option><option value="card">🃏 بطاقة نشاط أو تمارين: الفيديو يشرحها</option><option value="product">📦 منتج أو صورة: تظهر في المشاهد اللي تخصها</option><option value="style">🎨 مرجع للشكل والألوان بس</option></select></div>
+      <label>الشعار <small>(اختياري، لكل الأساليب. إذا ما رفعته ينصنع الفيديو بدون شعار)</small></label>
+      <div id="pLogoDrop" class="drop" tabindex="0" role="button"><input type="file" id="pLogo" accept="image/*" hidden><div id="pLogoTxt">🏷️ اسحب شعارك أو <u>اضغط للاختيار</u></div><img id="pLogoPrev" class="hidden" alt=""><button type="button" id="pLogoDel" class="ghost small hidden">إزالة الشعار</button></div>
+      <label style="font-weight:400;display:flex;gap:8px;align-items:center;margin-top:8px"><input type="checkbox" id="pWhite" checked> شيل الخلفية البيضاء من الشعار تلقائيًا</label>
       <div class="row">
         <div><label for="sAud">الجمهور</label><select id="sAud"><option value="kids">أطفال</option><option value="teachers">معلمات وتربويين</option><option value="marketing">تسويق وإعلان</option><option value="product">شرح منتج أو خدمة</option><option value="general">عام</option></select></div>
         <div><label for="sLang">اللهجة</label><select id="sLang"><option value="Saudi Arabic (اللهجة السعودية البيضاء)">السعودية</option><option value="Gulf Arabic (اللهجة الخليجية)">الخليجية</option><option value="Modern Standard Arabic (الفصحى)">الفصحى</option><option value="Egyptian Arabic (اللهجة المصرية)">المصرية</option><option value="English">English</option></select></div>
@@ -276,9 +299,6 @@
       </div>
       <div id="promoBox" class="promoBox hidden">
         <p class="where" style="margin:0">🚀 إعلان بمستوى احترافي: شعارك يظهر بإضاءة ولمعة، عناوين تتحرك كلمة كلمة، كتابة وضغط زر، خطوات بعلامات صح، بطاقات، جوال، وخاتمة فيها رابطك. وكل حركة لها صوتها مع الموسيقى.</p>
-        <label>الشعار <small>(اختياري — PNG بخلفية شفافة أفضل)</small></label>
-        <div id="pLogoDrop" class="drop" tabindex="0" role="button"><input type="file" id="pLogo" accept="image/*" hidden><div id="pLogoTxt">🏷️ اسحب شعارك أو <u>اضغط للاختيار</u></div><img id="pLogoPrev" class="hidden" alt=""><button type="button" id="pLogoDel" class="ghost small hidden">إزالة الشعار</button></div>
-        <label style="font-weight:400;display:flex;gap:8px;align-items:center;margin-top:8px"><input type="checkbox" id="pWhite" checked> شيل الخلفية البيضاء من الشعار تلقائيًا</label>
         <label style="margin-top:12px">📸 صور المنتجات أو الخدمات <small>(اختياري — لين 8 صور)</small></label>
         <p class="where" style="margin:0 0 6px;font-size:13px">كل صورة تاخذ رقم، واكتب تحتها اسمها (مثلًا: رمان منعش). الصورة تنعرض بخلفيتها، إلا إذا اخترت «شيل الخلفية البيضاء» لها. وفي الفكرة تقدر تكتب «صورة 1 …» أو اسمها، والإعلان يعرض صورك الحقيقية بدل الرموز.</p>
         <div id="pPicsDrop" class="drop" tabindex="0" role="button"><input type="file" id="pPics" accept="image/*" multiple hidden>📸 اسحب الصور أو <u>اضغط للاختيار</u></div>
@@ -305,11 +325,13 @@
       </div>
       <label for="sCredit">✍️ بصمة العمل <small>(اختياري — «هذا العمل من تنسيق …» في النهاية)</small></label>
       <input type="text" id="sCredit" placeholder="اكتب الاسم">
+      <label style="font-weight:400;display:flex;gap:8px;align-items:center"><input type="checkbox" id="sReview" checked> راجع الفكرة قبل الصنع (مجانًا): تشوف السيناريو وتعدّله قبل ما تنخصم أي نقطة</label>
       <label style="font-weight:400;display:flex;gap:8px;align-items:center"><input type="checkbox" id="sAuto" checked> بعد ما يجهز، سجّل الفيديو ونزّله تلقائيًا</label>
       <button type="button" class="go" id="sGo">🎬 اصنع الفيديو</button>
       <p id="sCost" class="where hidden" style="text-align:center;margin:8px 0 0"></p>
       <div class="btns" style="margin-top:10px"><button type="button" class="ghost" id="sClear">🧹 فكرة جديدة</button></div>
       <div id="sMsg"></div>
+      <section id="rv" class="rv hidden" aria-label="مراجعة الفكرة"></section>
 
       <details id="kBox">
         <summary><span id="kTitle">🔑 مفتاح Gemini <small>(مرة وحدة بس)</small></span> <span id="kBadge" class="kbadge"></span></summary>
@@ -575,8 +597,16 @@ THIS IS A PRESENTATION DECK (slides), not an ad. Override the rules above where 
 - ${o.scenes ? 'EXACTLY ' + o.scenes : '6 to 10'} slides in a clear logical outline: slide 1 = cover (type "title": heading = the presentation title, text = a one-line subtitle), then the content slides, last slide = summary / key takeaways (type "list") or a closing message (type "quote").
 - Content slides use "list", "steps", "number", "compare", "icon_text" or "quote". Each heading is the slide title (at most 7 words). List items are real bullet points (at most 7 words each, 3 or 4 per slide).
 - narration = the presenter's speaker notes for that slide (20 to 40 words), explaining it naturally.
-- The concept is the outline of the talk: no gimmicks, no "kinetic" or "question" slides except an optional question slide right after the cover.` : ''}`;
+- The concept is the outline of the talk: no gimmicks, no "kinetic" or "question" slides except an optional question slide right after the cover.` : ''}${verbatimRule(o)}`;
   }
+
+  // «خلّ نصي مثل ما هو»: the client's own words, only split across scenes
+  const verbatimRule = o => o.verbatim ? `
+VERBATIM: the client wants their own text kept exactly as written. Use the client's words as they are for the narration and the on-screen texts: only split them across the scenes (and shorten on-screen text by cutting words, never by rewording). Never rewrite, never add new claims, offers or words of your own.` : '';
+  // the review card: Gemini also explains the plan, notes what is missing and what pictures would help
+  const reviewRule = (prev, fb) => `
+Also add a top-level key "review", written in simple Arabic: {"idea":"the client's idea rewritten clearly and attractively in 2 to 4 short sentences, saying what the video will show","missing":["important information this video needs that the client did not give (contact number, price, city, date, end of an offer…), at most 3 short notes, [] if nothing"],"pics":["pictures the client could upload to make it better, at most 3 short notes, [] if not needed"],"logo":true}. "logo" is true when the client's logo would help this video, else false.${prev ? `
+This must be a NEW, clearly DIFFERENT version. The previous version was: ${prev}.${fb ? ` What the client wants changed: """${fb}"""` : ' Take a different creative direction.'}` : ''}`;
 
   // ── 🚀 promo plan: Gemini picks scenes from the animation kit and writes short punchy texts ──
   function promoPrompt(o, brand) {
@@ -604,7 +634,7 @@ Rules:
 - ${o.textMode === 'bi' ? 'Fill headingEn, textEn and items[].en with short simple English.' : 'Leave every English field empty.'}
 Pictures (shown big and professional instead of an emoji, on "title" scenes and on "showcase", "cards" and "checklist" items):
 - ${o.pics && o.pics.length ? `The client attached ${o.pics.length} numbered picture(s), in order, each after its label: ${o.pics.map((t, i) => `Picture ${i + 1}${t ? ' = "' + t + '"' : ''}`).join('; ')}. The idea may name them by number ("صورة 1", "الصورة الثانية") or by name. Set "pic" to the picture number on every title scene / showcase / card / checklist item that shows that thing (one showcase item per product when there are several), and use every picture at least once when it fits. pic = 0 otherwise.` : 'No pictures were attached: pic = 0 everywhere.'}
-- ${o.draw ? 'For every title scene, showcase, card or checklist item that shows a concrete thing (a product, a flavour, a dish, a drink, a device, a place…) and has no attached picture, write "draw": an English description of an immersive, real advertising PHOTOGRAPH of exactly that thing, filling the whole frame with what it is made of or used with: its real ingredients, materials or setting (for example "a tall glass of blueberry juice surrounded by heaps of fresh blueberries with water droplets, a few berries splashing into the juice"). The items of one scene must look like one set (same angle, light and mood). Keep "draw" "" for abstract ideas (speed, quality, price…), where the emoji is better.' : 'Leave every "draw" empty.'}${o.noEmoji && o.draw ? '\n- Because there are no emojis, EVERY title scene, showcase item and card needs a picture: an attached "pic" or a "draw". Offers, sizes and prices are concrete too: draw the product in that size (for example "a small cup of strawberry gelato" / "a large waffle cone with three scoops"), with the same style for the whole set. Only checklist steps and chips may stay without a picture.' : ''}`;
+- ${o.draw ? 'For every title scene, showcase, card or checklist item that shows a concrete thing (a product, a flavour, a dish, a drink, a device, a place…) and has no attached picture, write "draw": an English description of an immersive, real advertising PHOTOGRAPH of exactly that thing, filling the whole frame with what it is made of or used with: its real ingredients, materials or setting (for example "a tall glass of blueberry juice surrounded by heaps of fresh blueberries with water droplets, a few berries splashing into the juice"). The items of one scene must look like one set (same angle, light and mood). Keep "draw" "" for abstract ideas (speed, quality, price…), where the emoji is better.' : 'Leave every "draw" empty.'}${o.noEmoji && o.draw ? '\n- Because there are no emojis, EVERY title scene, showcase item and card needs a picture: an attached "pic" or a "draw". Offers, sizes and prices are concrete too: draw the product in that size (for example "a small cup of strawberry gelato" / "a large waffle cone with three scoops"), with the same style for the whole set. Only checklist steps and chips may stay without a picture.' : ''}${verbatimRule(o)}`;
   }
   // offline: a good-looking template from the idea alone (no API)
   function promoTemplate(o, brand) {
@@ -716,6 +746,7 @@ Pictures (shown big and professional instead of an emoji, on "title" scenes and 
     if (typeof costUI === 'function') costUI(); if (typeof goLabel === 'function') goLabel();
   }
   $('sType').addEventListener('change', typeUI); $('oSub').addEventListener('change', typeUI);
+  $('sType').addEventListener('change', () => setTimeout(goLabel, 0));
   const promoUI = () => { $('promoBox').classList.toggle('hidden', $('sStyle').value !== 'promo' || isOcc() || isDeck()); };
   $('sStyle').addEventListener('change', promoUI); promoUI(); typeUI();
   // white background → transparent (flood fill from the edges), crop, and the main colour of the logo
@@ -925,7 +956,7 @@ Pictures (shown big and professional instead of an emoji, on "title" scenes and 
       return;
     }
     if (PROJ.kind === 'cartoon') {
-      eng = VideoEngine.create(cv, Object.assign({}, PROJ.card, { media: { image: CARDIMG }, voiceDur: PROJ.voiceDur, music: PROJ.music || {}, credit: PROJ.credit }));
+      eng = VideoEngine.create(cv, Object.assign({}, PROJ.card, { media: { image: CARDIMG }, voiceDur: PROJ.voiceDur, music: PROJ.music || {}, credit: PROJ.credit, logo: PROJ.logoIm || null }));
       music = PROJ.music ? eng.music() : null;
       $('sSeek').max = eng.DUR; $('sEmpty').classList.add('hidden'); draw(Math.min(3, eng.DUR));
       $('sReMusic').classList.toggle('hidden', !PROJ.music); $('sWav').classList.toggle('hidden', !VOICE);
@@ -1008,7 +1039,7 @@ Pictures (shown big and professional instead of an emoji, on "title" scenes and 
   $('sClear').onclick = () => {
     if (($('sIdea').value.trim() || PROJ) && !confirm('تبدأ فكرة جديدة؟ (الفيديو الحالي محفوظ في السجل)')) return;
     stopPlay(); clearPreview(); PROJ = null; PLAN = null; VOICE = null; PICS = []; PICBLOBS = [];
-    $('sIdea').value = ''; if (IMG) $('sImgDel').click(); save(); msg('sMsg', '✓ جاهز لفكرة جديدة.'); hRender(); $('sIdea').focus();
+    $('sIdea').value = ''; if (IMG) $('sImgDel').click(); save(); reviewClear(); msg('sMsg', '✓ جاهز لفكرة جديدة.'); hRender(); $('sIdea').focus();
   };
   hRender();
 
@@ -1030,7 +1061,7 @@ Pictures (shown big and professional instead of an emoji, on "title" scenes and 
   const jobStyle = () => { if (isOcc() || isDeck()) return 'motion'; const v = $('sStyle').value; return v === 'pictures' || v === 'cinematic' ? 'pictures' : v === 'promo' && $('pDraw').checked ? 'promo_pics' : 'motion'; };
   const costNow = () => SERVER ? (jobStyle() === 'motion' ? SERVER.points.motion : SERVER.points.pictures) : 0;
   const ptsTxt = n => n === 1 ? 'نقطة واحدة' : n === 2 ? 'نقطتين' : n >= 3 && n <= 10 ? n + ' نقاط' : n + ' نقطة';
-  function goLabel() { const go = $('sGo'); if (go.disabled) return; const c = useProxy() && ME ? costNow() : 0; go.innerHTML = '🎬 اصنع الفيديو' + (c ? ` <small>· ${ptsTxt(c)}</small>` : ''); }
+  function goLabel() { const go = $('sGo'); if (go.disabled) return; const rv = $('sReview').checked && !isOcc() && (useProxy() ? ME : validKey(KEY())); if (rv) { go.innerHTML = '✨ راجع فكرتي <small>· مجانًا</small>'; return; } const c = useProxy() && ME ? costNow() : 0; go.innerHTML = '🎬 اصنع الفيديو' + (c ? ` <small>· ${ptsTxt(c)}</small>` : ''); }
   function askCost() {
     const c = costNow(), have = ME.points, ok = have >= c, styleName = $('sStyle').selectedOptions[0].textContent.replace(/\s*\(.*\)\s*$/, '');
     $('caIc').textContent = ok ? '⭐' : '🪫';
@@ -1165,7 +1196,7 @@ Also add to the JSON object a key "narration": {"intro":"","steps":[""],"outro":
 - steps: one item per step / exercise in the same order, 10 to 28 words each, explaining clearly how to do it${o.aud === 'kids' ? ' for children' : ''}.
 - outro: at most 12 words, encouraging.
 "setting" may also be "park" (outdoor activities) or "classroom" (school or table activities) — pick the place that fits the card best.
-Client note: "${o.idea}".`;
+Client note: "${o.idea}".${verbatimRule(o)}`;
   async function cleanNarr(tm, items, lang) {
     if (/English/.test(lang) || !items.length) return items;
     try {
@@ -1182,12 +1213,14 @@ Items: ${JSON.stringify(items)}`;
     if (o.textMode === 'none') { (sp.steps || []).forEach(x => { x.capAr = ''; x.capEn = ''; }); }
     return sp;
   }
-  async function runCartoon(o, gender, voiceName, imgRef, tm) {
+  async function runCartoon(o, gender, voiceName, imgRef, tm, given) {
     if (!imgRef) throw new Error('أسلوب الشخصيات الكرتونية يحتاج صورة بطاقة النشاط أو التمارين. ارفعها أو اختر أسلوب ثاني.');
-    step('plan', 'doing', 'Gemini يقرأ البطاقة…');
-    const parts = [{ inlineData: { mimeType: imgRef.mime, data: imgRef.b64 } }, { text: cardPrompt(o) }];
+    step('plan', 'doing', given ? 'من المراجعة' : 'Gemini يقرأ البطاقة…');
+    let card;
+    if (given) card = JSON.parse(JSON.stringify(given));
+    else { const parts = [{ inlineData: { mimeType: imgRef.mime, data: imgRef.b64 } }, { text: cardPrompt(o) }];
     let j; try { j = await gapi(`models/${tm}:generateContent`, { contents: [{ parts }], generationConfig: { responseMimeType: 'application/json' } }); } catch (e) { if (e.status !== 400) throw e; j = await gapi(`models/${tm}:generateContent`, { contents: [{ parts }] }); }
-    const raw = partText(j), card = JSON.parse(raw.slice(raw.indexOf('{'), raw.lastIndexOf('}') + 1));
+    const raw = partText(j); card = JSON.parse(raw.slice(raw.indexOf('{'), raw.lastIndexOf('}') + 1)); }
     if ($('sPlace').value !== 'auto') card.setting = $('sPlace').value;
     const nSteps = card.template === 'workout' ? (card.exercises || []).length : (card.steps || []).length;
     const N = card.narration || {}, list = [N.intro || '', ...Array.from({ length: nSteps }, (_, i) => (N.steps || [])[i] || ''), N.outro || ''];
@@ -1368,16 +1401,22 @@ Reply with ONLY a JSON object: {"message":["",""],"close":"","narration":[""]}
       const w = (partText(j).toLowerCase().match(/logo|card|product/) || ['product'])[0]; return w;
     } catch (e) { return 'product'; }
   }
-  async function runPromo(o, gender, voiceName, imgRef) {
+  const promoO = o => Object.assign({}, o, { pics: PPICS.slice(0, 8).map(p => p.tag.trim()), draw: $('pDraw').checked, noEmoji: $('pNoEmoji').checked });
+  async function promoParts(o, imgRef, brand, gender) {
+    const pics = PPICS.slice(0, 8), parts = imgRef ? [{ inlineData: { mimeType: imgRef.mime, data: imgRef.b64 } }] : [];
+    for (let i = 0; i < pics.length; i++) { const r = await smallJpeg(pics[i].file); parts.push({ text: `Picture ${i + 1}${pics[i].tag ? ': ' + pics[i].tag : ''}` }, { inlineData: { mimeType: r.mime, data: r.b64 } }); }
+    parts.push({ text: promoPrompt(Object.assign({ voice: gender !== 'none' }, o), brand) });
+    return parts;
+  }
+  async function runPromo(o, gender, voiceName, imgRef, given) {
     const brand = brandValues(), pics = PPICS.slice(0, 8); let plan = null, tm = null, offline = false;
-    o = Object.assign({}, o, { pics: pics.map(p => p.tag.trim()), draw: $('pDraw').checked, noEmoji: $('pNoEmoji').checked });
-    step('plan', 'doing', 'Gemini يكتب الإعلان…');
-    try {
+    o = promoO(o);
+    step('plan', 'doing', given ? 'من المراجعة' : 'Gemini يكتب الإعلان…');
+    if (given) { plan = JSON.parse(JSON.stringify(given)); try { tm = await pick('text'); } catch (e) {} }
+    else try {
       if (!useProxy() && !validKey(KEY())) throw new Error('بدون مفتاح');
       tm = await pick('text'); if (!tm) throw new Error('ما لقيت موديل نصوص');
-      const parts = imgRef ? [{ inlineData: { mimeType: imgRef.mime, data: imgRef.b64 } }] : [];
-      for (let i = 0; i < pics.length; i++) { const r = await smallJpeg(pics[i].file); parts.push({ text: `Picture ${i + 1}${pics[i].tag ? ': ' + pics[i].tag : ''}` }, { inlineData: { mimeType: r.mime, data: r.b64 } }); }
-      parts.push({ text: promoPrompt(Object.assign({ voice: gender !== 'none' }, o), brand) });
+      const parts = await promoParts(o, imgRef, brand, gender);
       let j; try { j = await gapi(`models/${tm}:generateContent`, { contents: [{ parts }], generationConfig: { responseMimeType: 'application/json' } }); } catch (e) { if (e.status !== 400) throw e; j = await gapi(`models/${tm}:generateContent`, { contents: [{ parts }] }); }
       const raw = partText(j); plan = JSON.parse(raw.slice(raw.indexOf('{'), raw.lastIndexOf('}') + 1));
       if (!Array.isArray(plan.scenes) || plan.scenes.length < 2) throw new Error('الخطة رجعت فاضية');
@@ -1431,18 +1470,151 @@ Reply with ONLY a JSON object: {"message":["",""],"close":"","narration":[""]}
   }
 
   // ── the one button ──
+  // ── ✨ review before making: Gemini writes the plan for free, the client approves / edits / rebuilds, then points are spent ──
+  const buildO = () => { const idea = $('sIdea').value.trim(); return { idea: idea || 'Explain what is shown in the attached picture.', aud: $('sAud').value, lang: $('sLang').value, len: +$('sLen').value, scenes: +$('sScenes').value, textMode: $('sText').value, img: !!IMG, verbatim: $('sVerbatim').checked }; };
+  let REVIEW = null;                                 // { kind, plan, review, snap, rebuilds, draft, draftAt, at, edit }
+  const REBUILDS = 5;
+  const rvKind = ik => { const st = $('sStyle').value; return isDeck() ? 'explainer' : st === 'promo' ? 'promo' : st === 'cartoon' && IMG && ik !== 'logo' ? 'cartoon' : 'explainer'; };
+  // settings that change what Gemini writes: changing one after the review needs a rebuild
+  const SNAP = { sType: 'نوع الفيديو', sImgKind: 'نوع الصورة', sStyle: 'الأسلوب', sLang: 'اللهجة', sAud: 'الجمهور', sLen: 'المدة', sScenes: 'عدد المشاهد', sText: 'النص على الشاشة', sIdea: 'الفكرة', sVerbatim: '«خلّ نصي مثل ما هو»', pDraw: 'رسم الصور', pNoEmoji: '«بدون رموز تعبيرية»', img: 'صورة الفكرة', pics: 'صور المنتجات' };
+  const snapNow = () => { const o = {}; Object.keys(SNAP).forEach(k => { const el = $(k); o[k] = el ? (el.type === 'checkbox' ? el.checked : el.value) : ''; });
+    if ($('sStyle').value !== 'promo') { delete o.pDraw; delete o.pNoEmoji; delete o.pics; } else o.pics = PPICS.map(p => p.tag).join('|');
+    o.img = IMG ? (IMG.name || '') + ':' + IMG.size : ''; return o; };
+  const rvChanged = () => REVIEW ? Object.keys(REVIEW.snap).filter(k => JSON.stringify(REVIEW.snap[k]) !== JSON.stringify(snapNow()[k])) : [];
+  const rvSave = () => { try { if (REVIEW) localStorage.setItem('studio-review', JSON.stringify(REVIEW)); else localStorage.removeItem('studio-review'); } catch (e) {} };
+  function reviewClear() { REVIEW = null; rvSave(); $('rv').classList.add('hidden'); $('rv').innerHTML = ''; goLabel(); }
+  async function newDraft() {
+    const r = await fetch('/api/draft', { method: 'POST', credentials: 'same-origin' }); const j = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error((j.error && j.error.message) || 'تعذّر بدء المراجعة'); return j.draft;
+  }
+  const prevSummary = R => R.kind === 'cartoon' ? JSON.stringify(R.plan.narration || {}).slice(0, 600) : (R.plan.scenes || []).map(x => String(x.heading || '').replace(/\*/g, '')).join(' | ').slice(0, 600);
+  async function reviewStart(fb) {
+    const prev = fb != null && REVIEW ? REVIEW : null;
+    if (prev && prev.rebuilds >= REBUILDS) return msg('sMsg', `⚠️ وصلت حد إعادة البناء (${REBUILDS} مرات) لهذي الفكرة. عدّل النصوص بنفسك، أو اضغط «فكرة جديدة».`, 'warn');
+    const o = buildO(), go = $('sGo'), old = go.innerHTML; let kind = rvKind(), ik = null;
+    go.disabled = true; go.innerHTML = '<span class="spin">⏳</span> Gemini يجهّز فكرتك…'; msg('sMsg', '');
+    document.querySelectorAll('#rv button').forEach(b => { b.disabled = true; });
+    let draft = prev && prev.draft && Date.now() - (prev.draftAt || 0) < 40 * 60e3 ? prev.draft : null, draftAt = prev ? prev.draftAt : 0;
+    try {
+      const run = async () => {
+        if (useProxy() && !draft) { draft = await newDraft(); draftAt = Date.now(); }
+        JOB = useProxy() ? draft : null;
+        const tm = await pick('text'); if (!tm) throw new Error('ما لقيت موديل نصوص');
+        let imgRef = IMG ? { mime: IMG.type || 'image/png', b64: await fileB64(IMG) } : null; const addon = reviewRule(prev ? prevSummary(prev) : '', fb || '');
+        // what the attached image is (logo / card / product), decided once and reused when making
+        ik = prev && prev.ik ? prev.ik : imgRef ? await imageKind(imgRef, tm) : null; kind = rvKind(ik);
+        if (ik === 'logo') { if (!LOGO) await setLogo(IMG, true); imgRef = null; }
+        o.imgKind = ik; o.img = !!imgRef; if (isDeck()) o.deck = true;
+        let parts;
+        if (kind === 'promo') { parts = await promoParts(promoO(o), imgRef, brandValues(), $('sGender').value); parts[parts.length - 1].text += addon; }
+        else if (kind === 'cartoon') parts = [{ inlineData: { mimeType: imgRef.mime, data: imgRef.b64 } }, { text: cardPrompt(o) + addon }];
+        else parts = (imgRef ? [{ inlineData: { mimeType: imgRef.mime, data: imgRef.b64 } }] : []).concat({ text: planPrompt(o) + addon });
+        let j; try { j = await gapi(`models/${tm}:generateContent`, { contents: [{ parts }], generationConfig: { responseMimeType: 'application/json' } }); } catch (e) { if (e.status !== 400) throw e; j = await gapi(`models/${tm}:generateContent`, { contents: [{ parts }] }); }
+        const raw = partText(j), plan = JSON.parse(raw.slice(raw.indexOf('{'), raw.lastIndexOf('}') + 1));
+        if (kind !== 'cartoon' && (!Array.isArray(plan.scenes) || plan.scenes.length < 2)) throw new Error('الفكرة رجعت فاضية، جرّب مرة ثانية');
+        const review = plan.review || {}; delete plan.review;
+        if (kind !== 'cartoon' && o.scenes) plan.scenes = plan.scenes.slice(0, Math.max(o.scenes, 2));
+        return { plan, review };
+      };
+      let r; try { r = await run(); } catch (e) { if (!useProxy() || !/job_closed|job_limit|انتهت صلاحية|تجاوزت/.test(e.message + (e.status || ''))) throw e; draft = null; r = await run(); }
+      REVIEW = { kind, ik, plan: r.plan, review: r.review, snap: snapNow(), rebuilds: prev ? prev.rebuilds + 1 : 0, draft, draftAt, at: Date.now(), edit: false };
+      rvSave(); reviewRender(); $('rv').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } catch (e) { msg('sMsg', '⚠️ ' + esc(e.message), 'warn'); if (REVIEW) reviewRender(); }
+    finally { JOB = null; go.disabled = false; go.innerHTML = old; goLabel(); }
+  }
+  // fields shown / edited for each scene
+  const RVTY = { logo: 'الشعار', title: 'عنوان', typing: 'كتابة', checklist: 'خطوات', cards: 'بطاقات', showcase: 'عرض المنتجات', chips: 'مزايا', phone: 'جوال', outro: 'الخاتمة', icon_text: 'فكرة', list: 'قائمة', steps: 'خطوات', number: 'رقم', compare: 'مقارنة', quote: 'خلاصة' };
+  function rvFields(R) {
+    const L = [];
+    if (R.kind === 'cartoon') {
+      const N = R.plan.narration || (R.plan.narration = { intro: '', steps: [], outro: '' }), names = (R.plan.template === 'workout' ? R.plan.exercises : R.plan.steps) || [];
+      L.push({ h: 'البداية', f: [['narration.intro', 'الكلام', N.intro, 1]] });
+      names.forEach((x, i) => L.push({ h: `${i + 1}. ${(x && (x.ar || x.name)) || ''}`, f: [[`narration.steps.${i}`, 'الكلام', (N.steps || [])[i] || '', 1]] }));
+      L.push({ h: 'النهاية', f: [['narration.outro', 'الكلام', N.outro, 1]] });
+      return L;
+    }
+    R.plan.scenes.forEach((x, i) => {
+      const f = [[`scenes.${i}.heading`, 'العنوان', x.heading || '']];
+      if (x.text != null && (x.text || R.kind === 'explainer' || ['title', 'typing', 'phone', 'outro', 'logo'].includes(x.type))) f.push([`scenes.${i}.text`, R.kind === 'promo' && x.type === 'typing' ? 'اللي ينكتب' : 'النص', x.text || '']);
+      if (x.type === 'typing') f.push([`scenes.${i}.button`, 'الزر', x.button || '']);
+      if (x.type === 'number') f.push([`scenes.${i}.number`, 'الرقم', x.number || '']);
+      (x.items || []).forEach((it, j) => { f.push([`scenes.${i}.items.${j}.text`, `البند ${j + 1}`, (it && it.text) || '']); if (it && it.narration) f.push([`scenes.${i}.items.${j}.narration`, `كلام البند ${j + 1}`, it.narration, 1]); });
+      (x.chips || []).forEach((c, j) => f.push([`scenes.${i}.chips.${j}.text`, `ميزة ${j + 1}`, (c && c.text) || '']));
+      if (x.narration || R.kind !== 'promo' || !['showcase', 'checklist'].includes(x.type)) f.push([`scenes.${i}.narration`, 'الكلام', x.narration || '', 1]);
+      L.push({ h: `${i + 1}. ${RVTY[x.type] || ''}`, ty: x, f });
+    });
+    return L;
+  }
+  const pathSet = (o, path, v) => { const k = path.split('.'); let c = o; for (let i = 0; i < k.length - 1; i++) { if (c[k[i]] == null) c[k[i]] = /^\d+$/.test(k[i + 1]) ? [] : {}; c = c[k[i]]; } c[k[k.length - 1]] = v; };
+  function rvDraws(R) {
+    if (R.kind !== 'promo' || !$('pDraw').checked) return 0; const n = PPICS.length, seen = new Set();
+    R.plan.scenes.forEach(x => { const sl = x.type === 'title' ? [x] : ['showcase', 'cards', 'checklist'].includes(x.type) ? x.items || [] : []; sl.forEach(it => { const p = parseInt(it && it.pic, 10); if (!(p >= 1 && p <= n) && it && String(it.draw || '').trim()) seen.add(String(it.draw).trim()); }); });
+    return Math.min(8, seen.size);
+  }
+  function reviewRender() {
+    const R = REVIEW, box = $('rv'); if (!R) { box.classList.add('hidden'); return; }
+    const rv = R.review || {}, ch = rvChanged(), c = costNow(), draws = rvDraws(R), proxy = useProxy();
+    const tip = (cls, t) => `<div class="rvTip ${cls}">${t}</div>`;
+    const sc = rvFields(R).map((S, si) => {
+      const x = S.ty || {}, head = esc(String(x.heading || '').replace(/\*/g, ''));
+      if (R.edit) return `<div class="rvSc"><span class="ty">${esc(S.h)}</span>${S.f.map(([path, lab, v, big]) => `<label style="margin:6px 0 0;font-size:13px">${lab}</label>${big ? `<textarea data-rv="${path}">${esc(v)}</textarea>` : `<input type="text" data-rv="${path}" value="${esc(v)}">`}`).join('')}</div>`;
+      if (R.kind === 'cartoon') return `<div class="rvSc"><span class="ty">${esc(S.h)}</span><div class="say">${esc(S.f[0][2])}</div></div>`;
+      const items = (x.items || []).filter(Boolean);
+      return `<div class="rvSc"><span class="ty">${esc(S.h)}</span><b>${head}</b>${x.text ? `<div>${esc(x.text)}</div>` : ''}${items.length ? `<ul>${items.map(it => `<li>${esc(it.text || '')}${it.narration ? ` <span class="say" style="display:inline">${esc(it.narration)}</span>` : ''}</li>`).join('')}</ul>` : ''}${(x.chips || []).length ? `<div class="where">${x.chips.map(c2 => esc(c2.text || '')).join(' · ')}</div>` : ''}${x.narration ? `<div class="say">${esc(x.narration)}</div>` : ''}</div>`;
+    }).join('');
+    const brand = R.kind === 'promo' ? (R.edit ? `<div class="rvSc"><span class="ty">بيانات النشاط</span><div class="row"><div><label style="font-size:13px;margin:6px 0 0">الاسم</label><input type="text" data-bind="pName" value="${esc($('pName').value)}"></div><div><label style="font-size:13px;margin:6px 0 0">الجوال أو واتساب</label><input type="text" data-bind="pPhone" style="direction:ltr" value="${esc($('pPhone').value)}"></div></div><label style="font-size:13px;margin:6px 0 0">الرابط</label><input type="text" data-bind="pUrl" style="direction:ltr" value="${esc($('pUrl').value)}"></div>`
+      : `<div class="where" style="margin:6px 0">النشاط: <b>${esc($('pName').value || '—')}</b> · الجوال: <b style="direction:ltr;display:inline-block">${esc($('pPhone').value || '—')}</b> · الرابط: <b style="direction:ltr;display:inline-block">${esc($('pUrl').value || '—')}</b></div>`) : '';
+    const styleName = $('sStyle').selectedOptions[0].textContent.replace(/\s*\(.*\)\s*$/, ''), nSc = R.kind === 'cartoon' ? ((R.plan.narration || {}).steps || []).length + 2 : R.plan.scenes.length;
+    const costTxt = proxy ? `${ptsTxt(c)}${R.kind === 'promo' && $('pDraw').checked && !draws ? ' (يرجع لك الفرق، لأن ما فيه صور تنرسم)' : ''}` : 'مفتاحك الخاص';
+    box.innerHTML = `<h3>✨ راجع فكرتك قبل الصنع</h3><p class="where" style="margin:0">هذا اللي جهّزه الذكاء من فكرتك. ما انخصمت ولا نقطة للحين: وافق، أو عدّل النصوص، أو اطلب فكرة مختلفة.</p>
+      ${rv.idea ? `<div class="rvIdea"><b>الفكرة:</b> ${esc(rv.idea)}${!$('sVerbatim').checked ? ` <button type="button" class="ghost small" id="rvTake">خذها كفكرتي</button>` : ''}</div>` : ''}
+      ${(rv.missing || []).filter(Boolean).map(t => tip('warn', '⚠️ <span>' + esc(t) + '</span>')).join('')}
+      ${(rv.pics || []).filter(Boolean).map(t => tip('info', '📸 <span>' + esc(t) + (R.kind === 'promo' ? ' (ارفعها في «صور المنتجات»' + ($('pDraw').checked ? '، أو خلّ الذكاء يرسمها' : '') + ')' : '') + '</span>')).join('')}
+      ${rv.logo && !LOGO ? tip('info', '🏷️ <span>يفضّل ترفع شعارك. <button type="button" class="ghost small" id="rvLogo">ارفع الشعار</button></span>') : ''}
+      ${brand}${sc}
+      <div class="rvSum"><div>الأسلوب<b>${esc(styleName)}</b></div><div>المشاهد<b>${nSc}</b></div><div>الصوت<b>${esc($('sGender').selectedOptions[0].textContent)}${$('sGender').value !== 'none' ? ' · ' + esc($('sLang').selectedOptions[0].textContent) : ''}</b></div>${R.kind === 'promo' ? `<div>صور تنرسم<b>${draws || 'لا'}</b></div>` : ''}<div>التكلفة<b>${esc(costTxt)}</b></div>${proxy && ME ? `<div>رصيدك<b>${ptsTxt(ME.points)}</b></div>` : ''}</div>
+      ${ch.length ? `<div class="note warn" style="margin:10px 0">غيّرت ${ch.map(k => SNAP[k]).join('، ')} بعد المراجعة. اضغط «🔄 أعد البناء» عشان تنكتب الفكرة بالإعدادات الجديدة، أو رجّعها مثل ما كانت.</div>` : ''}
+      <button type="button" class="go rvGo" id="rvOk"${ch.length ? ' disabled' : ''}>✅ موافق، ابدأ${proxy ? ` <small>· ${ptsTxt(c)}</small>` : ''}</button>
+      <div class="btns" style="margin-top:10px"><button type="button" class="ghost" id="rvEdit">${R.edit ? '✓ خلصت التعديل' : '✏️ عدّل النصوص'}</button><button type="button" class="ghost" id="rvNo">✖ إلغاء</button></div>
+      <label for="rvFb" style="margin-top:12px">ما عجبتك؟ وش تبي يتغير؟ <small>(اختياري)</small></label>
+      <textarea id="rvFb" style="min-height:64px" placeholder="مثال: خلها أكثر حماس، ركّز على العروض، أضف مشهد للتوصيل"></textarea>
+      <button type="button" class="ghost" id="rvAgain" style="margin-top:8px"${R.rebuilds >= REBUILDS ? ' disabled' : ''}>🔄 ${ch.length ? 'أعد البناء' : 'فكرة مختلفة'} <small>(باقي ${REBUILDS - R.rebuilds} من ${REBUILDS})</small></button>`;
+    box.classList.remove('hidden');
+    box.querySelectorAll('[data-rv]').forEach(el => el.addEventListener('input', () => { pathSet(R.plan, el.dataset.rv, el.value); rvSave(); }));
+    box.querySelectorAll('[data-bind]').forEach(el => el.addEventListener('input', () => { $(el.dataset.bind).value = el.value; pSave(); }));
+    $('rvEdit').onclick = () => { R.edit = !R.edit; rvSave(); reviewRender(); };
+    $('rvNo').onclick = () => { reviewClear(); msg('sMsg', 'انلغت المراجعة، وما انخصمت أي نقطة.'); };
+    $('rvAgain').onclick = () => reviewStart($('rvFb').value.trim());
+    if ($('rvTake')) $('rvTake').onclick = () => { $('sIdea').value = rv.idea; $('sIdea').dispatchEvent(new Event('input')); reviewRender(); };
+    if ($('rvLogo')) $('rvLogo').onclick = () => $('pLogo').click();
+    $('rvOk').onclick = () => {
+      if (rvChanged().length) return reviewRender();
+      if (useProxy() && ME && ME.points < costNow()) return askCost();
+      R.edit = false; rvSave(); box.classList.add('hidden'); $('sGo').onclick(null, 'review');
+    };
+  }
+  // settings changed while a review is open: refresh the warning and the cost
+  ['sStyle', 'sLang', 'sAud', 'sLen', 'sScenes', 'sText', 'sVerbatim', 'pDraw', 'pNoEmoji', 'sGender'].forEach(id => $(id).addEventListener('change', () => { if (REVIEW) reviewRender(); }));
+  $('sIdea').addEventListener('change', () => { if (REVIEW) reviewRender(); });
+  // remembered choices, and a review left open (reload, closed tab…)
+  try { if (localStorage.getItem('studio-review-on') === '0') $('sReview').checked = false; if (localStorage.getItem('studio-verbatim') === '1') $('sVerbatim').checked = true; } catch (e) {}
+  $('sReview').addEventListener('change', () => { try { localStorage.setItem('studio-review-on', $('sReview').checked ? '1' : '0'); } catch (e) {} goLabel(); });
+  $('sVerbatim').addEventListener('change', () => { try { localStorage.setItem('studio-verbatim', $('sVerbatim').checked ? '1' : '0'); } catch (e) {} });
+  try { const r = JSON.parse(localStorage.getItem('studio-review') || 'null'); if (r && r.plan && Date.now() - r.at < 2 * 864e5) { REVIEW = r; setTimeout(reviewRender, 600); } } catch (e) {}
+
   $('sGo').onclick = async (ev, confirmed) => {
     const idea = $('sIdea').value.trim();
     const OCCASION = isOcc(), DECK = isDeck();
     if (!idea && !IMG && !OCCASION) return msg('sMsg', '⚠️ اكتب فكرتك أو ارفع صورة.', 'warn');
     if ($('sType').value === 'wedding' && !$('oGroom').value.trim() && !$('oHost').value.trim()) return msg('sMsg', '⚠️ اكتب اسم العريس أو الداعي.', 'warn');
     if ($('sType').value === 'invite' && !$('oEvent').value.trim()) return msg('sMsg', '⚠️ اكتب نوع المناسبة (مثل: حفل تخرج).', 'warn');
+    if (!confirmed && !OCCASION && $('sReview').checked && (useProxy() ? ME : validKey(KEY()))) return reviewStart();
     if (useProxy()) { if (!ME) { $('acct').scrollIntoView({ behavior: 'smooth', block: 'center' }); return msg('sMsg', '⚠️ سجّل دخولك بحساب Google أولاً (الزر فوق).', 'warn'); } if (!confirmed) return askCost(); }
     else if (!validKey(KEY()) && $('sStyle').value !== 'promo' && !OCCASION) { $('kBox').open = true; keyUI(true); return msg('sMsg', '⚠️ تحتاج مفتاح Gemini أول مرة. الصقه في المربع اللي انفتح تحت.', 'warn'); }
     stopPlay(); AC = new (window.AudioContext || window.webkitAudioContext)(); AC.resume();   // created on the click, reused for auto-recording
     const go = $('sGo'), oldTxt = go.innerHTML; go.disabled = true; go.innerHTML = '<span class="spin">⏳</span> يشتغل…';
     ['plan', 'voice', 'pics', 'video', 'rec'].forEach(k => step(k, '')); msg('sMsg', ''); msg('sRecMsg', ''); $('sWav').classList.add('hidden'); PICBLOBS = [];
-    const o = { idea: idea || 'Explain what is shown in the attached picture.', aud: $('sAud').value, lang: $('sLang').value, len: +$('sLen').value, scenes: +$('sScenes').value, textMode: $('sText').value, img: !!IMG };
+    const o = buildO(), GIVEN = confirmed === 'review' && REVIEW ? REVIEW : null;
     const gender = $('sGender').value, voiceName = $('sVoice').value; let style = $('sStyle').value;
     JOB = null;
     try {
@@ -1461,10 +1633,10 @@ Reply with ONLY a JSON object: {"message":["",""],"close":"","narration":[""]}
       if (DECK) { style = 'motion'; o.deck = true; }
       if (style === 'promo') {
         let imgRef = IMG ? { mime: IMG.type || 'image/png', b64: await fileB64(IMG) } : null;
-        if (imgRef) { let ik = $('sImgKind').value; if (ik === 'auto') { const tq = (useProxy() || validKey(KEY())) ? await pick('text').catch(() => null) : null; ik = tq ? await imageKind(imgRef, tq) : 'logo'; }
+        if (imgRef) { let ik = GIVEN && GIVEN.ik ? GIVEN.ik : $('sImgKind').value; if (ik === 'auto') { const tq = (useProxy() || validKey(KEY())) ? await pick('text').catch(() => null) : null; ik = tq ? await imageKind(imgRef, tq) : 'logo'; }
           if (ik === 'logo') { if (!LOGO) await setLogo(IMG, true); imgRef = null; } }
-        const offline = await runPromo(Object.assign({}, o, { idea: idea || o.idea }), gender, voiceName, imgRef);
-        await saveProject(); await finishJob(!offline);
+        const offline = await runPromo(Object.assign({}, o, { idea: idea || o.idea }), gender, voiceName, imgRef, GIVEN && GIVEN.kind === 'promo' ? GIVEN.plan : null);
+        await saveProject(); await finishJob(!offline); if (GIVEN) reviewClear();
         if ($('sAuto').checked) await record(AC); else { step('rec', '', 'اضغط «نزّل الفيديو»'); try { AC.close(); } catch (e) {} }
         return;
       }
@@ -1473,31 +1645,35 @@ Reply with ONLY a JSON object: {"message":["",""],"close":"","narration":[""]}
       const tm = await pick('text'); if (!tm) throw new Error('ما لقيت موديل نصوص في حسابك');
       const imgRef = IMG ? { mime: IMG.type || 'image/png', b64: await fileB64(IMG) } : null;
       const cine = style === 'cinematic'; if (cine) style = 'pictures';
-      const ik = imgRef ? await imageKind(imgRef, tm) : null; o.imgKind = ik; o.img = !!imgRef && ik !== 'logo';
-      let logoIm = null, logoBlob = null;
+      const ik = imgRef ? (GIVEN && GIVEN.ik ? GIVEN.ik : await imageKind(imgRef, tm)) : null; o.imgKind = ik; o.img = !!imgRef && ik !== 'logo';
+      let logoIm = LOGO ? LOGO.im : null, logoBlob = LOGO ? LOGO.blob : null;
       if (ik === 'logo') { try { const r = await cleanLogo(IMG, true); logoIm = r.im; logoBlob = r.blob; } catch (e) {} }
       const contentRef = ik === 'logo' ? null : imgRef;
       if (style === 'cartoon' && (!imgRef || ik === 'logo')) { style = 'motion'; msg('sMsg', ik === 'logo' ? 'ℹ️ الصورة شعار، والشخصيات الكرتونية تحتاج بطاقة نشاط أو تمارين، فسويت موشن جرافيك والشعار يظهر في البداية والنهاية.' : 'ℹ️ أسلوب الشخصيات الكرتونية يحتاج صورة بطاقة نشاط أو تمارين، فسويت موشن جرافيك.'); }
       if (style === 'cartoon') {
-        const { card, clips } = await runCartoon(o, gender, voiceName, imgRef, tm);
+        const { card, clips } = await runCartoon(o, gender, voiceName, imgRef, tm, GIVEN && GIVEN.kind === 'cartoon' ? GIVEN.plan : null);
         step('video', 'doing'); await fontsReady;
         const im = new Image(); im.src = URL.createObjectURL(IMG); await im.decode();
         const vd = clips ? clips.slice(1, -1).map(c => c.pcm.length / c.rate) : null;
         PROJ = { kind: 'cartoon', id: 's' + Date.now().toString(36), created: Date.now(), title: card.title || { ar: '', en: '' }, card: cartoonSpec(card, o), voiceDur: vd, textMode: o.textMode, credit: $('sCredit').value.trim(), music: musicChoice(),
           plan: { scenes: (card.narration.steps || []).map((t, i) => ({ heading: (((card.template === 'workout' ? card.exercises : card.steps) || [])[i] || {}).ar || '', narration: t })) }, settings: Object.assign(formValues(), { idea: $('sIdea').value }) };
-        PROJ.narr = card.narration; CARDIMG = im; PICS = []; PICBLOBS = [];
+        PROJ.narr = card.narration; CARDIMG = im; PICS = []; PICBLOBS = []; PROJ.logoIm = LOGO ? LOGO.im : null; PROJ.logoBlob = LOGO ? LOGO.blob : null;
         eng = VideoEngine.create(cv, Object.assign({}, PROJ.card, { media: { image: im }, voiceDur: vd, music: PROJ.music || {}, credit: PROJ.credit }));
         VOICE = placeVoice(clips, eng.T); if (VOICE) PROJ.voiceInfo = VOICE.info;
         buildVideo();
         step('video', 'done', fmt(eng.DUR));
-        await saveProject(); await finishJob(true);
+        await saveProject(); await finishJob(true); if (GIVEN) reviewClear();
         if ($('sAuto').checked) await record(AC); else { step('rec', '', 'اضغط «نزّل الفيديو»'); try { AC.close(); } catch (e) {} }
         return;
       }
-      const parts = (contentRef ? [{ inlineData: { mimeType: contentRef.mime, data: contentRef.b64 } }] : []).concat({ text: planPrompt(o) });
-      let j; try { j = await gapi(`models/${tm}:generateContent`, { contents: [{ parts }], generationConfig: { responseMimeType: 'application/json', temperature: 1.1 } }); } catch (e) { if (e.status !== 400) throw e; j = await gapi(`models/${tm}:generateContent`, { contents: [{ parts }] }); }
-      const raw = partText(j), a = raw.indexOf('{'), b = raw.lastIndexOf('}');
-      PLAN = JSON.parse(raw.slice(a, b + 1)); if (!Array.isArray(PLAN.scenes) || !PLAN.scenes.length) throw new Error('السيناريو رجع فاضي');
+      if (GIVEN && GIVEN.kind === 'explainer') PLAN = JSON.parse(JSON.stringify(GIVEN.plan));
+      else {
+        const parts = (contentRef ? [{ inlineData: { mimeType: contentRef.mime, data: contentRef.b64 } }] : []).concat({ text: planPrompt(o) });
+        let j; try { j = await gapi(`models/${tm}:generateContent`, { contents: [{ parts }], generationConfig: { responseMimeType: 'application/json', temperature: 1.1 } }); } catch (e) { if (e.status !== 400) throw e; j = await gapi(`models/${tm}:generateContent`, { contents: [{ parts }] }); }
+        const raw = partText(j), a = raw.indexOf('{'), b = raw.lastIndexOf('}');
+        PLAN = JSON.parse(raw.slice(a, b + 1));
+      }
+      if (!Array.isArray(PLAN.scenes) || !PLAN.scenes.length) throw new Error('السيناريو رجع فاضي');
       PLAN.scenes = PLAN.scenes.slice(0, o.scenes || 8);
       // item lines only where the scene has items to show, one per item (said when it appears)
       PLAN.scenes.forEach(x => { const its = Array.isArray(x.items) ? x.items : []; if (!['list', 'steps', 'compare'].includes(x.type) || !its.some(i => i && String(i.narration || '').trim())) its.forEach(i => { if (i) i.narration = ''; }); });
@@ -1566,10 +1742,10 @@ Reply with ONLY a JSON object: {"message":["",""],"close":"","narration":[""]}
       buildVideo();
       step('video', 'done', fmt(eng.DUR));
       await saveProject();
-      await finishJob(true);
+      await finishJob(true); if (GIVEN) reviewClear();
       if ($('sAuto').checked) await record(AC); else { step('rec', '', 'اضغط «نزّل الفيديو»'); try { AC.close(); } catch (e) {} }
     } catch (err) {
-      await finishJob(false);
+      await finishJob(false); if (GIVEN) reviewRender();
       msg('sMsg', `⚠️ ${esc(err.message)}`, 'warn'); ['plan', 'voice', 'pics', 'video'].forEach(k => { const li = document.querySelector(`#sSteps li[data-k="${k}"]`); if (li.classList.contains('doing')) step(k, 'fail'); });
     } finally { go.disabled = false; go.innerHTML = oldTxt; }
   };
