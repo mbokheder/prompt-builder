@@ -331,7 +331,13 @@
       </div>
       <div class="row">
         <div><label for="sText">النص على الشاشة</label><select id="sText"><option value="ar">عربي</option><option value="bi">عربي + إنجليزي صغير</option><option value="none">بدون نص (صور وصوت فقط)</option></select></div>
-        <div><label for="sMusic">الموسيقى</label><select id="sMusic"><option value="auto">🎶 تلقائي حسب الجمهور</option><option value="cheerful">😄 مرحة</option><option value="calm">😌 هادئة</option><option value="energetic">⚡ حماسية</option><option value="inspiring">🌟 ملهمة</option><option value="modern">💼 عصرية</option><option value="off">🔇 بدون موسيقى</option></select></div>
+        <div><label for="sMusic">الموسيقى</label><select id="sMusic"><option value="auto">🎶 تلقائي حسب الجمهور</option><option value="cheerful">😄 مرحة</option><option value="calm">😌 هادئة</option><option value="energetic">⚡ حماسية</option><option value="inspiring">🌟 ملهمة</option><option value="modern">💼 عصرية</option><option value="custom">🎵 موسيقى من عندي (ملف أو رابط)</option><option value="off">🔇 بدون موسيقى</option></select></div>
+      </div>
+      <div id="cmBox" class="promoBox hidden" style="margin-top:8px">
+        <p class="where" style="margin:0 0 6px;font-size:13px">ارفع ملف صوت (MP3، M4A، WAV)، أو الصق رابط مباشر لملف MP3. الموسيقى تنقص على طول الفيديو، أو تتكرر إذا كانت أقصر، وتختفي بهدوء في النهاية. روابط يوتيوب ما تنفع (يوتيوب ما يسمح بسحب الصوت): نزّل المقطع كملف صوت وارفعه هنا.</p>
+        <div id="cmDrop" class="drop" tabindex="0" role="button"><input type="file" id="cmFile" accept="audio/*,.mp3,.m4a,.wav,.aac,.ogg" hidden><div id="cmTxt">🎵 اسحب ملف الموسيقى أو <u>اضغط للاختيار</u></div></div>
+        <div style="display:flex;gap:8px;margin-top:8px"><input type="text" id="cmUrl" placeholder="https://…/music.mp3" style="direction:ltr"><button type="button" class="ghost" id="cmLoad">حمّل</button></div>
+        <div id="cmInfo" class="where" style="margin-top:6px"></div>
       </div>
       <label for="sCredit">✍️ بصمة العمل <small>(اختياري — «هذا العمل من تنسيق …» في النهاية)</small></label>
       <input type="text" id="sCredit" placeholder="اكتب الاسم">
@@ -717,7 +723,7 @@ Pictures (shown big and professional instead of an emoji, on "title" scenes and 
   }
 
   const MOOD_BY_AUD = { kids: 'cheerful', teachers: 'inspiring', marketing: 'energetic', product: 'modern', general: 'inspiring' };
-  const musicChoice = () => { const v = $('sMusic').value; return v === 'off' ? null : { mood: v === 'auto' ? MOOD_BY_AUD[$('sAud').value] : v, seed: (Date.now() ^ Math.floor(Math.random() * 1e9)) >>> 0 }; };
+  const musicChoice = () => { const v = $('sMusic').value; if (v === 'custom') return CM ? { custom: true, name: CM.name } : null; return v === 'off' ? null : { mood: v === 'auto' ? MOOD_BY_AUD[$('sAud').value] : v, seed: (Date.now() ^ Math.floor(Math.random() * 1e9)) >>> 0 }; };
 
   // ── storage for the history (separate from the main page) ──
   const IDB = (() => {
@@ -868,6 +874,38 @@ Pictures (shown big and professional instead of an emoji, on "title" scenes and 
   let PROJ = null, PICS = [], PICBLOBS = [], CARDIMG = null;
   const fontsReady = Promise.all(['900 40px Cairo', '800 40px Cairo', '700 40px Cairo'].map(f => document.fonts.load(f, 'ابت abc'))).catch(() => {});
   function draw(t) { if (!eng) return; eng.render(t); $('sSeek').value = t; $('sTime').textContent = `${fmt(t)} / ${fmt(eng.DUR)}`; }
+  // ── 🎵 the client's own music: a file or a direct link, fitted to the video (looped if short, faded out at the end) ──
+  var CM = null;                                     // { file, name, buf }
+  async function decodeAudio(blob) { const ac = new (window.AudioContext || window.webkitAudioContext)(); try { return await ac.decodeAudioData(await blob.arrayBuffer()); } finally { try { ac.close(); } catch (e) {} } }
+  function fitMusic(buf, dur) {
+    const sr = buf.sampleRate, n = Math.ceil(dur * sr), L = new Float32Array(n), R = new Float32Array(n), a = buf.getChannelData(0), b = buf.numberOfChannels > 1 ? buf.getChannelData(1) : a;
+    for (let i = 0; i < n; i++) { const k = i % a.length; L[i] = a[k]; R[i] = b[k]; }
+    const fi = Math.min(n, Math.round(.4 * sr)), fo = Math.min(n, Math.round(2.5 * sr));
+    for (let i = 0; i < fi; i++) { L[i] *= i / fi; R[i] *= i / fi; } for (let i = 0; i < fo; i++) { const g = i / fo, j = n - 1 - i; L[j] *= g; R[j] *= g; }
+    return { L, R, sr };
+  }
+  const musicFor = e => { if (!PROJ || !PROJ.music) return null; if (PROJ.music.custom) { const b = PROJ.cmBuf || (CM && CM.buf); return b ? fitMusic(b, e.DUR) : null; } return e.music(); };
+  function cmUI() { $('cmBox').classList.toggle('hidden', $('sMusic').value !== 'custom'); $('cmInfo').innerHTML = CM ? `✓ <b>${esc(CM.name)}</b> · ${fmt(CM.buf.duration)} <button type="button" class="ghost small" id="cmDel">إزالة</button>` : ''; if ($('cmDel')) $('cmDel').onclick = () => { CM = null; IDB.del('custom-music'); cmUI(); }; }
+  async function setCM(blob, name, save) {
+    try { const buf = await decodeAudio(blob); CM = { file: blob, name: name || 'موسيقى', buf }; cmUI(); if (save) IDB.set('custom-music', { file: blob, name: CM.name }); }
+    catch (e) { msg('sMsg', '⚠️ ما قدرت أقرأ ملف الموسيقى. جرّب MP3 أو M4A.', 'warn'); }
+  }
+  $('sMusic').addEventListener('change', cmUI);
+  $('cmDrop').addEventListener('click', () => $('cmFile').click());
+  $('cmFile').addEventListener('change', e => { const f = e.target.files[0]; if (f) setCM(f, f.name, true); e.target.value = ''; });
+  ['dragenter', 'dragover'].forEach(ev => $('cmDrop').addEventListener(ev, e => { e.preventDefault(); $('cmDrop').classList.add('over'); }));
+  ['dragleave', 'drop'].forEach(ev => $('cmDrop').addEventListener(ev, e => { e.preventDefault(); $('cmDrop').classList.remove('over'); }));
+  $('cmDrop').addEventListener('drop', e => { const f = e.dataTransfer.files[0]; if (f) setCM(f, f.name, true); });
+  $('cmLoad').onclick = async () => {
+    const u = $('cmUrl').value.trim(); if (!u) return;
+    if (/youtu\.?be/i.test(u)) return msg('sMsg', '⚠️ روابط يوتيوب ما تنفع: يوتيوب ما يسمح بسحب الصوت من المواقع الثانية. نزّل المقطع كملف صوت (MP3) وارفعه هنا.', 'warn');
+    $('cmLoad').disabled = true;
+    try { const r = await fetch(u); if (!r.ok) throw new Error(r.status); const b = await r.blob(); await setCM(b, decodeURIComponent(u.split('/').pop().split('?')[0]) || 'موسيقى', true); }
+    catch (e) { msg('sMsg', '⚠️ ما قدرت أحمّل الرابط: الموقع اللي فيه الملف ما يسمح بالتحميل المباشر. نزّل الملف على جهازك وارفعه هنا.', 'warn'); }
+    finally { $('cmLoad').disabled = false; }
+  };
+  IDB.get('custom-music').then(x => { if (x && x.file && !CM) setCM(x.file, x.name, false); });
+  setTimeout(cmUI, 0);
   const audioBuffer = (ac, m) => { const b = ac.createBuffer(2, m.L.length, m.sr); b.copyToChannel(m.L, 0); b.copyToChannel(m.R, 1); return b; };
   function startAudio(ac, out, t0, off) {
     const srcs = [];
@@ -968,16 +1006,16 @@ Pictures (shown big and professional instead of an emoji, on "title" scenes and 
   function buildVideo() {
     $('sPdf').classList.toggle('hidden', !(PROJ && PROJ.deck));
     if (PROJ.kind === 'occasion') {
-      eng = VideoEngine.create(cv, occSpec()); previewSize(); music = PROJ.music ? eng.music() : null;
+      eng = VideoEngine.create(cv, occSpec()); previewSize(); music = musicFor(eng);
       $('sSeek').max = eng.DUR; $('sEmpty').classList.add('hidden'); draw(Math.min(3, eng.DUR));
-      $('sReMusic').classList.toggle('hidden', !PROJ.music); $('sWav').classList.toggle('hidden', !VOICE); $('sReLook').classList.remove('hidden');
+      $('sReMusic').classList.toggle('hidden', !PROJ.music || !!PROJ.music.custom); $('sWav').classList.toggle('hidden', !VOICE); $('sReLook').classList.remove('hidden');
       $('sScript').classList.remove('hidden');
       return;
     }
     if (PROJ.kind === 'promo') {
-      eng = VideoEngine.create(cv, promoSpec()); previewSize(); music = PROJ.music ? eng.music() : null;
+      eng = VideoEngine.create(cv, promoSpec()); previewSize(); music = musicFor(eng);
       $('sSeek').max = eng.DUR; $('sEmpty').classList.add('hidden'); draw(Math.min(4.5, eng.DUR));
-      $('sReMusic').classList.toggle('hidden', !PROJ.music); $('sWav').classList.toggle('hidden', !VOICE); $('sReLook').classList.add('hidden');
+      $('sReMusic').classList.toggle('hidden', !PROJ.music || !!PROJ.music.custom); $('sWav').classList.toggle('hidden', !VOICE); $('sReLook').classList.add('hidden');
       $('sScript').classList.remove('hidden');
       const TY = { logo: '✨ الشعار', title: '🔤 عنوان', typing: '⌨️ كتابة', checklist: '✅ خطوات', cards: '🃏 بطاقات', chips: '🏷️ مزايا', phone: '📱 جوال', outro: '🎬 الخاتمة' };
       $('sSceneList').innerHTML = eng.T.scenes.map((x, i) => `<div class="scene"><b>${i + 1}. ${TY[x.type] || ''} · ${esc(String(x.heading || '').replace(/\*/g, ''))}</b>${esc(x.say || '')}</div>`).join('');
@@ -985,9 +1023,9 @@ Pictures (shown big and professional instead of an emoji, on "title" scenes and 
     }
     if (PROJ.kind === 'cartoon') {
       eng = VideoEngine.create(cv, Object.assign({}, PROJ.card, { media: { image: CARDIMG }, voiceDur: PROJ.voiceDur, music: PROJ.music || {}, credit: PROJ.credit, logo: PROJ.logoIm || null }));
-      music = PROJ.music ? eng.music() : null;
+      music = musicFor(eng);
       $('sSeek').max = eng.DUR; $('sEmpty').classList.add('hidden'); draw(Math.min(3, eng.DUR));
-      $('sReMusic').classList.toggle('hidden', !PROJ.music); $('sWav').classList.toggle('hidden', !VOICE);
+      $('sReMusic').classList.toggle('hidden', !PROJ.music || !!PROJ.music.custom); $('sWav').classList.toggle('hidden', !VOICE);
       $('sScript').classList.remove('hidden');
       const n = PROJ.narr || { intro: '', steps: [], outro: '' };
       $('sSceneList').innerHTML = [['👋 البداية', n.intro], ...(n.steps || []).map((t, i) => [`${i + 1}. ${esc((PROJ.plan.scenes[i] || {}).heading || '')}`, t]), ['🎉 النهاية', n.outro]].map(([h, t]) => `<div class="scene"><b>${h}</b>${esc(t || '')}</div>`).join('');
@@ -995,9 +1033,9 @@ Pictures (shown big and professional instead of an emoji, on "title" scenes and 
     }
     const spec = { kind: 'explainer', deck: !!PROJ.deck, title: PROJ.title, credit: PROJ.credit, textMode: PROJ.textMode, music: PROJ.music || {}, presenter: PROJ.presenter || null, logo: PROJ.logoIm || null, cinematic: !!PROJ.cinematic, look: PROJ.look || {},
       scenes: PROJ.plan.scenes.map((s, i) => Object.assign({}, s, { say: s.narration || '', img: PICS[i] || null })), voice: VOICE ? Object.assign({}, VOICE.info, { env: VOICE.env || PROJ.voiceEnv || null }) : null };
-    eng = VideoEngine.create(cv, spec); music = PROJ.music ? eng.music() : null;
+    eng = VideoEngine.create(cv, spec); music = musicFor(eng);
     $('sSeek').max = eng.DUR; $('sEmpty').classList.add('hidden'); draw(Math.min(3, eng.DUR));
-    $('sReMusic').classList.toggle('hidden', !PROJ.music); $('sWav').classList.toggle('hidden', !VOICE); $('sReLook').classList.toggle('hidden', !!PROJ.cinematic);
+    $('sReMusic').classList.toggle('hidden', !PROJ.music || !!PROJ.music.custom); $('sWav').classList.toggle('hidden', !VOICE); $('sReLook').classList.toggle('hidden', !!PROJ.cinematic);
     $('sScript').classList.remove('hidden');
     $('sSceneList').innerHTML = PROJ.plan.scenes.map((x, i) => `<div class="scene"><b>${i + 1}. ${esc(x.emoji || '')} ${esc(x.heading || x.text || '')}</b>${esc(x.narration || '')}</div>`).join('');
   }
@@ -1026,6 +1064,7 @@ Pictures (shown big and professional instead of an emoji, on "title" scenes and 
     for (let i = 0; i < PICBLOBS.length; i++) if (PICBLOBS[i]) await IDB.set('pic:' + PROJ.id + ':' + i, PICBLOBS[i]);
     if (IMG) await IDB.set('input:' + PROJ.id, IMG);
     if (PROJ.logoBlob) await IDB.set('logo:' + PROJ.id, PROJ.logoBlob);
+    if (PROJ.music && PROJ.music.custom) { if (!PROJ.cmBlob && CM) { PROJ.cmBlob = CM.file; PROJ.cmBuf = CM.buf; } if (PROJ.cmBlob) await IDB.set('music:' + PROJ.id, PROJ.cmBlob); }
     if (PROJ.photoBlob) await IDB.set('photo:' + PROJ.id, PROJ.photoBlob);
     if (PROJ.bgBlob) await IDB.set('bg:' + PROJ.id, PROJ.bgBlob);
     if (PROJ.bgsBlobs) for (let i = 0; i < PROJ.bgsBlobs.length; i++) await IDB.set('bgs:' + PROJ.id + ':' + i, PROJ.bgsBlobs[i]);
@@ -1045,6 +1084,7 @@ Pictures (shown big and professional instead of an emoji, on "title" scenes and 
     const x = hLoad().find(i => i.id === id); if (!x) return;
     stopPlay(); clearPreview();
     PROJ = { id: x.id, kind: x.kind, frame: x.frame, font: x.font, occ: x.occ, sub: x.sub, deck: x.deck, cinematic: x.cinematic, look: x.look, created: x.created, title: x.title, plan: x.plan, card: x.card, narr: x.narr, voiceDur: x.voiceDur, presenter: x.presenter, voiceEnv: x.voiceEnv, textMode: x.textMode, noEmoji: x.noEmoji, credit: x.credit, music: x.music, voiceInfo: x.voiceInfo, settings: x.settings, brand: x.brand, aspect: x.aspect };
+    if (x.music && x.music.custom) { const mb = await IDB.get('music:' + x.id); if (mb) { try { PROJ.cmBuf = await decodeAudio(mb); PROJ.cmBlob = mb; } catch (e) {} } }
     { const lb = await IDB.get('logo:' + x.id); if (lb) { const im = new Image(); im.src = URL.createObjectURL(lb); try { await im.decode(); PROJ.logoIm = im; PROJ.logoBlob = lb; } catch (e) {} }
       PROJ.pimgs = []; PROJ.nPimg = x.nPimg || 0;
       for (let i = 0; i < PROJ.nPimg; i++) { const b = await IDB.get('ppic:' + x.id + ':' + i), im = new Image(); if (!b) { PROJ.pimgs[i] = null; continue; } im.src = URL.createObjectURL(b); try { await im.decode(); PROJ.pimgs[i] = { im, blob: b, cut: !!(x.pimgCut && x.pimgCut[i]) }; } catch (e) { PROJ.pimgs[i] = null; } } }
@@ -1066,7 +1106,7 @@ Pictures (shown big and professional instead of an emoji, on "title" scenes and 
     const b = e.target.closest('button'); if (!b) return;
     if (b.dataset.open) return openProject(b.dataset.open);
     if (b.dataset.del) { const x = hLoad().find(i => i.id === b.dataset.del); if (!x || !confirm(`تحذف «${(x.title && x.title.ar) || ''}» من السجل؟`)) return;
-      hStore(hLoad().filter(i => i.id !== x.id)); IDB.del('voice:' + x.id); IDB.del('input:' + x.id); IDB.del('logo:' + x.id); IDB.del('photo:' + x.id); IDB.del('bg:' + x.id); for (let i = 0; i < 4; i++) IDB.del('bgs:' + x.id + ':' + i); for (let i = 0; i < 8; i++) IDB.del('pic:' + x.id + ':' + i); for (let i = 0; i < (x.nPimg || 0); i++) IDB.del('ppic:' + x.id + ':' + i); hRender(); }
+      hStore(hLoad().filter(i => i.id !== x.id)); IDB.del('voice:' + x.id); IDB.del('input:' + x.id); IDB.del('logo:' + x.id); IDB.del('music:' + x.id); IDB.del('photo:' + x.id); IDB.del('bg:' + x.id); for (let i = 0; i < 4; i++) IDB.del('bgs:' + x.id + ':' + i); for (let i = 0; i < 8; i++) IDB.del('pic:' + x.id + ':' + i); for (let i = 0; i < (x.nPimg || 0); i++) IDB.del('ppic:' + x.id + ':' + i); hRender(); }
   });
   // ── new idea: clear everything except the settings and the key ──
   function clearPreview() { eng = null; music = null; previewSize(); { const c2 = cv.getContext('2d'); c2.setTransform(1, 0, 0, 1, 0, 0); c2.globalAlpha = 1; c2.clearRect(0, 0, cv.width, cv.height); } $('sEmpty').classList.remove('hidden'); $('sTime').textContent = '0:00 / 0:00'; $('sSeek').value = 0; $('sScript').classList.add('hidden'); $('sWav').classList.add('hidden'); $('sReMusic').classList.add('hidden'); msg('sRecMsg', ''); ['plan', 'voice', 'pics', 'video', 'rec'].forEach(k => step(k, '')); }
@@ -1538,7 +1578,7 @@ Reply with ONLY a JSON object: {"message":["",""],"close":"","narration":[""]}
     step('video', 'doing'); await fontsReady; await loadOccFonts(font);
     const mv = $('sMusic').value, seed = (Date.now() ^ Math.floor(Math.random() * 1e9)) >>> 0;
     const EVM = { milka: { mood: 'inspiring', genre: 'arabic' }, khutba: { mood: 'inspiring', genre: 'arabic' }, taqaddum: { mood: 'calm', genre: 'arabic' }, home: { mood: 'calm', genre: 'cinematic' }, grad: { mood: 'inspiring', genre: 'cinematic' }, shifa: { mood: 'calm', genre: 'cinematic' }, hajj: null, success: { mood: 'energetic', genre: 'pop' } };
-    const mo = ty === 'events' ? EVM[$('oEvt').value] : OCC_MUSIC[ty], music = mv === 'off' ? null : mv === 'auto' ? (mo ? Object.assign({ seed }, mo) : null) : { mood: mv, seed };
+    const mo = ty === 'events' ? EVM[$('oEvt').value] : OCC_MUSIC[ty], music = mv === 'custom' ? musicChoice() : mv === 'off' ? null : mv === 'auto' ? (mo ? Object.assign({ seed }, mo) : null) : { mood: mv, seed };
     const titleTxt = (scenes[0].title || '') + (ty === 'events' && occVal('oName1') ? ' — ' + occVal('oName1') : ty === 'wedding' && occVal('oGroom') ? ' — ' + occVal('oGroom') : ty === 'baby' && occVal('oBaby') ? ' — ' + occVal('oBaby') : '');
     PROJ = { id: 's' + Date.now().toString(36), created: Date.now(), kind: 'occasion', font, frame: $('oLook').value, photoIm, photoBlob, bgsIm: arts.map(a => a.im), bgsBlobs: arts.map(a => a.blob), bgIm: OBG ? OBG.im : null, bgBlob: OBG ? OBG.file : null, logoIm: LOGO ? LOGO.im : null, logoBlob: LOGO ? LOGO.blob : null, occ: ty, sub: ty === 'baby' ? $('oGender').value : ty === 'religious' ? $('oSub').value : ty === 'events' ? $('oEvt').value : '', aspect: $('oAspect').value,
       title: { ar: titleTxt, en: '' }, plan: { scenes: scenes.map((x, i) => Object.assign({}, x, { narration: narr[i] || '' })) }, credit: $('sCredit').value.trim(), music,
@@ -1771,6 +1811,7 @@ Reply with ONLY a JSON object: {"message":["",""],"close":"","narration":[""]}
     const idea = $('sIdea').value.trim();
     const OCCASION = isOcc(), DECK = isDeck();
     if (!idea && !IMG && !OCCASION) return msg('sMsg', '⚠️ اكتب فكرتك أو ارفع صورة.', 'warn');
+    if ($('sMusic').value === 'custom' && !CM) { cmUI(); $('cmBox').scrollIntoView({ behavior: 'smooth', block: 'center' }); return msg('sMsg', '⚠️ اخترت «موسيقى من عندي»: ارفع ملف الموسيقى أو الصق رابطه أول.', 'warn'); }
     if ($('sType').value === 'wedding' && !$('oGroom').value.trim() && !$('oHost').value.trim()) return msg('sMsg', '⚠️ اكتب اسم العريس أو الداعي.', 'warn');
     if ($('sType').value === 'events' && ['milka', 'khutba', 'taqaddum', 'grad', 'success'].includes($('oEvt').value) && !$('oName1').value.trim() && !$('oHost').value.trim()) return msg('sMsg', '⚠️ اكتب الاسم أو الداعي.', 'warn');
     if ($('sType').value === 'invite' && !$('oEvent').value.trim()) return msg('sMsg', '⚠️ اكتب نوع المناسبة (مثل: حفل تخرج).', 'warn');
