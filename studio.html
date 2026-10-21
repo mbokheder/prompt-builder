@@ -888,20 +888,26 @@ Pictures (shown big and professional instead of an emoji, on "title" scenes and 
   function cmUI() { $('cmBox').classList.toggle('hidden', $('sMusic').value !== 'custom'); $('cmInfo').innerHTML = CM ? `✓ <b>${esc(CM.name)}</b> · ${fmt(CM.buf.duration)} <button type="button" class="ghost small" id="cmDel">إزالة</button>` : ''; if ($('cmDel')) $('cmDel').onclick = () => { CM = null; IDB.del('custom-music'); cmUI(); }; }
   async function setCM(blob, name, save) {
     try { const buf = await decodeAudio(blob); CM = { file: blob, name: name || 'موسيقى', buf }; cmUI(); if (save) IDB.set('custom-music', { file: blob, name: CM.name }); }
-    catch (e) { msg('sMsg', '⚠️ ما قدرت أقرأ ملف الموسيقى. جرّب MP3 أو M4A.', 'warn'); }
+    catch (e) { CM = null; cmNote('⚠️ ما قدرت أقرأ ملف الموسيقى. جرّب ملف MP3 أو M4A.', 'warn'); }
   }
   $('sMusic').addEventListener('change', cmUI);
   $('cmDrop').addEventListener('click', () => $('cmFile').click());
-  $('cmFile').addEventListener('change', e => { const f = e.target.files[0]; if (f) setCM(f, f.name, true); e.target.value = ''; });
+  $('cmFile').addEventListener('change', e => { const f = e.target.files[0]; if (f) { cmNote('⏳ أقرأ الملف…'); setCM(f, f.name, true); } e.target.value = ''; });
   ['dragenter', 'dragover'].forEach(ev => $('cmDrop').addEventListener(ev, e => { e.preventDefault(); $('cmDrop').classList.add('over'); }));
   ['dragleave', 'drop'].forEach(ev => $('cmDrop').addEventListener(ev, e => { e.preventDefault(); $('cmDrop').classList.remove('over'); }));
   $('cmDrop').addEventListener('drop', e => { const f = e.dataTransfer.files[0]; if (f) setCM(f, f.name, true); });
+  // every step of loading shows right inside the music box
+  const cmNote = (html, cls = 'info') => { $('cmInfo').innerHTML = `<div class="note ${cls}" style="margin:0">${html}</div>`; };
   $('cmLoad').onclick = async () => {
-    const u = $('cmUrl').value.trim(); if (!u) return;
-    if (/youtu\.?be/i.test(u)) return msg('sMsg', '⚠️ روابط يوتيوب ما تنفع: يوتيوب ما يسمح بسحب الصوت من المواقع الثانية. نزّل المقطع كملف صوت (MP3) وارفعه هنا.', 'warn');
-    $('cmLoad').disabled = true;
-    try { const r = await fetch(u); if (!r.ok) throw new Error(r.status); const b = await r.blob(); await setCM(b, decodeURIComponent(u.split('/').pop().split('?')[0]) || 'موسيقى', true); }
-    catch (e) { msg('sMsg', '⚠️ ما قدرت أحمّل الرابط: الموقع اللي فيه الملف ما يسمح بالتحميل المباشر. نزّل الملف على جهازك وارفعه هنا.', 'warn'); }
+    const u = $('cmUrl').value.trim();
+    if (!u) return cmNote('⚠️ الصق رابط ملف الموسيقى في الخانة أول.', 'warn');
+    if (/youtu\.?be/i.test(u)) return cmNote('⚠️ روابط يوتيوب ما تنفع: يوتيوب ما يسمح بسحب الصوت من المواقع الثانية. حوّل المقطع لملف MP3 وارفعه من المربع فوق.', 'warn');
+    if (!/^https?:\/\//i.test(u)) return cmNote('⚠️ الرابط لازم يبدأ بـ https://', 'warn');
+    $('cmLoad').disabled = true; cmNote('⏳ أحمّل الموسيقى…');
+    try { const r = await fetch(u); if (!r.ok) throw new Error(r.status); const b = await r.blob();
+      if (!/audio|octet-stream|mpeg|mp4/.test(b.type || 'audio/')) throw new Error('not audio');
+      await setCM(b, decodeURIComponent(u.split('/').pop().split('?')[0]) || 'موسيقى', true); if (!CM) throw new Error('decode'); $('cmUrl').value = ''; }
+    catch (e) { cmNote(e.message === 'not audio' || e.message === 'decode' ? '⚠️ الرابط ما يوصل لملف صوت. لازم يكون رابط مباشر لملف (ينتهي غالبًا بـ ‎.mp3)، مو صفحة.' : '⚠️ ما قدرت أحمّل الرابط: الموقع اللي فيه الملف ما يسمح بالتحميل المباشر. نزّل الملف على جهازك وارفعه من المربع فوق.', 'warn'); }
     finally { $('cmLoad').disabled = false; }
   };
   IDB.get('custom-music').then(x => { if (x && x.file && !CM) setCM(x.file, x.name, false); });
