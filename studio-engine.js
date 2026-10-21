@@ -2689,8 +2689,9 @@ function synthMusic(T, SR = 32000, mo = {}) {
 // ───────────── OCCASIONS: invitations, weddings, newborns, religious greetings ─────────────
 // spec: { kind:'occasion', occ:'invite'|'wedding'|'baby'|'religious', sub, aspect:'16:9'|'9:16', look:{seed}, credit, music, voice:{marks,duration}|null,
 //         scenes:[{ type, top, title, sub, label, names:[], lines:[], items:[{icon,label,value}], source, quran, say }] }
-// types: open (opening line + big title), names (big names), message (short lines), verse (Quran / dua in a frame), details (date, time, place…), close
-const OTYPES = ['open', 'names', 'message', 'verse', 'details', 'close'];
+// types: open (opening line + big title), names (big names), message (short lines), verse (Quran / dua in a frame), details (date, time, place…), photo (the client's picture), close
+// spec.photo = the client's picture (invitation card, the couple, the baby, the venue…), spec.logo = their logo shown at the top
+const OTYPES = ['open', 'names', 'message', 'verse', 'details', 'photo', 'close'];
 const OFAM = { deco: "'Aref Ruqaa', 'Amiri', serif", verse: "'Amiri', serif", body: "'Cairo', Tahoma, sans-serif" };
 const OTHEMES = {
   wedding: [
@@ -2721,16 +2722,16 @@ function normOccasion(s) {
     names: (Array.isArray(x.names) ? x.names : []).map(str).filter(Boolean).slice(0, 2), lines: (Array.isArray(x.lines) ? x.lines : []).map(str).filter(Boolean).slice(0, 5),
     items: (Array.isArray(x.items) ? x.items : []).filter(i => i && str(i.value)).slice(0, 6).map(i => ({ icon: str(i.icon).slice(0, 8), label: str(i.label), value: str(i.value) })),
     source: str(x.source), quran: !!x.quran, say: str(x.say),
-  })).filter(x => x.title || x.top || x.names.length || x.lines.length || x.items.length);
+  })).filter(x => x.type === 'photo' ? !!s.photo : x.title || x.top || x.names.length || x.lines.length || x.items.length);
   if (!scenes.length) scenes.push({ type: 'open', top: '', title: 'دعوة', sub: '', label: '', names: [], lines: [], items: [], source: '', quran: false, say: '' });
-  return { kind: 'occasion', occ, sub: str(s.sub), vertical: s.aspect === '9:16', look: s.look || {}, credit: str(s.credit), music: s.music || null, scenes, title: pair(s.title),
+  return { kind: 'occasion', occ, sub: str(s.sub), vertical: s.aspect === '9:16', look: s.look || {}, credit: str(s.credit), music: s.music || null, scenes, title: pair(s.title), photo: s.photo || null, logo: s.logo || null,
     voice: s.voice && isFinite(s.voice.duration) ? s.voice : null };
 }
 function planOccasion(X) {
   const T = { X, scenes: [] };
   const natural = x => {
     const words = [x.top, x.title, x.sub, x.label, ...x.names, ...x.lines, ...x.items.map(i => i.label + ' ' + i.value), x.source].join(' ').split(/\s+/).filter(Boolean).length;
-    const base = { open: 4.6, names: 5, message: 3.2, verse: 5.5, details: 2.4, close: 5.5 }[x.type] || 4;
+    const base = { open: 4.6, names: 5, message: 3.2, verse: 5.5, details: 2.4, photo: 5.5, close: 5.5 }[x.type] || 4;
     return Math.max(base, Math.min(12, 1.6 + words * .38 + (x.type === 'details' ? x.items.length * .9 : 0) + (x.type === 'message' ? x.lines.length * .5 : 0)));
   };
   if (X.voice && Array.isArray(X.voice.marks) && X.voice.marks.length === X.scenes.length) {
@@ -2897,6 +2898,15 @@ function createOccasion(canvas, spec) {
         ctx.font = `${Math.round(bub * 1.1)}px 'Segoe UI Emoji','Apple Color Emoji','Noto Color Emoji',sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(it.icon || '✨', x1 - bub - 24, y + 2);
         const tx0 = x1 - bub * 2 - 56; if (it.label) tx(it.label, tx0, y - rh * .16, V ? 34 : 30, OFAM.body, TH.acc, 'right', CW - bub * 2 - 100, '700');
         tx(it.value, tx0, it.label ? y + rh * .14 : y, V ? 50 : 44, OFAM.body, TH.ink, 'right', CW - bub * 2 - 100, '800'); } }); });
+    } else if (s.type === 'photo') {
+      // the picture whole, in a gold-edged frame, slowly zooming; an optional caption under it
+      const im = X.photo, iw = im && (im.naturalWidth || im.width), ih = im && (im.naturalHeight || im.height);
+      if (iw && ih) { const capH = s.title ? (V ? 110 : 90) : 0, bw = CW, bh = area.y1 - area.y0 - 40 - capH, k0 = Math.min(bw / iw, bh / ih), w = iw * k0, h = ih * k0, a = .2;
+        rows.push({ h: h + 40, k: ap(lt, a, .9), draw: y => { const z = 1 + .04 * P(lt, a, s.b - s.a); ctx.translate(CX, y); ctx.scale(z, z);
+          ctx.shadowColor = 'rgba(0,0,0,.35)'; ctx.shadowBlur = 40; ctx.shadowOffsetY = 14; ctx.fillStyle = TH.acc; ctx.beginPath(); ctx.roundRect(-w / 2 - 10, -h / 2 - 10, w + 20, h + 20, 26); ctx.fill(); ctx.shadowColor = 'transparent';
+          ctx.save(); ctx.beginPath(); ctx.roundRect(-w / 2, -h / 2, w, h, 18); ctx.clip(); ctx.drawImage(im, -w / 2, -h / 2, w, h); ctx.restore();
+          ctx.strokeStyle = 'rgba(255,255,255,.55)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.roundRect(-w / 2 + 8, -h / 2 + 8, w - 16, h - 16, 14); ctx.stroke(); } });
+        if (s.title) { const a2 = a + .6; rows.push({ h: capH, k: ap(lt, a2), draw: y => tx(s.title, CX, y, V ? 56 : 50, OFAM.deco, TH.acc, 'center', CW) }); } }
     } else {   // close
       if (s.title) { const a = nx(), f = fitLines(s.title, CW, 2, V ? 120 : 110, OFAM.deco, 56); rows.push({ h: f.ls.length * f.sz * 1.3 + 30, k: ap(lt, a, .8), draw: y => { const sc = .85 + .15 * E.back(P(lt, a, a + .8)); ctx.translate(CX, y); ctx.scale(sc, sc); f.ls.forEach((l, j) => tx(l, 0, (j - (f.ls.length - 1) / 2) * f.sz * 1.3, f.sz, OFAM.deco, TH.acc)); } }); }
       { const a = nx(); rows.push({ h: 50, k: 1, draw: y => divider(y, P(lt, a, a + .8), 360) }); }
@@ -2918,6 +2928,10 @@ function createOccasion(canvas, spec) {
     content(cur, t, cur.n === T.scenes.length - 1 ? k * (1 - P(t, T.DUR - .6, T.DUR)) : k * (1 - P(t, cur.b - .25, cur.b + .3) * 0));
     // golden shimmer sweep at every cut
     if (prev && t - cur.a < 1) { const q = P(t, cur.a - .1, cur.a + .9), x = lerp(-W * .3, W * 1.3, E.io(q)); ctx.save(); const g = ctx.createLinearGradient(x - 260, 0, x + 260, 0); g.addColorStop(0, TH.acc + '00'); g.addColorStop(.5, TH.acc + '55'); g.addColorStop(1, TH.acc + '00'); ctx.fillStyle = g; ctx.globalCompositeOperation = TH.dark ? 'lighter' : 'source-over'; ctx.fillRect(0, 0, W, H); ctx.restore(); }
+    // the client's logo, small at the top centre
+    const lg = X.logo, lw = lg && (lg.naturalWidth || lg.width), lh = lg && (lg.naturalHeight || lg.height);
+    if (lw && lh) { const k = Math.min((V ? 230 : 200) / lw, (V ? 120 : 84) / lh), w = lw * k, h = lh * k, y = V ? 70 : 22; ctx.save(); ctx.globalAlpha = .95 * P(t, .4, 1.4) * (1 - P(t, T.DUR - .6, T.DUR));
+      ctx.fillStyle = TH.dark ? 'rgba(255,255,255,.92)' : 'rgba(255,255,255,.8)'; ctx.beginPath(); ctx.roundRect(CX - w / 2 - 16, y - 10, w + 32, h + 20, 16); ctx.fill(); ctx.drawImage(lg, CX - w / 2, y, w, h); ctx.restore(); }
     if (t < .8) { ctx.fillStyle = TH.bg[1]; ctx.globalAlpha = 1 - P(t, 0, .8); ctx.fillRect(0, 0, W, H); ctx.globalAlpha = 1; }
   }
   return { DUR: T.DUR, T, S: X, render, mode: 'occasion', music: () => X.music ? synthMusic(T, 32000, X.music) : null };

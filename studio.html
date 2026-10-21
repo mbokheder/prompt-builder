@@ -126,7 +126,7 @@
   .ptsBal small{display:block;font-size:13px;opacity:.85}
   .ptsBal b{display:block;font-size:34px;font-weight:900;line-height:1.2}
   .ptsH{margin:0 0 14px;font-size:20px;font-weight:900}
-  .pk3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;align-items:stretch}
+  .pk3{display:grid;grid-template-columns:repeat(var(--n,3),minmax(0,1fr));gap:18px;align-items:stretch}
   .pk{position:relative;background:var(--card);border:1px solid var(--line);border-radius:22px;padding:22px 20px 18px;display:flex;flex-direction:column;box-shadow:0 6px 0 rgba(29,42,110,.06)}
   .pk.best{border:2px solid var(--orange);box-shadow:0 10px 30px rgba(255,122,26,.18)}
   .pkTag{position:absolute;top:-13px;inset-inline-start:20px;background:var(--orange);color:#fff;font-weight:800;font-size:13px;padding:4px 12px;border-radius:999px}
@@ -166,6 +166,10 @@
   .pGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(340px,100%),1fr));gap:20px;align-items:start}
   .aSet{margin:12px 0 4px;padding:12px 14px;border:1px dashed var(--line);border-radius:14px}
   .aSet label{margin-top:0}
+  .aPack{display:grid;grid-template-columns:90px 100px 1fr auto auto;gap:6px;align-items:center;margin-top:6px}
+  .aPack input{padding:7px 9px;font-size:14px}
+  .aPack label{display:flex;gap:4px;align-items:center;font-size:12.5px;font-weight:400;margin:0;white-space:nowrap}
+  @media (max-width:640px){.aPack{grid-template-columns:1fr 1fr}.aPack input[data-f=note]{grid-column:1/-1}}
   .pTable{width:100%;border-collapse:collapse;font-size:15px}
   .pTable td{border-bottom:1px solid var(--line);padding:8px 6px}
   .pTable td:last-child{text-align:left;font-weight:900;color:var(--orange);white-space:nowrap}
@@ -274,6 +278,7 @@
         <div class="row" data-occ="invite wedding baby"><div><label for="oDate">التاريخ</label><input type="text" id="oDate" placeholder="مثال: الخميس ١٢ رجب ١٤٤٨هـ"></div><div><label for="oTime">الوقت <small>(اختياري)</small></label><input type="text" id="oTime" placeholder="مثال: ٨:٣٠ مساءً"></div></div>
         <div class="row" data-occ="invite wedding baby"><div><label for="oPlace">المكان <small>(اختياري)</small></label><input type="text" id="oPlace" placeholder="مثال: قاعة الياسمين - الرياض"></div><div><label for="oPhone">للتأكيد أو التواصل <small>(اختياري)</small></label><input type="text" id="oPhone" style="direction:ltr" placeholder="05xxxxxxxx"></div></div>
         <div data-occ="baby"><label for="oWeight">الوزن <small>(اختياري)</small></label><input type="text" id="oWeight" placeholder="مثال: ٣.٢ كجم"></div>
+        <label class="chk" style="align-items:flex-start"><input type="checkbox" id="oDraw" checked style="margin-top:4px"> <span>🎨 إذا ما رفعت صورة، ارسم صورة فنية واقعية بالذكاء الاصطناعي: لقطة مقرّبة جمالية بدون إظهار الوجه كامل (مثل يد المولود، أو أيدي العروسين بالحنا والخواتم) <small>(<span class="pcT" data-k="pictures">3 نقاط</span> بدل <span class="pcT" data-k="motion">نقطة واحدة</span>، ويرجع الفرق إذا ما انرسمت)</small></span></label>
         <label for="oAspect">المقاس</label><select id="oAspect"><option value="9:16">📱 طولي 9:16 (حالة واتساب، ستوري)</option><option value="16:9">🖥️ عرضي 16:9</option></select>
       </div>
       <label for="sIdea" id="sIdeaLab">عن ماذا الفيديو؟ <small>(فكرة، أو نص، أو وصف منتج)</small></label>
@@ -304,7 +309,7 @@
         <div id="pPicsDrop" class="drop" tabindex="0" role="button"><input type="file" id="pPics" accept="image/*" multiple hidden>📸 اسحب الصور أو <u>اضغط للاختيار</u></div>
         <div id="pPicsList" class="pPics"></div>
         <label style="font-weight:400;display:flex;gap:8px;align-items:center;margin-top:10px"><input type="checkbox" id="pNoEmoji" checked> بدون رموز تعبيرية (إيموجي) في الإعلان</label>
-        <label style="font-weight:400;display:flex;gap:8px;align-items:flex-start;margin-top:10px"><input type="checkbox" id="pDraw" checked style="margin-top:4px"> <span>🎨 ارسم بالذكاء الاصطناعي صور احترافية للمنتجات اللي ما لها صورة (مثل النكهات والأطباق) بدل الرموز التعبيرية <small>(<span class="pc" data-k="pictures">3</span> نقاط بدل نقطة)</small></span></label>
+        <label style="font-weight:400;display:flex;gap:8px;align-items:flex-start;margin-top:10px"><input type="checkbox" id="pDraw" checked style="margin-top:4px"> <span>🎨 ارسم بالذكاء الاصطناعي صور احترافية للمنتجات اللي ما لها صورة (مثل النكهات والأطباق) بدل الرموز التعبيرية <small>(<span class="pcT" data-k="pictures">3 نقاط</span> بدل <span class="pcT" data-k="motion">نقطة واحدة</span>)</small></span></label>
         <div class="row">
           <div><label for="pName">اسم النشاط أو المنتج</label><input type="text" id="pName" placeholder="مثال: مقهى الورد"></div>
           <div><label for="pColor">اللون الرئيسي <small>(ينأخذ من الشعار)</small></label><input type="color" id="pColor" value="#ff6a13"></div>
@@ -375,6 +380,12 @@
     <p class="where" style="margin-top:6px">أضف نقاط لأي مستخدم بإيميله (ولو ما دخل للحين)، أو حدّد رصيده الجديد مباشرة. اضغط على أي مستخدم في الجدول عشان تعبّي إيميله. كل تعديل يسألك «متأكد؟» قبل التنفيذ، وتقدر تتراجع عنه بعدها.</p>
     <div class="row"><div><label for="aEmail">إيميل المستخدم</label><input type="text" id="aEmail" style="direction:ltr" placeholder="name@gmail.com"></div><div><label for="aMode">نوع التعديل</label><select id="aMode"><option value="add">➕ أضف أو اخصم (بالسالب)</option><option value="set">✏️ حدّد المجموع الجديد</option></select></div><div><label for="aPts" id="aPtsL">النقاط</label><input type="text" id="aPts" value="10" style="direction:ltr"></div></div>
     <div class="btns"><button type="button" class="ghost aQuick" style="direction:ltr" data-n="10">+10</button><button type="button" class="ghost aQuick" style="direction:ltr" data-n="30">+30</button><button type="button" class="ghost aQuick" style="direction:ltr" data-n="100">+100</button><button type="button" class="primary" id="aAdd">➕ أضف النقاط</button><button type="button" class="ghost" id="aRefresh">🔄 تحديث القائمة</button></div>
+    <div class="aSet" id="aPrices"><label style="margin-top:0">الأسعار <small>(تتحدث صفحة «النقاط والأسعار» وتكلفة كل فيديو تلقائيًا)</small></label>
+      <div class="row"><div><label for="aPMotion" style="font-size:13px">نقاط فيديو الموشن والكرتون والإعلان</label><input type="number" id="aPMotion" min="1" max="20" style="direction:ltr;width:100%"></div><div><label for="aPPics" style="font-size:13px">نقاط الصور والسينمائي والإعلان مع رسم</label><input type="number" id="aPPics" min="1" max="50" style="direction:ltr;width:100%"></div></div>
+      <label style="font-size:13px">الباقات <small>(النقاط · السعر بالريال · ملاحظة قصيرة · الأكثر طلبًا)</small></label>
+      <div id="aPacks"></div>
+      <div class="btns" style="margin-top:6px"><button type="button" class="ghost small" id="aPackAdd">+ باقة</button><button type="button" class="primary" id="aPricesSave">احفظ الأسعار</button></div>
+    </div>
     <div class="aSet"><label for="aWelcome">نقاط الهدية لكل حساب جديد</label><div style="display:flex;gap:8px;align-items:center"><input type="number" id="aWelcome" min="0" max="100" step="1" style="direction:ltr;max-width:110px"><button type="button" class="ghost" id="aWelcomeSave">احفظ</button></div><small class="where">تنضاف تلقائيًا أول ما يدخل الشخص بحساب Google لأول مرة. الحسابات الموجودة ما تتأثر.</small></div>
     <div id="aMsg"></div>
     <div style="overflow:auto"><table class="atable" id="aUsers"></table></div>
@@ -391,28 +402,18 @@
 
     <section class="ptsSec" aria-labelledby="pkT">
       <h3 id="pkT" class="ptsH">باقات النقاط</h3>
-      <div class="pk3">
-        <div class="pk"><div class="pkTop"><span class="pkN">10</span><span class="pkU">نقاط</span></div><div class="pkPrice">19 <small>ريال</small></div><div class="pkPer">1.90 ريال للنقطة</div>
-          <ul><li><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M5 12l5 5L20 7"/></svg>10 فيديو موشن أو إعلان</li><li><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M5 12l5 5L20 7"/></svg>أو 3 فيديوهات بالصور</li><li><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M5 12l5 5L20 7"/></svg>مناسبة للتجربة</li></ul>
-          <button type="button" class="waBtn" data-pts="10" data-price="19"><svg class="waIc" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 1.8a8.2 8.2 0 1 1-4.3 15.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 0 1 12 3.8z"/><path fill="currentColor" d="M8.6 7.4c.2-.5.5-.5.8-.5h.6c.2 0 .4 0 .6.5l.8 1.9c.1.2.1.4 0 .6l-.5.7c-.1.2-.2.3 0 .6.5.8 1.1 1.5 1.9 2 .3.2.5.2.6 0l.7-.8c.2-.2.4-.2.6-.1l1.8.9c.3.1.4.3.4.5 0 .8-.6 1.9-1.6 2-.9.1-1.8 0-3.7-.9-2.1-1-3.5-3.1-3.8-3.5-.3-.4-.9-1.5-.9-2.6s.4-1.6.7-1.9z"/></svg>اطلبها على واتساب</button></div>
-        <div class="pk best"><span class="pkTag">الأكثر طلبًا</span><div class="pkTop"><span class="pkN">30</span><span class="pkU">نقطة</span></div><div class="pkPrice">49 <small>ريال</small></div><div class="pkPer">1.63 ريال للنقطة · وفّر 14%</div>
-          <ul><li><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M5 12l5 5L20 7"/></svg>30 فيديو موشن أو إعلان</li><li><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M5 12l5 5L20 7"/></svg>أو 10 فيديوهات بالصور</li><li><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M5 12l5 5L20 7"/></svg>للمسوّقين والمعلمين</li></ul>
-          <button type="button" class="waBtn" data-pts="30" data-price="49"><svg class="waIc" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 1.8a8.2 8.2 0 1 1-4.3 15.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 0 1 12 3.8z"/><path fill="currentColor" d="M8.6 7.4c.2-.5.5-.5.8-.5h.6c.2 0 .4 0 .6.5l.8 1.9c.1.2.1.4 0 .6l-.5.7c-.1.2-.2.3 0 .6.5.8 1.1 1.5 1.9 2 .3.2.5.2.6 0l.7-.8c.2-.2.4-.2.6-.1l1.8.9c.3.1.4.3.4.5 0 .8-.6 1.9-1.6 2-.9.1-1.8 0-3.7-.9-2.1-1-3.5-3.1-3.8-3.5-.3-.4-.9-1.5-.9-2.6s.4-1.6.7-1.9z"/></svg>اطلبها على واتساب</button></div>
-        <div class="pk"><div class="pkTop"><span class="pkN">100</span><span class="pkU">نقطة</span></div><div class="pkPrice">149 <small>ريال</small></div><div class="pkPer">1.49 ريال للنقطة · وفّر 22%</div>
-          <ul><li><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M5 12l5 5L20 7"/></svg>100 فيديو موشن أو إعلان</li><li><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M5 12l5 5L20 7"/></svg>أو 33 فيديو بالصور</li><li><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M5 12l5 5L20 7"/></svg>للمدارس والشركات</li></ul>
-          <button type="button" class="waBtn" data-pts="100" data-price="149"><svg class="waIc" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 1.8a8.2 8.2 0 1 1-4.3 15.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 0 1 12 3.8z"/><path fill="currentColor" d="M8.6 7.4c.2-.5.5-.5.8-.5h.6c.2 0 .4 0 .6.5l.8 1.9c.1.2.1.4 0 .6l-.5.7c-.1.2-.2.3 0 .6.5.8 1.1 1.5 1.9 2 .3.2.5.2.6 0l.7-.8c.2-.2.4-.2.6-.1l1.8.9c.3.1.4.3.4.5 0 .8-.6 1.9-1.6 2-.9.1-1.8 0-3.7-.9-2.1-1-3.5-3.1-3.8-3.5-.3-.4-.9-1.5-.9-2.6s.4-1.6.7-1.9z"/></svg>اطلبها على واتساب</button></div>
-      </div>
+      <div class="pk3" id="pkList"></div>
     </section>
 
     <div class="ptsTwo">
       <section class="card" aria-labelledby="p1">
         <h3 id="p1" class="ptsH">كم يكلّف كل فيديو؟</h3>
         <div class="costList">
-          <div class="cRow"><span class="cIc" style="--c:var(--blue)"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M4 5h16v11H4zM8 20h8M10 9l4 2-4 2z"/></svg></span><span class="cT"><b>موشن جرافيك</b><small>مع المقدّم الكرتوني أو بدونه</small></span><span class="cP"><span class="pc" data-k="motion">1</span> نقطة</span></div>
-          <div class="cRow"><span class="cIc" style="--c:var(--green)"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM6 22v-6l-2-4 5-2h6l5 2-2 4v6"/></svg></span><span class="cT"><b>شخصيات كرتونية</b><small>لبطاقات الأنشطة والتمارين</small></span><span class="cP"><span class="pc" data-k="motion">1</span> نقطة</span></div>
-          <div class="cRow"><span class="cIc" style="--c:var(--orange)"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M3 11l14-6v14L3 13zM17 8a4 4 0 0 1 0 8M7 13l1 6h3l-1-5"/></svg></span><span class="cT"><b>إعلان موشن احترافي</b><small>بصورك أنت أو بدون صور</small></span><span class="cP"><span class="pc" data-k="motion">1</span> نقطة</span></div>
-          <div class="cRow"><span class="cIc" style="--c:var(--purple)"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M4 4h16v16H4zM4 15l5-5 4 4 3-3 4 4M15 8.5h.01"/></svg></span><span class="cT"><b>إعلان مع صور مرسومة بالذكاء</b><small>صور إعلانية حقيقية لمنتجاتك. إذا ما احتاج رسم، يرجع لك الفرق</small></span><span class="cP"><span class="pc" data-k="pictures">3</span> نقاط</span></div>
-          <div class="cRow"><span class="cIc" style="--c:var(--red)"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M3 6h18v13H3zM3 15l5-5 5 5 3-3 5 5M16 9.5h.01"/></svg></span><span class="cT"><b>صور بالذكاء الاصطناعي أو سينمائي</b><small>صورة مرسومة لكل مشهد</small></span><span class="cP"><span class="pc" data-k="pictures">3</span> نقاط</span></div>
+          <div class="cRow"><span class="cIc" style="--c:var(--blue)"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M4 5h16v11H4zM8 20h8M10 9l4 2-4 2z"/></svg></span><span class="cT"><b>موشن جرافيك</b><small>مع المقدّم الكرتوني أو بدونه</small></span><span class="cP"><span class="pcT" data-k="motion">نقطة واحدة</span></span></div>
+          <div class="cRow"><span class="cIc" style="--c:var(--green)"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM6 22v-6l-2-4 5-2h6l5 2-2 4v6"/></svg></span><span class="cT"><b>شخصيات كرتونية</b><small>لبطاقات الأنشطة والتمارين</small></span><span class="cP"><span class="pcT" data-k="motion">نقطة واحدة</span></span></div>
+          <div class="cRow"><span class="cIc" style="--c:var(--orange)"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M3 11l14-6v14L3 13zM17 8a4 4 0 0 1 0 8M7 13l1 6h3l-1-5"/></svg></span><span class="cT"><b>إعلان موشن احترافي</b><small>بصورك أنت أو بدون صور</small></span><span class="cP"><span class="pcT" data-k="motion">نقطة واحدة</span></span></div>
+          <div class="cRow"><span class="cIc" style="--c:var(--purple)"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M4 4h16v16H4zM4 15l5-5 4 4 3-3 4 4M15 8.5h.01"/></svg></span><span class="cT"><b>إعلان مع صور مرسومة بالذكاء</b><small>صور إعلانية حقيقية لمنتجاتك. إذا ما احتاج رسم، يرجع لك الفرق</small></span><span class="cP"><span class="pcT" data-k="pictures">3 نقاط</span></span></div>
+          <div class="cRow"><span class="cIc" style="--c:var(--red)"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M3 6h18v13H3zM3 15l5-5 5 5 3-3 5 5M16 9.5h.01"/></svg></span><span class="cT"><b>صور بالذكاء الاصطناعي أو سينمائي</b><small>صورة مرسومة لكل مشهد</small></span><span class="cP"><span class="pcT" data-k="pictures">3 نقاط</span></span></div>
         </div>
         <ul class="ptsNotes">
           <li><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg><span>إذا فشل الفيديو قبل ما يتولّد الصوت أو الصور، <b>ترجع نقاطك تلقائيًا</b>.</span></li>
@@ -537,13 +538,13 @@
   // ── optional picture ──
   let IMG = null;
   const fileB64 = f => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result).split(',')[1]); r.onerror = rej; r.readAsDataURL(f); });
-  function setImg(f) { if (!f || !f.type.startsWith('image/')) return; IMG = f; $('sImgPrev').src = URL.createObjectURL(f); $('sImgPrev').classList.remove('hidden'); $('sImgDel').classList.remove('hidden'); $('sDropTxt').classList.add('hidden'); $('sKindRow').classList.remove('hidden'); }
+  function setImg(f) { if (!f || !f.type.startsWith('image/')) return; IMG = f; setTimeout(() => { costUI(); goLabel(); }, 0); $('sImgPrev').src = URL.createObjectURL(f); $('sImgPrev').classList.remove('hidden'); $('sImgDel').classList.remove('hidden'); $('sDropTxt').classList.add('hidden'); $('sKindRow').classList.remove('hidden'); }
   $('sDrop').addEventListener('click', e => { if (e.target.id !== 'sImgDel') $('sImg').click(); });
   $('sImg').addEventListener('change', e => setImg(e.target.files[0]));
   ['dragenter', 'dragover'].forEach(ev => $('sDrop').addEventListener(ev, e => { e.preventDefault(); $('sDrop').classList.add('over'); }));
   ['dragleave', 'drop'].forEach(ev => $('sDrop').addEventListener(ev, e => { e.preventDefault(); $('sDrop').classList.remove('over'); }));
   $('sDrop').addEventListener('drop', e => setImg(e.dataTransfer.files[0]));
-  $('sImgDel').onclick = e => { e.stopPropagation(); IMG = null; $('sImg').value = ''; $('sImgPrev').classList.add('hidden'); $('sImgDel').classList.add('hidden'); $('sDropTxt').classList.remove('hidden'); $('sKindRow').classList.add('hidden'); };
+  $('sImgDel').onclick = e => { e.stopPropagation(); IMG = null; setTimeout(() => { costUI(); goLabel(); }, 0); $('sImg').value = ''; $('sImgPrev').classList.add('hidden'); $('sImgDel').classList.add('hidden'); $('sDropTxt').classList.remove('hidden'); $('sKindRow').classList.add('hidden'); };
 
   // ── Gemini API ──
   const G = 'https://generativelanguage.googleapis.com/v1beta/';
@@ -739,7 +740,9 @@ Pictures (shown big and professional instead of an emoji, on "title" scenes and 
     const hide = (el, h) => { if (el) el.classList.toggle('hidden', h); };
     const cell = id => $(id).closest('div');
     hide(cell('sStyle'), occ || deck); hide(cell('sPlace'), occ || deck); hide(cell('sAud'), occ); hide(cell('sLen'), occ); hide(cell('sScenes'), occ); hide(cell('sText'), occ);
-    hide($('sDrop'), occ); hide($('sDrop').previousElementSibling, occ); if (occ) $('sKindRow').classList.add('hidden'); else if (IMG) $('sKindRow').classList.remove('hidden');
+    // occasions: the picture field becomes «صورة للمناسبة» (shown in its own framed scene), no image-kind question
+    $('sDrop').previousElementSibling.innerHTML = occ ? 'صورة للمناسبة <small>(اختياري: صورة الدعوة، العروسين، المولود، القاعة…)</small>' : 'صورة للفكرة <small>(اختياري: بطاقة نشاط، صورة منتج…)</small>';
+    if (occ) $('sKindRow').classList.add('hidden'); else if (IMG) $('sKindRow').classList.remove('hidden');
     $('promoBox').classList.toggle('hidden', occ || deck || $('sStyle').value !== 'promo');
     $('sIdeaLab').innerHTML = occ ? 'ملاحظة أو رسالة إضافية <small>(اختياري: مثل «الحفل نسائي» أو «نرجو عدم اصطحاب الأطفال»)</small>' : deck ? 'موضوع العرض ونقاطه <small>(اكتب الفكرة أو الصق النص أو النقاط)</small>' : 'عن ماذا الفيديو؟ <small>(فكرة، أو نص، أو وصف منتج)</small>';
     $('sIdea').placeholder = occ ? 'اختياري' : deck ? 'مثال: عرض عن أهمية الأمن السيبراني للموظفين: كلمات المرور، التصيد، النسخ الاحتياطي' : 'مثال: فيديو يشرح للأطفال ليش لازم نشرب ماء كل يوم، بأسلوب مرح';
@@ -818,6 +821,8 @@ Pictures (shown big and professional instead of an emoji, on "title" scenes and 
   $('pPicsList').addEventListener('click', e => { const b = e.target.closest('.x'); if (!b) return; PPICS.splice(+b.dataset.i, 1); ppRender(); ppSave(); });
   IDB.get('promo-pics').then(a => { if (Array.isArray(a) && !PPICS.length) { PPICS = a.filter(p => p && p.file).slice(0, 8).map(p => ({ file: p.file, tag: p.tag || '', cut: !!p.cut, url: URL.createObjectURL(p.file) })); ppRender(); } });
   try { if (store.get('studio-pdraw') === '0') $('pDraw').checked = false; if (store.get('studio-pnoemoji') === '0') $('pNoEmoji').checked = false; } catch (e) {}
+  try { if (store.get('studio-odraw') === '0') $('oDraw').checked = false; } catch (e) {}
+  $('oDraw').addEventListener('change', () => { store.set('studio-odraw', $('oDraw').checked ? '1' : '0'); costUI(); goLabel(); });
   $('pNoEmoji').addEventListener('change', () => store.set('studio-pnoemoji', $('pNoEmoji').checked ? '1' : '0'));
   $('pDraw').addEventListener('change', () => { store.set('studio-pdraw', $('pDraw').checked ? '1' : '0'); costUI(); goLabel(); });
   // a small JPEG for Gemini to look at
@@ -935,7 +940,7 @@ Pictures (shown big and professional instead of an emoji, on "title" scenes and 
 
   function formValues() { const o = {}; FIELDS.forEach(f => o[f] = $(f).value); return o; }
   const promoSpec = (P2 = PROJ) => ({ kind: 'promo', aspect: P2.aspect, brand: Object.assign({}, P2.brand, { logo: P2.logoIm || null }), title: P2.title, credit: P2.credit, textMode: P2.textMode, noEmoji: P2.noEmoji, scenes: withPics(P2.plan.scenes, P2.pimgs), voiceDur: P2.voiceDur, music: P2.music || {} });
-  const occSpec = (P2 = PROJ) => ({ kind: 'occasion', occ: P2.occ, sub: P2.sub, aspect: P2.aspect, look: P2.look || {}, credit: P2.credit, music: P2.music, title: P2.title,
+  const occSpec = (P2 = PROJ) => ({ kind: 'occasion', occ: P2.occ, sub: P2.sub, aspect: P2.aspect, look: P2.look || {}, credit: P2.credit, music: P2.music, title: P2.title, photo: P2.photoIm || null, logo: P2.logoIm || null,
     scenes: P2.plan.scenes.map(x => Object.assign({}, x, { say: x.narration || '' })), voice: VOICE ? VOICE.info : (P2.voiceInfo && null) });
   function buildVideo() {
     $('sPdf').classList.toggle('hidden', !(PROJ && PROJ.deck));
@@ -998,6 +1003,7 @@ Pictures (shown big and professional instead of an emoji, on "title" scenes and 
     for (let i = 0; i < PICBLOBS.length; i++) if (PICBLOBS[i]) await IDB.set('pic:' + PROJ.id + ':' + i, PICBLOBS[i]);
     if (IMG) await IDB.set('input:' + PROJ.id, IMG);
     if (PROJ.logoBlob) await IDB.set('logo:' + PROJ.id, PROJ.logoBlob);
+    if (PROJ.photoBlob) await IDB.set('photo:' + PROJ.id, PROJ.photoBlob);
     if (PROJ.kind === 'promo' && PROJ.pimgs) for (let i = 0; i < PROJ.pimgs.length; i++) await IDB.set('ppic:' + PROJ.id + ':' + i, PROJ.pimgs[i].blob);
     const list = hLoad().filter(x => x.id !== PROJ.id); list.unshift(Object.assign(meta(), { thumb: thumb() })); if (list.length > 60) list.length = 60;
     msg('hMsg', hStore(list) ? '' : '⚠️ ذاكرة المتصفح ممتلئة. احذف أعمال قديمة من السجل.', 'warn'); hRender();
@@ -1022,7 +1028,8 @@ Pictures (shown big and professional instead of an emoji, on "title" scenes and 
     for (let i = 0; i < x.plan.scenes.length; i++) { const b = await IDB.get('pic:' + x.id + ':' + i); if (b) { const im = new Image(); im.src = URL.createObjectURL(b); try { await im.decode(); PICS[i] = im; PICBLOBS[i] = b; } catch (e) {} } }
     const w = await IDB.get('voice:' + x.id);
     if (w && x.voiceInfo) { try { const ac = new (window.AudioContext || window.webkitAudioContext)(); const buf = await ac.decodeAudioData(await w.arrayBuffer()); ac.close(); VOICE = { buf, wav: w, info: x.voiceInfo, env: x.voiceEnv }; } catch (e) {} }
-    const inp = await IDB.get('input:' + x.id); if (inp) { setImg(inp); if (x.kind === 'cartoon') { const im = new Image(); im.src = URL.createObjectURL(inp); try { await im.decode(); CARDIMG = im; } catch (e) {} } }
+    const inp = await IDB.get('input:' + x.id); if (x.kind === 'occasion' && !inp) { const pb = await IDB.get('photo:' + x.id); if (pb) { const im = new Image(); im.src = URL.createObjectURL(pb); try { await im.decode(); PROJ.photoIm = im; PROJ.photoBlob = pb; } catch (e) {} } }
+    if (inp) { setImg(inp); if (x.kind === 'occasion') { const im = new Image(); im.src = URL.createObjectURL(inp); try { await im.decode(); PROJ.photoIm = im; } catch (e) {} } if (x.kind === 'cartoon') { const im = new Image(); im.src = URL.createObjectURL(inp); try { await im.decode(); CARDIMG = im; } catch (e) {} } }
     if (x.kind === 'cartoon' && !CARDIMG) return msg('sMsg', '⚠️ صورة البطاقة لهذا العمل غير محفوظة.', 'warn');
     await fontsReady; buildVideo();
     ['plan', 'voice', 'pics', 'video'].forEach(k => step(k, 'done', k === 'plan' ? 'من السجل' : '')); step('rec', '', 'اضغط «نزّل الفيديو»');
@@ -1032,14 +1039,19 @@ Pictures (shown big and professional instead of an emoji, on "title" scenes and 
     const b = e.target.closest('button'); if (!b) return;
     if (b.dataset.open) return openProject(b.dataset.open);
     if (b.dataset.del) { const x = hLoad().find(i => i.id === b.dataset.del); if (!x || !confirm(`تحذف «${(x.title && x.title.ar) || ''}» من السجل؟`)) return;
-      hStore(hLoad().filter(i => i.id !== x.id)); IDB.del('voice:' + x.id); IDB.del('input:' + x.id); IDB.del('logo:' + x.id); for (let i = 0; i < 8; i++) IDB.del('pic:' + x.id + ':' + i); for (let i = 0; i < (x.nPimg || 0); i++) IDB.del('ppic:' + x.id + ':' + i); hRender(); }
+      hStore(hLoad().filter(i => i.id !== x.id)); IDB.del('voice:' + x.id); IDB.del('input:' + x.id); IDB.del('logo:' + x.id); IDB.del('photo:' + x.id); for (let i = 0; i < 8; i++) IDB.del('pic:' + x.id + ':' + i); for (let i = 0; i < (x.nPimg || 0); i++) IDB.del('ppic:' + x.id + ':' + i); hRender(); }
   });
   // ── new idea: clear everything except the settings and the key ──
   function clearPreview() { eng = null; music = null; previewSize(); { const c2 = cv.getContext('2d'); c2.setTransform(1, 0, 0, 1, 0, 0); c2.globalAlpha = 1; c2.clearRect(0, 0, cv.width, cv.height); } $('sEmpty').classList.remove('hidden'); $('sTime').textContent = '0:00 / 0:00'; $('sSeek').value = 0; $('sScript').classList.add('hidden'); $('sWav').classList.add('hidden'); $('sReMusic').classList.add('hidden'); msg('sRecMsg', ''); ['plan', 'voice', 'pics', 'video', 'rec'].forEach(k => step(k, '')); }
   $('sClear').onclick = () => {
     if (($('sIdea').value.trim() || PROJ) && !confirm('تبدأ فكرة جديدة؟ (الفيديو الحالي محفوظ في السجل)')) return;
     stopPlay(); clearPreview(); PROJ = null; PLAN = null; VOICE = null; PICS = []; PICBLOBS = [];
-    $('sIdea').value = ''; if (IMG) $('sImgDel').click(); save(); reviewClear(); msg('sMsg', '✓ جاهز لفكرة جديدة.'); hRender(); $('sIdea').focus();
+    $('sIdea').value = ''; if (IMG) $('sImgDel').click();
+    // the previous idea's logo, product pictures and business details go too (the saved video keeps its own copy in the history)
+    if (LOGO || LOGOFILE) $('pLogoDel').click();
+    if (PPICS.length) { PPICS = []; ppRender(); ppSave(); }
+    ['pName', 'pUrl', 'pPhone'].forEach(id => { $(id).value = ''; }); $('pColor').value = '#ff6a13'; pSave();
+    save(); reviewClear(); msg('sMsg', '✓ جاهز لفكرة جديدة.'); hRender(); $('sIdea').focus();
   };
   hRender();
 
@@ -1058,7 +1070,7 @@ Pictures (shown big and professional instead of an emoji, on "title" scenes and 
     const c = costNow();
     el.innerHTML = `هذا الفيديو يكلّف <b>${c}</b> ${c === 1 ? 'نقطة' : 'نقاط'} · رصيدك <b>${ME.points}</b>`;
   }
-  const jobStyle = () => { if (isOcc() || isDeck()) return 'motion'; const v = $('sStyle').value; return v === 'pictures' || v === 'cinematic' ? 'pictures' : v === 'promo' && $('pDraw').checked ? 'promo_pics' : 'motion'; };
+  const jobStyle = () => { if (isOcc()) return $('oDraw').checked && !IMG ? 'promo_pics' : 'motion'; if (isDeck()) return 'motion'; const v = $('sStyle').value; return v === 'pictures' || v === 'cinematic' ? 'pictures' : v === 'promo' && $('pDraw').checked ? 'promo_pics' : 'motion'; };
   const costNow = () => SERVER ? (jobStyle() === 'motion' ? SERVER.points.motion : SERVER.points.pictures) : 0;
   const ptsTxt = n => n === 1 ? 'نقطة واحدة' : n === 2 ? 'نقطتين' : n >= 3 && n <= 10 ? n + ' نقاط' : n + ' نقطة';
   function goLabel() { const go = $('sGo'); if (go.disabled) return; const rv = $('sReview').checked && !isOcc() && (useProxy() ? ME : validKey(KEY())); if (rv) { go.innerHTML = '✨ راجع فكرتي <small>· مجانًا</small>'; return; } const c = useProxy() && ME ? costNow() : 0; go.innerHTML = '🎬 اصنع الفيديو' + (c ? ` <small>· ${ptsTxt(c)}</small>` : ''); }
@@ -1084,6 +1096,8 @@ Pictures (shown big and professional instead of an emoji, on "title" scenes and 
     $('kProxyNote').classList.toggle('hidden', !SERVER);
     setTimeout(goLabel, 0); $('adminCard').classList.toggle('hidden', !(ME && ME.admin)); $('pAdmin').classList.toggle('hidden', !(ME && ME.admin));
     if (SERVER) document.querySelectorAll('.pc').forEach(e => { const v = e.dataset.k === 'welcome' ? SERVER.welcome : SERVER.points[e.dataset.k]; if (v != null) e.textContent = v; });
+    if (SERVER) document.querySelectorAll('.pcT').forEach(e => { const v = SERVER.points[e.dataset.k]; if (v != null) e.textContent = ptsTxt(v); });
+    if (SERVER) packsRender();
     if (SERVER) { $('welcomeTxt').textContent = ptsTxt(SERVER.welcome) + ' هدية'; $('welcomeLi').classList.toggle('hidden', !SERVER.welcome); }
     costUI(); balUI();
     if (!SERVER) return box.classList.add('hidden');
@@ -1114,8 +1128,41 @@ Pictures (shown big and professional instead of an emoji, on "title" scenes and 
   }
   $('aUsers').addEventListener('click', e => { const tr = e.target.closest('tr[data-email]'); if (tr) { $('aEmail').value = tr.dataset.email; $('aPts').focus(); } });
   $('aRefresh').onclick = adminLoad;
+  // ── prices: point costs and packages come from the server (the admin changes them); everything shown is worked out from them ──
+  const DEF_PACKS = [{ points: 10, price: 19, note: 'مناسبة للتجربة' }, { points: 30, price: 49, note: 'للمسوّقين والمعلمين', best: true }, { points: 100, price: 149, note: 'للمدارس والشركات' }];
+  const CHECK_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M5 12l5 5L20 7"/></svg>', WA_SVG = '<svg class="waIc" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 1.8a8.2 8.2 0 1 1-4.3 15.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 0 1 12 3.8z"/><path fill="currentColor" d="M8.6 7.4c.2-.5.5-.5.8-.5h.6c.2 0 .4 0 .6.5l.8 1.9c.1.2.1.4 0 .6l-.5.7c-.1.2-.2.3 0 .6.5.8 1.1 1.5 1.9 2 .3.2.5.2.6 0l.7-.8c.2-.2.4-.2.6-.1l1.8.9c.3.1.4.3.4.5 0 .8-.6 1.9-1.6 2-.9.1-1.8 0-3.7-.9-2.1-1-3.5-3.1-3.8-3.5-.3-.4-.9-1.5-.9-2.6s.4-1.6.7-1.9z"/></svg>';
+  const ptsUnit = n => n === 1 ? 'نقطة' : n === 2 ? 'نقطتين' : n >= 3 && n <= 10 ? 'نقاط' : 'نقطة';
+  const sar = v => (Math.round(v * 100) / 100).toString();
+  function packsRender() {
+    const L = (SERVER && Array.isArray(SERVER.packages) && SERVER.packages.length ? SERVER.packages : DEF_PACKS), mo = SERVER ? SERVER.points.motion : 1, pi = SERVER ? SERVER.points.pictures : 3;
+    const base = L[0] && L[0].points ? L[0].price / L[0].points : 0;
+    $('pkList').style.setProperty('--n', Math.min(4, L.length));
+    $('pkList').innerHTML = L.map(x => { const per = x.points ? x.price / x.points : 0, save = base && per < base ? Math.round((1 - per / base) * 100) : 0;
+      return `<div class="pk${x.best ? ' best' : ''}">${x.best ? '<span class="pkTag">الأكثر طلبًا</span>' : ''}<div class="pkTop"><span class="pkN">${x.points}</span><span class="pkU">${ptsUnit(x.points)}</span></div><div class="pkPrice">${sar(x.price)} <small>ريال</small></div><div class="pkPer">${per.toFixed(2)} ريال للنقطة${save ? ` · وفّر ${save}%` : ''}</div>
+        <ul><li>${CHECK_SVG}${Math.floor(x.points / mo)} فيديو موشن أو إعلان</li><li>${CHECK_SVG}أو ${Math.floor(x.points / pi)} فيديو بالصور</li>${x.note ? `<li>${CHECK_SVG}${esc(x.note)}</li>` : ''}</ul>
+        <button type="button" class="waBtn" data-pts="${x.points}" data-price="${sar(x.price)}">${WA_SVG}اطلبها على واتساب</button></div>`; }).join('');
+  }
+  packsRender();
+  // admin: edit the prices
+  function aPacksRender(L) {
+    $('aPacks').innerHTML = L.map((x, i) => `<div class="aPack" data-i="${i}"><input type="number" data-f="points" min="1" value="${x.points}" placeholder="النقاط" style="direction:ltr"><input type="number" data-f="price" min="0" step="0.01" value="${x.price}" placeholder="السعر" style="direction:ltr"><input type="text" data-f="note" value="${esc(x.note || '')}" placeholder="ملاحظة: للمدارس…" maxlength="40"><label><input type="radio" name="aBest" data-f="best"${x.best ? ' checked' : ''}> الأكثر طلبًا</label><button type="button" class="ghost small" data-del="${i}" title="احذف الباقة">✕</button></div>`).join('');
+    $('aPackAdd').disabled = L.length >= 4;
+  }
+  const aPacksRead = () => [...document.querySelectorAll('#aPacks .aPack')].map(r => ({ points: +r.querySelector('[data-f=points]').value, price: +r.querySelector('[data-f=price]').value, note: r.querySelector('[data-f=note]').value.trim(), best: r.querySelector('[data-f=best]').checked }));
+  $('aPackAdd').onclick = () => { const L = aPacksRead(); if (L.length < 4) { L.push({ points: 50, price: 79, note: '' }); aPacksRender(L); } };
+  $('aPacks').addEventListener('click', e => { const d = e.target.closest('[data-del]'); if (!d) return; const L = aPacksRead(); if (L.length <= 1) return; L.splice(+d.dataset.del, 1); aPacksRender(L); });
+  function pricesLoad(r) { $('aPMotion').value = r.points.motion; $('aPPics').value = r.points.pictures; aPacksRender(r.packages || DEF_PACKS); }
+  $('aPricesSave').onclick = async () => {
+    const mo = parseInt($('aPMotion').value, 10), pi = parseInt($('aPPics').value, 10), L = aPacksRead();
+    if (!(mo >= 1 && mo <= 20) || !(pi >= 1 && pi <= 50)) return msg('aMsg', '⚠️ نقاط الفيديو: من 1 إلى 20 للموشن، ومن 1 إلى 50 للصور.', 'warn');
+    if (L.some(x => !(x.points >= 1) || !(x.price >= 0))) return msg('aMsg', '⚠️ اكتب نقاط وسعر كل باقة.', 'warn');
+    const base = L[0].price / L[0].points;
+    if (!(await ptsAsk(`<b>تكلفة الفيديو:</b> موشن وإعلان ${ptsTxt(mo)} · بالصور ${ptsTxt(pi)}<br><b>الباقات:</b><br>${L.map(x => `${x.points} ${ptsUnit(x.points)} بـ ${sar(x.price)} ريال (${(x.price / x.points).toFixed(2)} للنقطة${x.price / x.points < base ? ' · وفّر ' + Math.round((1 - x.price / x.points / base) * 100) + '%' : ''})${x.best ? ' ⭐' : ''}`).join('<br>')}<br>الأسعار الجديدة تمشي على الفيديوهات الجاية بس.`))) return msg('aMsg', 'انلغى، ما تغيّر شي.');
+    try { const r = await api('admin/settings', { points: { motion: mo, pictures: pi }, packages: L }); Object.assign(SERVER, { points: r.points, packages: r.packages, welcome: r.welcome }); pricesLoad(r); acctRender(); packsRender(); msg('aMsg', '✓ انحفظت الأسعار، وصفحة «النقاط والأسعار» تحدّثت.'); } catch (e) { msg('aMsg', '⚠️ ' + esc(e.message), 'warn'); }
+  };
+
   // the welcome gift for new accounts
-  async function welcomeLoad() { try { const r = await api('admin/settings'); $('aWelcome').value = r.welcome; } catch (e) {} }
+  async function welcomeLoad() { try { const r = await api('admin/settings'); $('aWelcome').value = r.welcome; pricesLoad(r); } catch (e) {} }
   $('aWelcomeSave').onclick = async () => {
     const n = parseInt($('aWelcome').value, 10); if (isNaN(n) || n < 0 || n > 100) return msg('aMsg', '⚠️ اكتب رقم من 0 إلى 100.', 'warn');
     if (!(await ptsAsk(`نقاط الهدية لكل حساب جديد تصير <b>${n}</b>${SERVER && SERVER.welcome != null ? ` بدل <b>${SERVER.welcome}</b>` : ''}.`))) return msg('aMsg', 'انلغى، ما تغيّر شي.');
@@ -1132,7 +1179,7 @@ Pictures (shown big and professional instead of an emoji, on "title" scenes and 
   $('laNo').onclick = closeAsk;
   $('loginAsk').addEventListener('click', e => { if (e.target === $('loginAsk')) closeAsk(); });
   $('laGo').onclick = () => { closeAsk(); window.scrollTo({ top: 0, behavior: 'smooth' }); const a = $('acct'); a.classList.remove('pulse'); void a.offsetWidth; a.classList.add('pulse'); };
-  document.querySelectorAll('.waBtn').forEach(b => b.onclick = () => {
+  document.addEventListener('click', e => { const b = e.target.closest('.waBtn'); if (!b) return;
     const pk = b.dataset.pts ? `باقة ${b.dataset.pts} نقطة (${b.dataset.price} ريال)` : 'نقاط';
     if (SERVER && !ME) return $('loginAsk').classList.remove('hidden');
     const text = `السلام عليكم، أبغى أشحن ${pk} في الاستوديو الآلي.${ME ? '\nإيميل حسابي: ' + ME.email : ''}\nحوّلت المبلغ، وهذا إيصال التحويل:`;
@@ -1348,6 +1395,23 @@ Reply with ONLY a JSON object: {"message":["",""],"close":"","narration":[""]}
     return { buf, wav: wavBlob(pcm, rate), info: { duration: total / rate, marks }, env: env.map(v => +(v / mx).toFixed(2)) };
   }
   const OCC_MUSIC = { wedding: { mood: 'inspiring', genre: 'arabic' }, invite: { mood: 'calm', genre: 'cinematic' }, baby: { mood: 'calm', genre: 'pop' }, religious: null };
+  // 🎨 occasions without a picture: one tasteful, realistic close-up drawn by AI (never a full face)
+  function occArtPrompt(ty) {
+    const pick1 = a => a[Math.floor(Math.random() * a.length)], g = $('oGender').value, col = g === 'girl' ? 'soft blush pink and cream' : g === 'boy' ? 'soft powder blue and cream' : 'soft cream and sage';
+    const sub = $('oSub').value, ev = occVal('oEvent');
+    const idea = ty === 'baby' ? pick1([`a newborn baby's tiny feet resting in a parent's hands`, `a newborn's tiny hand gently holding a parent's finger`, `a sleeping newborn seen from the side so only the tiny nose, lips and cheek show, the eyes and the rest of the face out of frame, wrapped in a knitted blanket`, `a newborn's tiny feet peeking out of a knitted blanket next to a small plush toy`]) + `, colour palette ${col}`
+      : ty === 'wedding' ? pick1(['the bride\'s hands with delicate henna holding a bouquet of white roses, the groom\'s hand with a wedding ring resting on hers', 'two wedding rings on an open velvet box among white roses and soft fairy lights', 'the bride\'s hand with henna and a ring placed over the groom\'s hand, elegant traditional sleeve and gold bracelets', 'an elegant wedding table with white flowers, gold candles and Arabic coffee cups, soft bokeh lights'])
+      : ty === 'religious' ? ({ ramadan: 'a glowing Ramadan lantern beside dates and a cup of Arabic coffee, a mosque silhouette softly blurred behind', fitr: 'Eid sweets and Arabic coffee on an elegant tray with a glowing lantern and gift boxes', adha: 'an elegant Eid al-Adha table with Arabic coffee, dates and a glowing lantern', arafa: 'the plain of Arafat at golden sunrise, soft and serene, seen from afar', hijri: 'a thin crescent moon over a softly lit mosque at dusk', jumuah: 'an open Quran on a carved wooden stand beside prayer beads, soft morning light' }[sub] || 'a glowing lantern and prayer beads on an elegant table, soft warm light')
+      : `an elegant realistic still life that celebrates ${ev || 'a happy occasion'}: its symbolic objects, flowers and soft festive lights, no people`;
+    return `${idea}. Hyper-realistic, tasteful fine-art photograph, macro close-up with a shallow depth of field, soft natural window light, warm elegant mood, culturally appropriate for a Gulf / Saudi audience, modest. Never show a full face: only hands, feet, or at most a small part of a face, the eyes and the rest out of frame. No text, no letters, no logo, no watermark.`;
+  }
+  async function occArt(ty) {
+    if (IMG || !$('oDraw').checked || (!useProxy() && !validKey(KEY()))) return null;
+    step('pics', 'doing', 'أرسم صورة المناسبة…');
+    try { const im = await pick('image'); if (!im) throw new Error('ما لقيت موديل صور');
+      const r = await drawScene(im, occArtPrompt(ty), [], $('oAspect').value === '9:16' ? '3:4' : '4:3'); step('pics', 'done', 'صورة فنية'); return r;
+    } catch (e) { step('pics', 'fail', 'بدون صورة'); msg('sMsg', `ℹ️ ما قدرت أرسم صورة المناسبة (${esc(e.message)})، فكملت بدونها.`); return null; }
+  }
   async function runOccasion(o, gender, voiceName) {
     o = Object.assign({}, o, { idea: $('sIdea').value.trim() });
     const ty = $('sType').value; let scenes = occTemplate(ty, o.idea), offline = true, narr = [];
@@ -1364,18 +1428,23 @@ Reply with ONLY a JSON object: {"message":["",""],"close":"","narration":[""]}
       if (Array.isArray(w.narration)) narr = w.narration.map((v, i) => scenes[i] && scenes[i].type === 'verse' ? '' : clean(v));
       offline = false;
     } catch (e) { msg('sMsg', `ℹ️ ${e.message === 'بدون مفتاح' ? 'ما فيه مفتاح Gemini' : 'ما قدرت أوصل لـ Gemini'}، فسويت ${$('sType').selectedOptions[0].textContent.replace(/^\S+\s/, '')} من قالب جاهز.`); }
+    // the client's picture (invitation card, the couple, the baby…) gets its own framed scene, after the names or the opening
+    let photoIm = null, photoBlob = null;
+    if (IMG) { try { const im = new Image(); im.src = URL.createObjectURL(IMG); await im.decode(); photoIm = im; } catch (e) {} }
+    else { const art = await occArt(ty); if (art) { photoIm = art.im; photoBlob = art.blob; } }
+    if (photoIm) { let at = scenes.findIndex(x => x.type === 'names'); at = at >= 0 ? at + 1 : 1; scenes.splice(at, 0, { type: 'photo', title: '' }); if (narr.length >= at) narr.splice(at, 0, ''); }
     step('plan', 'done', `${scenes.length} مشاهد`);
     $('sScript').classList.remove('hidden');
-    const TY = { open: '✨ الافتتاح', names: '💫 الأسماء', message: '💌 الرسالة', verse: '📖 آية أو دعاء', details: '📅 الموعد', close: '🎉 الختام' };
+    const TY = { photo: '🖼️ الصورة', open: '✨ الافتتاح', names: '💫 الأسماء', message: '💌 الرسالة', verse: '📖 آية أو دعاء', details: '📅 الموعد', close: '🎉 الختام' };
     $('sSceneList').innerHTML = scenes.map((x, i) => `<div class="scene"><b>${i + 1}. ${TY[x.type]} · ${esc(x.title || (x.names || []).join(' و ') || (x.lines || [])[0] || '')}</b>${esc(narr[i] || '')}</div>`).join('');
-    VOICE = null; step('pics', 'done', 'بدون صور');
-    if (gender !== 'none' && narr.some(Boolean)) { step('voice', 'doing', '…'); try { VOICE = await voiceFor(scenes.map((_, i) => narr[i] || ''), voiceName, 'warm, elegant, celebratory', scenes.map(x => ({ open: 4.6, names: 5, message: 4, verse: 7, details: 2.6 + 1.1 * (x.items || []).length, close: 5.5 }[x.type] || 4))); step('voice', 'done', Math.round(VOICE.info.duration) + ' ثانية'); $('sWav').classList.remove('hidden'); } catch (e) { step('voice', 'fail', 'بدون صوت'); } }
+    VOICE = null; if (!photoIm) step('pics', 'done', 'بدون صور');
+    if (gender !== 'none' && narr.some(Boolean)) { step('voice', 'doing', '…'); try { VOICE = await voiceFor(scenes.map((_, i) => narr[i] || ''), voiceName, 'warm, elegant, celebratory', scenes.map(x => ({ open: 4.6, names: 5, message: 4, verse: 7, details: 2.6 + 1.1 * (x.items || []).length, photo: 5.5, close: 5.5 }[x.type] || 4))); step('voice', 'done', Math.round(VOICE.info.duration) + ' ثانية'); $('sWav').classList.remove('hidden'); } catch (e) { step('voice', 'fail', 'بدون صوت'); } }
     else step('voice', 'done', gender === 'none' ? 'موسيقى فقط' : 'بدون صوت');
     step('video', 'doing'); await fontsReady; await Promise.all(['700 60px "Aref Ruqaa"', '700 60px Amiri'].map(f => document.fonts.load(f, 'ابت'))).catch(() => {});
     const mv = $('sMusic').value, seed = (Date.now() ^ Math.floor(Math.random() * 1e9)) >>> 0;
     const music = mv === 'off' ? null : mv === 'auto' ? (OCC_MUSIC[ty] ? Object.assign({ seed }, OCC_MUSIC[ty]) : null) : { mood: mv, seed };
     const titleTxt = (scenes[0].title || '') + (ty === 'wedding' && occVal('oGroom') ? ' — ' + occVal('oGroom') : ty === 'baby' && occVal('oBaby') ? ' — ' + occVal('oBaby') : '');
-    PROJ = { id: 's' + Date.now().toString(36), created: Date.now(), kind: 'occasion', occ: ty, sub: ty === 'baby' ? $('oGender').value : ty === 'religious' ? $('oSub').value : '', aspect: $('oAspect').value,
+    PROJ = { id: 's' + Date.now().toString(36), created: Date.now(), kind: 'occasion', photoIm, photoBlob, logoIm: LOGO ? LOGO.im : null, logoBlob: LOGO ? LOGO.blob : null, occ: ty, sub: ty === 'baby' ? $('oGender').value : ty === 'religious' ? $('oSub').value : '', aspect: $('oAspect').value,
       title: { ar: titleTxt, en: '' }, plan: { scenes: scenes.map((x, i) => Object.assign({}, x, { narration: narr[i] || '' })) }, credit: $('sCredit').value.trim(), music,
       voiceInfo: VOICE ? VOICE.info : null, settings: Object.assign(formValues(), { idea: $('sIdea').value }), look: { seed: (Date.now() ^ Math.floor(Math.random() * 1e9)) >>> 0 } };
     buildVideo(); step('video', 'done', fmt(eng.DUR));
