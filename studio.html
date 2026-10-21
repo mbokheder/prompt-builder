@@ -212,6 +212,11 @@
   .costT td:first-child{white-space:nowrap;padding-left:14px}
   .go small{font-size:15px;font-weight:700;opacity:.9}
   .promoBox{margin-top:14px;border:2px solid var(--orange);border-radius:18px;padding:10px 14px 14px;background:rgba(255,122,26,.06)}
+  .tplGrid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin-top:6px}
+  .tplCard{border:2px solid var(--line);border-radius:14px;padding:4px;background:var(--field);cursor:pointer;text-align:center;font-size:12px;font-weight:700}
+  .tplCard.on{border-color:var(--orange);box-shadow:0 0 0 3px rgba(255,122,26,.2)}
+  .tplCard canvas{width:100%;aspect-ratio:9/16;border-radius:10px;display:block;margin-bottom:4px}
+  @media (max-width:640px){.tplGrid{grid-template-columns:repeat(3,minmax(0,1fr))}}
   .chk{font-weight:400;display:flex;gap:8px;align-items:center;margin-top:8px}
   .rv{margin-top:16px;border:2px solid var(--purple);border-radius:20px;padding:16px;background:color-mix(in srgb,var(--purple) 6%,var(--card))}
   .rv h3{margin:0 0 4px;font-size:19px;font-weight:900}
@@ -281,7 +286,7 @@
         <div class="row" data-occ="invite wedding baby events"><div><label for="oPlace">المكان <small>(اختياري)</small></label><input type="text" id="oPlace" placeholder="مثال: قاعة الياسمين - الرياض"></div><div><label for="oPhone">للتأكيد أو التواصل <small>(اختياري)</small></label><input type="text" id="oPhone" style="direction:ltr" placeholder="05xxxxxxxx"></div></div>
         <div data-occ="baby"><label for="oWeight">الوزن <small>(اختياري)</small></label><input type="text" id="oWeight" placeholder="مثال: ٣.٢ كجم"></div>
         <label class="chk" style="align-items:flex-start"><input type="checkbox" id="oDraw" checked style="margin-top:4px"> <span>🎬 خلفيات سينمائية بالذكاء الاصطناعي: صور واقعية للمناسبة تتغير مع كل مشهد وتتحرك ببطء، بدون إظهار الوجوه <small>(<span class="pcT" data-k="pictures">3 نقاط</span> بدل <span class="pcT" data-k="motion">نقطة واحدة</span>، ويرجع الفرق إذا ما انرسمت. ما تنرسم إذا رفعت «خلفية خاصة»)</small></span></label>
-        <div data-occ="wedding events-milka events-khutba"><label for="oTpl">القالب</label><select id="oTpl"><option value="">✨ تلقائي</option><option value="silver">💎 فخامة فضية (خواتم وماس)</option><option value="roses">🌹 ورد أحمر وشموع</option><option value="watercolor">🌸 بطاقة بزهور مائية</option><option value="night">🌙 ليلي ذهبي</option><option value="lineart">🤍 رسم خطي للعروسين</option></select></div>
+        <div data-occ="wedding events-milka events-khutba"><label>القالب <small>(معاينة مجانية: اضغط على القالب اللي يعجبك)</small></label><select id="oTpl" hidden><option value="">✨ تلقائي</option><option value="silver">💎 فخامة فضية (خواتم وماس)</option><option value="roses">🌹 ورد أحمر وشموع</option><option value="watercolor">🌸 بطاقة بزهور مائية</option><option value="night">🌙 ليلي ذهبي</option><option value="lineart">🤍 رسم خطي للعروسين</option></select><div id="tplGrid" class="tplGrid"></div><p id="tplNote" class="where" style="margin:6px 0 0;font-size:13px"></p></div>
         <label for="oLook">الشكل</label><select id="oLook"><option value="modern">✨ عصري سينمائي: الصورة تملأ الشاشة والكتابة تحت</option><option value="classic">🏛️ رسمي كلاسيكي: إطار مزخرف والكتابة في النص</option></select>
         <label>خلفية خاصة <small>(اختياري: صورة تصير خلفية الفيديو كامل بدل خلفية الثيم، والكتابة تتلوّن على حسبها)</small></label>
         <div id="oBgDrop" class="drop" tabindex="0" role="button"><input type="file" id="oBg" accept="image/*" hidden><div id="oBgTxt">🖼️ اسحب صورة الخلفية أو <u>اضغط للاختيار</u></div><img id="oBgPrev" class="hidden" alt=""><button type="button" id="oBgDel" class="ghost small hidden">إزالة الخلفية</button></div>
@@ -759,11 +764,30 @@ Pictures (shown big and professional instead of an emoji, on "title" scenes and 
   }
   const isOcc = () => OCC.includes($('sType').value), isDeck = () => $('sType').value === 'slides';
   const OCC_HINT = { events: '🎊 مناسبات: ملكة، خطبة، تقدّم رسمي، منزل جديد، تخرج، سلامة، عودة من الحج، نجاح. اختر المناسبة، والحقول والنصوص والألوان تتغير معها. الآيات والأدعية ثابتة ومراجَعة.', invite: '💌 دعوة أنيقة بإطار ذهبي وحركة هادئة: العنوان، صاحب المناسبة، الموعد والمكان، وختام فيه رقم التأكيد. مناسبة لحالة الواتساب.', wedding: '💍 دعوة زواج: البسملة، آية المودة والرحمة، الأسماء بخط الرقعة مع الخاتمين، الموعد والمكان، ودعاء «بارك الله لهما».', baby: '👶 بشارة مولود بألوان ناعمة وبالونات: الاسم، تاريخ الولادة، دعاء المولود، و«شاركونا فرحتنا».', religious: '🌙 تهنئة دينية بالهلال والفوانيس والمساجد، مع آية أو دعاء ثابت ومراجَع (ما يكتبه الذكاء الاصطناعي)، ورسالة تهنئة باسمك.' };
+  // ── free live previews of the wedding templates (drawn here, no Gemini, no points) ──
+  const TPL_LIST = [['', '✨ تلقائي', 'ألوان المناسبة وصور واقعية لها'], ['silver', '💎 فضية', 'صور خواتم وماس ولآلئ بإضاءة فاتحة'], ['roses', '🌹 ورد وشموع', 'صور ورد أحمر وشموع وعلبة مجوهرات'], ['watercolor', '🌸 زهور مائية', 'رسومات زهور مائية ناعمة بالأزرق والوردي'], ['night', '🌙 ليلي ذهبي', 'صور فوانيس وأضواء ذهبية ليلية'], ['lineart', '🤍 رسم خطي', 'رسم خطي أسود للعروسين بدون ملامح']];
+  let TPLV = null;
+  function tplPreviews() {
+    if (TPLV || !window.VideoEngine) return;
+    $('tplGrid').innerHTML = TPL_LIST.map(([k, n]) => `<div class="tplCard" data-tpl="${k}"><canvas width="135" height="240"></canvas>${n}</div>`).join('');
+    TPLV = [...$('tplGrid').querySelectorAll('.tplCard')].map(c => { const k = c.dataset.tpl, n1 = 'زكريا', n2 = 'حنان';
+      const e = VideoEngine.create(c.querySelector('canvas'), { kind: 'occasion', occ: 'events', sub: 'khutba', tpl: k, aspect: '9:16', frame: 'modern', font: k ? 0 : 2, look: { seed: 3 }, credit: '',
+        scenes: [{ type: 'open', top: 'بكل الحب والفرح', title: 'خطوبة' }, { type: 'names', label: 'يسعدنا إعلان خطوبة', names: [n1, n2] }] });
+      return { k, e, c }; });
+    $('tplGrid').addEventListener('click', ev => { const c = ev.target.closest('.tplCard'); if (!c) return; $('oTpl').value = c.dataset.tpl; $('oTpl').dispatchEvent(new Event('change')); tplMark(); });
+    let t0 = performance.now(), last = 0;
+    const loop = now => { if (!TPLV) return; requestAnimationFrame(loop); if (now - last < 66 || $('tplGrid').offsetParent === null) return; last = now;
+      TPLV.forEach(v => { const d = v.e.DUR, t = ((now - t0) / 1000) % (d + 1); v.e.render(Math.min(d, t)); }); };
+    requestAnimationFrame(loop);
+    loadOccFonts(0); loadOccFonts(2);
+  }
+  function tplMark() { if (!TPLV) return; TPLV.forEach(v => v.c.classList.toggle('on', v.k === $('oTpl').value)); const it = TPL_LIST.find(x => x[0] === $('oTpl').value); $('tplNote').textContent = it ? `${it[1]}: ${it[2]}. الصور الحقيقية تنرسم بالذكاء وقت الصنع.` : ''; }
   function typeUI() {
     const ty = $('sType').value, occ = isOcc(), deck = isDeck(), sub = $('oSub').value;
     $('occBox').classList.toggle('hidden', !occ);
     document.querySelectorAll('[data-occ]').forEach(e => { const k = e.dataset.occ.split(' '); e.classList.toggle('hidden', !(k.includes(ty) || (ty === 'religious' && k.includes('religious-' + sub)) || (ty === 'events' && k.includes('events-' + $('oEvt').value)))); });
     evtUI();
+    if (ty === 'wedding' || (ty === 'events' && ['milka', 'khutba'].includes($('oEvt').value))) setTimeout(() => { tplPreviews(); tplMark(); }, 0);
     if (occ) $('occHint').textContent = OCC_HINT[ty];
     const hide = (el, h) => { if (el) el.classList.toggle('hidden', h); };
     const cell = id => $(id).closest('div');
