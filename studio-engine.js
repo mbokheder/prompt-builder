@@ -2696,6 +2696,17 @@ function synthMusic(T, SR = 32000, mo = {}) {
 // spec.bg = the client's own background picture (fills the screen under a soft veil; the text colour follows how light it is)
 const OTYPES = ['open', 'names', 'message', 'verse', 'details', 'photo', 'close'];
 const OFAM = { deco: "'Aref Ruqaa', 'Amiri', serif", verse: "'Amiri', serif", body: "'Cairo', Tahoma, sans-serif" };
+// font pairs for occasions (title / text); the page picks one per video (spec.font) and loads it first
+const OFONTS = [
+  { deco: "'Aref Ruqaa', 'Amiri', serif", body: "'Cairo', Tahoma, sans-serif" },
+  { deco: "'Reem Kufi', 'Cairo', sans-serif", body: "'Tajawal', 'Cairo', sans-serif" },
+  { deco: "'El Messiri', 'Cairo', serif", body: "'El Messiri', 'Cairo', sans-serif" },
+  { deco: "'Rakkas', 'Amiri', serif", body: "'Cairo', Tahoma, sans-serif" },
+  { deco: "'Lalezar', 'Cairo', sans-serif", body: "'Tajawal', 'Cairo', sans-serif" },
+  { deco: "'Amiri', serif", body: "'Markazi Text', 'Amiri', serif" },
+  { deco: "'Marhey', 'Cairo', sans-serif", body: "'Tajawal', 'Cairo', sans-serif" },
+  { deco: "'Katibeh', 'Aref Ruqaa', serif", body: "'Cairo', Tahoma, sans-serif" },
+];
 const OTHEMES = {
   wedding: [
     { bg: ['#fbf6ee', '#efe1c8'], ink: '#4a3426', acc: '#b8893b', acc2: '#d38b95', dark: false, deco: 'petals' },
@@ -2735,7 +2746,7 @@ function normOccasion(s) {
     source: str(x.source), quran: !!x.quran, say: str(x.say),
   })).filter(x => x.type === 'photo' ? !!s.photo : x.title || x.top || x.names.length || x.lines.length || x.items.length);
   if (!scenes.length) scenes.push({ type: 'open', top: '', title: 'دعوة', sub: '', label: '', names: [], lines: [], items: [], source: '', quran: false, say: '' });
-  return { kind: 'occasion', occ, sub: str(s.sub), vertical: s.aspect === '9:16', look: s.look || {}, credit: str(s.credit), music: s.music || null, scenes, title: pair(s.title), photo: s.photo || null, logo: s.logo || null, bg: s.bg || null, bgs: (Array.isArray(s.bgs) ? s.bgs : []).filter(im => im && (im.naturalWidth || im.width)), classic: s.frame === 'classic',
+  return { kind: 'occasion', occ, sub: str(s.sub), vertical: s.aspect === '9:16', look: s.look || {}, credit: str(s.credit), music: s.music || null, scenes, title: pair(s.title), photo: s.photo || null, logo: s.logo || null, bg: s.bg || null, bgs: (Array.isArray(s.bgs) ? s.bgs : []).filter(im => im && (im.naturalWidth || im.width)), classic: s.frame === 'classic', font: Math.max(0, Math.min(OFONTS.length - 1, s.font | 0)),
     voice: s.voice && isFinite(s.voice.duration) ? s.voice : null };
 }
 function planOccasion(X) {
@@ -2761,7 +2772,7 @@ function planOccasion(X) {
   return T;
 }
 function createOccasion(canvas, spec) {
-  const X = normOccasion(spec), T = planOccasion(X), ctx = canvas.getContext('2d');
+  const X = normOccasion(spec), T = planOccasion(X), ctx = canvas.getContext('2d'), FAM = { deco: OFONTS[X.font].deco, body: OFONTS[X.font].body, verse: OFAM.verse };
   const W = X.vertical ? 1080 : 1920, H = X.vertical ? 1920 : 1080, CX = W / 2, V = X.vertical;
   const lr = rng(((X.look.seed || 1) >>> 0) || 1);
   const key = X.occ === 'baby' ? 'baby_' + (['boy', 'girl'].includes(X.sub) ? X.sub : 'neutral') : X.occ === 'religious' ? (OTHEMES[X.sub] ? X.sub : 'religious') : X.occ === 'events' ? (OTHEMES['ev_' + X.sub] ? 'ev_' + X.sub : 'invite') : X.occ;
@@ -2773,6 +2784,10 @@ function createOccasion(canvas, spec) {
   const BGS = !BGI ? X.bgs : [];
   if (BGS.length) TH = Object.assign({}, TH, { dark: true, ink: '#ffffff', mosque: 0, moon: 0, hills: 0, deco: 'sparkle' });
   const FR = X.look.seed ? Math.floor(lr() * 3) : 0;                       // frame style
+  const PICS = !X.classic && (BGS.length || BGI);
+  const TC = PICS ? [TH.ink, TH.acc, TH.acc2, TH.ink][Math.floor(lr() * 4)] : TH.ink;
+  const POS = T.scenes.map((x, i) => !PICS ? 'mid' : i === 0 ? (lr() < .5 ? 'mid' : 'low') : x.type === 'details' ? (lr() < .7 ? 'low' : 'mid') : ['low', 'high', 'mid', 'low'][Math.floor(lr() * 4)]);
+  const SZ = T.scenes.map(() => PICS ? .94 + lr() * .14 : 1);
   const RINGS = X.occ === 'wedding' || (X.occ === 'events' && ['milka', 'khutba'].includes(X.sub));
   // ── particles ──
   const N = (n, f) => Array.from({ length: n }, f);
@@ -2847,7 +2862,9 @@ function createOccasion(canvas, spec) {
       if (prev && f < 1) { photoBg(BGS[prev.n % BGS.length], kOf(prev), prev.n % 2 ? -1 : 1); }
       ctx.save(); ctx.globalAlpha = f; photoBg(BGS[cur.n % BGS.length], kOf(cur), cur.n % 2 ? -1 : 1); ctx.restore();
       if (X.classic) { const vg = ctx.createRadialGradient(CX, H / 2, Math.min(W, H) * .25, CX, H / 2, Math.max(W, H) * .75); vg.addColorStop(0, 'rgba(0,0,0,.38)'); vg.addColorStop(1, 'rgba(0,0,0,.78)'); ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H); }
-      else { const lg = ctx.createLinearGradient(0, 0, 0, H); lg.addColorStop(0, 'rgba(0,0,0,.22)'); lg.addColorStop(.38, 'rgba(0,0,0,0)'); lg.addColorStop(.6, 'rgba(0,0,0,.35)'); lg.addColorStop(1, 'rgba(0,0,0,.86)'); ctx.fillStyle = lg; ctx.fillRect(0, 0, W, H); }
+      else { const veil = (pos, a) => { const lg = ctx.createLinearGradient(0, 0, 0, H), st = pos === 'low' ? [[0, .22], [.38, 0], [.6, .35], [1, .86]] : pos === 'high' ? [[0, .86], [.4, .35], [.62, 0], [1, .3]] : [[0, .3], [.25, .5], [.5, .62], [.75, .5], [1, .4]];
+          st.forEach(([o, v]) => lg.addColorStop(o, `rgba(0,0,0,${v})`)); ctx.save(); ctx.globalAlpha = a; ctx.fillStyle = lg; ctx.fillRect(0, 0, W, H); ctx.restore(); };
+        if (prev && f < 1) veil(POS[prev.n], 1 - f); veil(POS[cur.n], f); }
       depth(t); SPK.forEach(x => { const a = Math.max(0, Math.sin(t * x.f + x.ph)); if (a > .05) star4(x.x, x.y, x.s * (.6 + a * .6), TH.acc, a * .8); });
       return;
     }
@@ -2904,33 +2921,33 @@ function createOccasion(canvas, spec) {
   // ── scene content ──
   const CW = V ? 860 : 1360;
   // a band of light that passes over a big title once it is in
-  function shine(lt, a, w) { const p = P(lt, a + .9, a + 2.3); if (p <= 0 || p >= 1) return TH.ink; const x = lerp(-w * .8, w * .8, E.io(p)), g = ctx.createLinearGradient(x - 170, -80, x + 170, 80);
-    g.addColorStop(0, TH.ink); g.addColorStop(.5, TH.dark ? '#fff4c8' : TH.acc); g.addColorStop(1, TH.ink); return g; }
+  function shine(lt, a, w) { const p = P(lt, a + .9, a + 2.3); if (p <= 0 || p >= 1) return TC; const x = lerp(-w * .8, w * .8, E.io(p)), g = ctx.createLinearGradient(x - 170, -80, x + 170, 80);
+    g.addColorStop(0, TC); g.addColorStop(.5, TH.dark ? '#fff4c8' : TH.acc); g.addColorStop(1, TC); return g; }
   function block(rows, cy, alpha) {      // rows: [{h, draw(y)}] centred vertically around cy
     const tot = rows.reduce((a, r) => a + r.h, 0); let y = cy - tot / 2;
     rows.forEach(r => { ctx.save(); ctx.globalAlpha = alpha * (r.k == null ? 1 : clamp(r.k)); r.draw(y + r.h / 2 + (r.k == null ? 0 : (1 - E.out(clamp(r.k))) * 30)); ctx.restore(); y += r.h; });
   }
   function content(s, t, alpha) {
-    const low = !X.classic && (BGS.length || BGI) && s.type !== 'photo';
-    const lt = t - s.a, area = low ? { y0: H * (V ? .5 : .42), y1: H - (V ? 170 : 70) } : { y0: V ? 300 : 110, y1: H - (V ? (TH.mosque ? 470 : 260) : (TH.mosque ? 300 : 110)) }, cy = (area.y0 + area.y1) / 2;
+    const pos = PICS && s.type !== 'photo' ? POS[s.n] : null;
+    const lt = t - s.a, area = pos === 'low' ? { y0: H * (V ? .5 : .42), y1: H - (V ? 170 : 70) } : pos === 'high' ? { y0: V ? 230 : 70, y1: H * (V ? .5 : .58) } : pos === 'mid' ? { y0: H * .26, y1: H * .8 } : { y0: V ? 300 : 110, y1: H - (V ? (TH.mosque ? 470 : 260) : (TH.mosque ? 300 : 110)) }, cy = (area.y0 + area.y1) / 2;
     const rows = []; let i = 0; const nx = () => .25 + (i++) * .35;
     if (s.type === 'open') {
-      if (s.top) { const a = nx(); rows.push({ h: V ? 110 : 90, k: ap(lt, a) / 1, draw: y => tx(s.top, CX, y, V ? 54 : 50, OFAM.deco, TH.acc, 'center', CW) }); }
+      if (s.top) { const a = nx(); rows.push({ h: V ? 110 : 90, k: ap(lt, a) / 1, draw: y => tx(s.top, CX, y, V ? 54 : 50, FAM.deco, TH.acc, 'center', CW) }); }
       { const a = nx(); rows.push({ h: 50, k: 1, draw: y => divider(y, P(lt, a, a + .8), V ? 420 : 520) }); }
-      if (s.title) { const a = nx(), f = fitLines(s.title, CW, 2, V ? 150 : 140, OFAM.deco, 60); rows.push({ h: f.ls.length * f.sz * 1.3 + 30, k: ap(lt, a, .8), draw: y => { const sc = .85 + .15 * E.back(P(lt, a, a + .8)); ctx.translate(CX, y); ctx.scale(sc, sc); f.ls.forEach((l, j) => tx(l, 0, (j - (f.ls.length - 1) / 2) * f.sz * 1.3, f.sz, OFAM.deco, shine(lt, a, CW))); } }); }
-      if (s.sub) { const a = nx(), f = fitLines(s.sub, CW, 3, V ? 50 : 46, OFAM.body, 28, '600'); rows.push({ h: f.ls.length * f.sz * 1.5 + 20, k: ap(lt, a), draw: y => f.ls.forEach((l, j) => tx(l, CX, y + (j - (f.ls.length - 1) / 2) * f.sz * 1.5, f.sz, OFAM.body, TH.ink, 'center', CW, '600')) }); }
+      if (s.title) { const a = nx(), f = fitLines(s.title, CW, 2, V ? 150 : 140, FAM.deco, 60); rows.push({ h: f.ls.length * f.sz * 1.3 + 30, k: ap(lt, a, .8), draw: y => { const sc = .85 + .15 * E.back(P(lt, a, a + .8)); ctx.translate(CX, y); ctx.scale(sc, sc); f.ls.forEach((l, j) => tx(l, 0, (j - (f.ls.length - 1) / 2) * f.sz * 1.3, f.sz, FAM.deco, shine(lt, a, CW))); } }); }
+      if (s.sub) { const a = nx(), f = fitLines(s.sub, CW, 3, V ? 50 : 46, FAM.body, 28, '600'); rows.push({ h: f.ls.length * f.sz * 1.5 + 20, k: ap(lt, a), draw: y => f.ls.forEach((l, j) => tx(l, CX, y + (j - (f.ls.length - 1) / 2) * f.sz * 1.5, f.sz, FAM.body, TH.ink, 'center', CW, '600')) }); }
     } else if (s.type === 'names') {
-      if (s.label) { const a = nx(); rows.push({ h: 90, k: ap(lt, a), draw: y => tx(s.label, CX, y, V ? 48 : 44, OFAM.body, TH.acc, 'center', CW, '700') }); }
+      if (s.label) { const a = nx(); rows.push({ h: 90, k: ap(lt, a), draw: y => tx(s.label, CX, y, V ? 48 : 44, FAM.body, TH.acc, 'center', CW, '700') }); }
       s.names.forEach((nm, j) => {
-        if (j) { const a = nx(); rows.push({ h: RINGS ? 120 : 80, k: ap(lt, a), draw: y => RINGS ? rings(CX, y, E.back(P(lt, a, a + .6))) : tx('و', CX, y, 70, OFAM.deco, TH.acc) }); }
-        const a = nx(), f = fitLines(nm, CW, 2, V ? 170 : 150, OFAM.deco, 70);
-        rows.push({ h: f.ls.length * f.sz * 1.25 + 20, k: ap(lt, a, .8), draw: y => { const sc = .8 + .2 * E.back(P(lt, a, a + .8)); ctx.translate(CX, y); ctx.scale(sc, sc); ctx.shadowColor = TH.acc + '66'; ctx.shadowBlur = 30; f.ls.forEach((l, q) => tx(l, 0, (q - (f.ls.length - 1) / 2) * f.sz * 1.25, f.sz, OFAM.deco, shine(lt, a, CW))); } });
+        if (j) { const a = nx(); rows.push({ h: RINGS ? 120 : 80, k: ap(lt, a), draw: y => RINGS ? rings(CX, y, E.back(P(lt, a, a + .6))) : tx('و', CX, y, 70, FAM.deco, TH.acc) }); }
+        const a = nx(), f = fitLines(nm, CW, 2, V ? 170 : 150, FAM.deco, 70);
+        rows.push({ h: f.ls.length * f.sz * 1.25 + 20, k: ap(lt, a, .8), draw: y => { const sc = .8 + .2 * E.back(P(lt, a, a + .8)); ctx.translate(CX, y); ctx.scale(sc, sc); ctx.shadowColor = TH.acc + '66'; ctx.shadowBlur = 30; f.ls.forEach((l, q) => tx(l, 0, (q - (f.ls.length - 1) / 2) * f.sz * 1.25, f.sz, FAM.deco, shine(lt, a, CW))); } });
       });
       if (s.names.length === 1 && RINGS) { const a = nx(); rows.push({ h: 120, k: ap(lt, a), draw: y => rings(CX, y, E.back(P(lt, a, a + .6))) }); }
-      if (s.sub) { const a = nx(), f = fitLines(s.sub, CW, 3, V ? 48 : 44, OFAM.body, 28, '600'); rows.push({ h: f.ls.length * f.sz * 1.5 + 20, k: ap(lt, a), draw: y => f.ls.forEach((l, j) => tx(l, CX, y + (j - (f.ls.length - 1) / 2) * f.sz * 1.5, f.sz, OFAM.body, TH.ink, 'center', CW, '600')) }); }
+      if (s.sub) { const a = nx(), f = fitLines(s.sub, CW, 3, V ? 48 : 44, FAM.body, 28, '600'); rows.push({ h: f.ls.length * f.sz * 1.5 + 20, k: ap(lt, a), draw: y => f.ls.forEach((l, j) => tx(l, CX, y + (j - (f.ls.length - 1) / 2) * f.sz * 1.5, f.sz, FAM.body, TH.ink, 'center', CW, '600')) }); }
     } else if (s.type === 'message') {
-      if (s.title) { const a = nx(); rows.push({ h: V ? 130 : 110, k: ap(lt, a), draw: y => tx(s.title, CX, y, V ? 84 : 76, OFAM.deco, TH.acc, 'center', CW) }); }
-      s.lines.forEach(l => { const a = nx() + .1, f = fitLines(l, CW, 3, V ? 64 : 58, OFAM.body, 30, '700'); rows.push({ h: f.ls.length * f.sz * 1.45 + 26, k: ap(lt, a, .7), draw: y => f.ls.forEach((q, j) => tx(q, CX, y + (j - (f.ls.length - 1) / 2) * f.sz * 1.45, f.sz, OFAM.body, TH.ink, 'center', CW, '700')) }); });
+      if (s.title) { const a = nx(); rows.push({ h: V ? 130 : 110, k: ap(lt, a), draw: y => tx(s.title, CX, y, V ? 84 : 76, FAM.deco, TH.acc, 'center', CW) }); }
+      s.lines.forEach(l => { const a = nx() + .1, f = fitLines(l, CW, 3, V ? 64 : 58, FAM.body, 30, '700'); rows.push({ h: f.ls.length * f.sz * 1.45 + 26, k: ap(lt, a, .7), draw: y => f.ls.forEach((q, j) => tx(q, CX, y + (j - (f.ls.length - 1) / 2) * f.sz * 1.45, f.sz, FAM.body, TH.ink, 'center', CW, '700')) }); });
     } else if (s.type === 'verse') {
       const a = .3, f = fitLines((s.quran ? '﴿ ' : '« ') + (s.lines[0] || s.title) + (s.quran ? ' ﴾' : ' »'), CW - 120, V ? 7 : 4, V ? 66 : 60, OFAM.verse, 32, '700'), hh = f.ls.length * f.sz * 1.7 + (s.source ? 90 : 40) + 80;
       rows.push({ h: hh, k: ap(lt, a, .9), draw: y => {
@@ -2939,17 +2956,17 @@ function createOccasion(canvas, spec) {
         ctx.strokeStyle = TH.acc; ctx.lineWidth = 2.5; ctx.stroke(); ctx.lineWidth = 1.2; ctx.beginPath(); ctx.roundRect(x0 + 12, y0 + 12, bw - 24, bh - 24, 22); ctx.stroke();
         star8(x0 + 40, y0 + 40, 20, TH.acc, .8, 2); star8(x0 + bw - 40, y0 + 40, 20, TH.acc, .8, 2);
         const ty = y0 + 50 + f.sz * .9; f.ls.forEach((l, j) => { ctx.save(); ctx.globalAlpha *= clamp(P(lt, a + .3 + j * .35, a + .9 + j * .35)); tx(l, CX, ty + j * f.sz * 1.7, f.sz, OFAM.verse, TH.ink, 'center', CW - 120, '700'); ctx.restore(); });
-        if (s.source) { ctx.save(); ctx.globalAlpha *= clamp(P(lt, a + .6 + f.ls.length * .35, a + 1.2 + f.ls.length * .35)); tx(s.source, CX, y0 + bh - 46, V ? 38 : 34, OFAM.body, TH.acc, 'center', CW - 120, '700'); ctx.restore(); }
+        if (s.source) { ctx.save(); ctx.globalAlpha *= clamp(P(lt, a + .6 + f.ls.length * .35, a + 1.2 + f.ls.length * .35)); tx(s.source, CX, y0 + bh - 46, V ? 38 : 34, FAM.body, TH.acc, 'center', CW - 120, '700'); ctx.restore(); }
       } });
     } else if (s.type === 'details') {
-      if (s.title) { const a = nx(); rows.push({ h: V ? 130 : 100, k: ap(lt, a), draw: y => tx(s.title, CX, y, V ? 80 : 70, OFAM.deco, TH.acc, 'center', CW) }); }
+      if (s.title) { const a = nx(); rows.push({ h: V ? 130 : 100, k: ap(lt, a), draw: y => tx(s.title, CX, y, V ? 80 : 70, FAM.deco, TH.acc, 'center', CW) }); }
       const rh = V ? 160 : Math.min(140, 620 / Math.max(1, s.items.length));
       s.items.forEach((it, j) => { const a = .7 + j * .55; rows.push({ h: rh, k: ap(lt, a, .6), draw: y => {
         const x1 = CX + CW / 2, bub = rh * .3; ctx.fillStyle = TH.dark ? 'rgba(255,255,255,.07)' : 'rgba(255,255,255,.75)'; ctx.beginPath(); ctx.roundRect(CX - CW / 2, y - rh * .42, CW, rh * .84, rh * .3); ctx.fill(); ctx.strokeStyle = TH.acc + '88'; ctx.lineWidth = 2; ctx.stroke();
         ctx.fillStyle = TH.acc; ctx.beginPath(); ctx.arc(x1 - bub - 24, y, bub, 0, TAU); ctx.fill();
         ctx.font = `${Math.round(bub * 1.1)}px 'Segoe UI Emoji','Apple Color Emoji','Noto Color Emoji',sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(it.icon || '✨', x1 - bub - 24, y + 2);
-        const tx0 = x1 - bub * 2 - 56; if (it.label) tx(it.label, tx0, y - rh * .16, V ? 34 : 30, OFAM.body, TH.acc, 'right', CW - bub * 2 - 100, '700');
-        tx(it.value, tx0, it.label ? y + rh * .14 : y, V ? 50 : 44, OFAM.body, TH.ink, 'right', CW - bub * 2 - 100, '800'); } }); });
+        const tx0 = x1 - bub * 2 - 56; if (it.label) tx(it.label, tx0, y - rh * .16, V ? 34 : 30, FAM.body, TH.acc, 'right', CW - bub * 2 - 100, '700');
+        tx(it.value, tx0, it.label ? y + rh * .14 : y, V ? 50 : 44, FAM.body, TH.ink, 'right', CW - bub * 2 - 100, '800'); } }); });
     } else if (s.type === 'photo' && !X.classic) {
       const im = X.photo, iw = im && (im.naturalWidth || im.width), ih = im && (im.naturalHeight || im.height);
       if (iw && ih) { ctx.save(); ctx.globalAlpha = alpha; const z = 1.02 + .06 * P(lt, 0, s.b - s.a), same = Math.abs(iw / ih - W / H) / (W / H) < .18;
@@ -2965,14 +2982,14 @@ function createOccasion(canvas, spec) {
           ctx.shadowColor = 'rgba(0,0,0,.35)'; ctx.shadowBlur = 40; ctx.shadowOffsetY = 14; ctx.fillStyle = TH.acc; ctx.beginPath(); ctx.roundRect(-w / 2 - 10, -h / 2 - 10, w + 20, h + 20, 26); ctx.fill(); ctx.shadowColor = 'transparent';
           ctx.save(); ctx.beginPath(); ctx.roundRect(-w / 2, -h / 2, w, h, 18); ctx.clip(); ctx.drawImage(im, -w / 2, -h / 2, w, h); ctx.restore();
           ctx.strokeStyle = 'rgba(255,255,255,.55)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.roundRect(-w / 2 + 8, -h / 2 + 8, w - 16, h - 16, 14); ctx.stroke(); } });
-        if (s.title) { const a2 = a + .6; rows.push({ h: capH, k: ap(lt, a2), draw: y => tx(s.title, CX, y, V ? 56 : 50, OFAM.deco, TH.acc, 'center', CW) }); } }
+        if (s.title) { const a2 = a + .6; rows.push({ h: capH, k: ap(lt, a2), draw: y => tx(s.title, CX, y, V ? 56 : 50, FAM.deco, TH.acc, 'center', CW) }); } }
     } else {   // close
-      if (s.title) { const a = nx(), f = fitLines(s.title, CW, 2, V ? 120 : 110, OFAM.deco, 56); rows.push({ h: f.ls.length * f.sz * 1.3 + 30, k: ap(lt, a, .8), draw: y => { const sc = .85 + .15 * E.back(P(lt, a, a + .8)); ctx.translate(CX, y); ctx.scale(sc, sc); f.ls.forEach((l, j) => tx(l, 0, (j - (f.ls.length - 1) / 2) * f.sz * 1.3, f.sz, OFAM.deco, TH.acc)); } }); }
+      if (s.title) { const a = nx(), f = fitLines(s.title, CW, 2, V ? 120 : 110, FAM.deco, 56); rows.push({ h: f.ls.length * f.sz * 1.3 + 30, k: ap(lt, a, .8), draw: y => { const sc = .85 + .15 * E.back(P(lt, a, a + .8)); ctx.translate(CX, y); ctx.scale(sc, sc); f.ls.forEach((l, j) => tx(l, 0, (j - (f.ls.length - 1) / 2) * f.sz * 1.3, f.sz, FAM.deco, TH.acc)); } }); }
       { const a = nx(); rows.push({ h: 50, k: 1, draw: y => divider(y, P(lt, a, a + .8), 360) }); }
-      s.lines.forEach(l => { const a = nx(), f = fitLines(l, CW, 3, V ? 54 : 50, OFAM.body, 28, '700'); rows.push({ h: f.ls.length * f.sz * 1.45 + 20, k: ap(lt, a), draw: y => f.ls.forEach((q, j) => tx(q, CX, y + (j - (f.ls.length - 1) / 2) * f.sz * 1.45, f.sz, OFAM.body, TH.ink, 'center', CW, '700')) }); });
-      s.items.forEach(it => { const a = nx(); rows.push({ h: 110, k: ap(lt, a), draw: y => { const lab = (it.icon ? it.icon + '  ' : '') + it.value; ctx.font = `800 ${V ? 44 : 40}px ${OFAM.body}`; const w = Math.min(CW, ctx.measureText(lab).width + 90);
-        ctx.fillStyle = TH.acc; ctx.beginPath(); ctx.roundRect(CX - w / 2, y - 38, w, 76, 38); ctx.fill(); tx(lab, CX, y + 2, V ? 44 : 40, OFAM.body, TH.dark ? '#111' : '#fff', 'center', CW - 60, '800'); } }); });
-      if (X.credit) { const a = nx(); rows.push({ h: 100, k: ap(lt, a), draw: y => tx('هذا العمل من تنسيق ' + X.credit, CX, y, V ? 38 : 34, OFAM.body, TH.ink, 'center', CW, '600') }); }
+      s.lines.forEach(l => { const a = nx(), f = fitLines(l, CW, 3, V ? 54 : 50, FAM.body, 28, '700'); rows.push({ h: f.ls.length * f.sz * 1.45 + 20, k: ap(lt, a), draw: y => f.ls.forEach((q, j) => tx(q, CX, y + (j - (f.ls.length - 1) / 2) * f.sz * 1.45, f.sz, FAM.body, TH.ink, 'center', CW, '700')) }); });
+      s.items.forEach(it => { const a = nx(); rows.push({ h: 110, k: ap(lt, a), draw: y => { const lab = (it.icon ? it.icon + '  ' : '') + it.value; ctx.font = `800 ${V ? 44 : 40}px ${FAM.body}`; const w = Math.min(CW, ctx.measureText(lab).width + 90);
+        ctx.fillStyle = TH.acc; ctx.beginPath(); ctx.roundRect(CX - w / 2, y - 38, w, 76, 38); ctx.fill(); tx(lab, CX, y + 2, V ? 44 : 40, FAM.body, TH.dark ? '#111' : '#fff', 'center', CW - 60, '800'); } }); });
+      if (X.credit) { const a = nx(); rows.push({ h: 100, k: ap(lt, a), draw: y => tx('هذا العمل من تنسيق ' + X.credit, CX, y, V ? 38 : 34, FAM.body, TH.ink, 'center', CW, '600') }); }
     }
     block(rows, cy, alpha);
   }
@@ -2984,9 +3001,9 @@ function createOccasion(canvas, spec) {
     let cur = T.scenes[0]; T.scenes.forEach(s => { if (t >= s.a) cur = s; });
     const prev = T.scenes[cur.n - 1], k = prev ? E.io(P(t, cur.a, cur.a + .8)) : 1;
     const cam = (z, blur, fn) => { ctx.save(); ctx.translate(CX, H / 2); ctx.scale(z, z); ctx.translate(-CX, -H / 2); if (blur > .3) ctx.filter = `blur(${blur.toFixed(1)}px)`; fn(); ctx.restore(); };
-    if (prev && k < 1) cam(1 + .07 * k, k * 6, () => content(prev, t, 1 - k));
+    if (prev && k < 1) cam((1 + .07 * k) * SZ[prev.n], k * 6, () => content(prev, t, 1 - k));
     const drift = 1 + .015 * Math.sin((t - cur.a) * .5);
-    cam((1.06 - .06 * k) * drift, (1 - k) * 8, () => content(cur, t, cur.n === T.scenes.length - 1 ? k * (1 - P(t, T.DUR - .6, T.DUR)) : k));
+    cam((1.06 - .06 * k) * drift * SZ[cur.n], (1 - k) * 8, () => content(cur, t, cur.n === T.scenes.length - 1 ? k * (1 - P(t, T.DUR - .6, T.DUR)) : k));
     // golden shimmer sweep at every cut
     if (prev && t - cur.a < 1) { const q = P(t, cur.a - .1, cur.a + .9), x = lerp(-W * .3, W * 1.3, E.io(q)); ctx.save(); const g = ctx.createLinearGradient(x - 260, 0, x + 260, 0); g.addColorStop(0, TH.acc + '00'); g.addColorStop(.5, TH.acc + '55'); g.addColorStop(1, TH.acc + '00'); ctx.fillStyle = g; ctx.globalCompositeOperation = TH.dark ? 'lighter' : 'source-over'; ctx.fillRect(0, 0, W, H); ctx.restore(); }
     // the client's logo, small at the top centre
