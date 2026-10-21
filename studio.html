@@ -28,7 +28,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="الاستوديو الآلي">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Aref+Ruqaa:wght@400;700&family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;600;700&family=El+Messiri:wght@400;600;700&family=Rakkas&family=Lalezar&family=Marhey:wght@400;600;700&family=Tajawal:wght@500;700;800&family=Markazi+Text:wght@500;700&family=Katibeh&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Aref+Ruqaa:wght@400;700&family=Amiri:wght@400;700&family=Reem+Kufi:wght@400;600;700&family=El+Messiri:wght@400;600;700&family=Rakkas&family=Lalezar&family=Marhey:wght@400;600;700&family=Tajawal:wght@500;700;800&family=Markazi+Text:wght@500;700&family=Katibeh&family=Mirza:wght@500;700&display=swap" rel="stylesheet">
 <style>
   :root{--navy:#1d2a6e;--orange:#ff7a1a;--blue:#2f6fe0;--yellow:#ffd21f;--red:#e53935;--green:#20a35a;--purple:#8e5bff;
     --bg:#eef6ff;--card:#fff;--text:#1d2a6e;--muted:#5b6690;--line:#d5e2f5;--field:#f7faff}
@@ -281,6 +281,7 @@
         <div class="row" data-occ="invite wedding baby events"><div><label for="oPlace">المكان <small>(اختياري)</small></label><input type="text" id="oPlace" placeholder="مثال: قاعة الياسمين - الرياض"></div><div><label for="oPhone">للتأكيد أو التواصل <small>(اختياري)</small></label><input type="text" id="oPhone" style="direction:ltr" placeholder="05xxxxxxxx"></div></div>
         <div data-occ="baby"><label for="oWeight">الوزن <small>(اختياري)</small></label><input type="text" id="oWeight" placeholder="مثال: ٣.٢ كجم"></div>
         <label class="chk" style="align-items:flex-start"><input type="checkbox" id="oDraw" checked style="margin-top:4px"> <span>🎬 خلفيات سينمائية بالذكاء الاصطناعي: صور واقعية للمناسبة تتغير مع كل مشهد وتتحرك ببطء، بدون إظهار الوجوه <small>(<span class="pcT" data-k="pictures">3 نقاط</span> بدل <span class="pcT" data-k="motion">نقطة واحدة</span>، ويرجع الفرق إذا ما انرسمت. ما تنرسم إذا رفعت «خلفية خاصة»)</small></span></label>
+        <div data-occ="wedding events-milka events-khutba"><label for="oTpl">القالب</label><select id="oTpl"><option value="">✨ تلقائي</option><option value="silver">💎 فخامة فضية (خواتم وماس)</option><option value="roses">🌹 ورد أحمر وشموع</option><option value="watercolor">🌸 بطاقة بزهور مائية</option><option value="night">🌙 ليلي ذهبي</option><option value="lineart">🤍 رسم خطي للعروسين</option></select></div>
         <label for="oLook">الشكل</label><select id="oLook"><option value="modern">✨ عصري سينمائي: الصورة تملأ الشاشة والكتابة تحت</option><option value="classic">🏛️ رسمي كلاسيكي: إطار مزخرف والكتابة في النص</option></select>
         <label>خلفية خاصة <small>(اختياري: صورة تصير خلفية الفيديو كامل بدل خلفية الثيم، والكتابة تتلوّن على حسبها)</small></label>
         <div id="oBgDrop" class="drop" tabindex="0" role="button"><input type="file" id="oBg" accept="image/*" hidden><div id="oBgTxt">🖼️ اسحب صورة الخلفية أو <u>اضغط للاختيار</u></div><img id="oBgPrev" class="hidden" alt=""><button type="button" id="oBgDel" class="ghost small hidden">إزالة الخلفية</button></div>
@@ -331,7 +332,7 @@
       </div>
       <div class="row">
         <div><label for="sText">النص على الشاشة</label><select id="sText"><option value="ar">عربي</option><option value="bi">عربي + إنجليزي صغير</option><option value="none">بدون نص (صور وصوت فقط)</option></select></div>
-        <div><label for="sMusic">الموسيقى</label><select id="sMusic"><option value="auto">🎶 تلقائي حسب الجمهور</option><option value="cheerful">😄 مرحة</option><option value="calm">😌 هادئة</option><option value="energetic">⚡ حماسية</option><option value="inspiring">🌟 ملهمة</option><option value="modern">💼 عصرية</option><option value="custom">🎵 موسيقى من عندي (ملف أو رابط)</option><option value="off">🔇 بدون موسيقى</option></select></div>
+        <div><label for="sMusic">الموسيقى</label><select id="sMusic"><option value="auto">🎶 تلقائي حسب الجمهور</option><option value="cheerful">😄 مرحة</option><option value="calm">😌 هادئة</option><option value="energetic">⚡ حماسية</option><option value="inspiring">🌟 ملهمة</option><option value="modern">💼 عصرية</option><option value="duff">🥁 دف فقط (بدون موسيقى)</option><option value="zaffa">🥁 زفة دف (بدون موسيقى)</option><option value="custom">🎵 موسيقى من عندي (ملف أو رابط)</option><option value="off">🔇 بدون موسيقى</option></select></div>
       </div>
       <div id="cmBox" class="promoBox hidden" style="margin-top:8px">
         <p class="where" style="margin:0 0 6px;font-size:13px">ارفع ملف صوت (MP3، M4A، WAV)، أو الصق رابط مباشر لملف MP3. الموسيقى تنقص على طول الفيديو، أو تتكرر إذا كانت أقصر، وتختفي بهدوء في النهاية. روابط يوتيوب ما تنفع (يوتيوب ما يسمح بسحب الصوت): نزّل المقطع كملف صوت وارفعه هنا.</p>
@@ -538,7 +539,7 @@
   function voiceUI() { const g = $('sGender').value; $('sVoice').disabled = g === 'none'; $('sVoice').innerHTML = g === 'none' ? '<option>—</option>' : VOICES[g].map(([v, l]) => `<option value="${v}">${l}</option>`).join(''); }
   $('sGender').addEventListener('change', () => { voiceUI(); save(); }); voiceUI();
   // remember the choices
-  const FIELDS = ['sIdea', 'sAud', 'sLang', 'sGender', 'sVoice', 'sLen', 'sScenes', 'sPlace', 'sStyle', 'sText', 'sMusic', 'sImgKind', 'sType', 'oSub', 'oFrom', 'oGreet', 'oGender', 'oBaby', 'oEvent', 'oHonoree', 'oGroom', 'oBride', 'oEvt', 'oName1', 'oName2', 'oLook', 'oHost', 'oDate', 'oTime', 'oPlace', 'oPhone', 'oWeight', 'oAspect'];
+  const FIELDS = ['sIdea', 'sAud', 'sLang', 'sGender', 'sVoice', 'sLen', 'sScenes', 'sPlace', 'sStyle', 'sText', 'sMusic', 'sImgKind', 'sType', 'oSub', 'oFrom', 'oGreet', 'oGender', 'oBaby', 'oEvent', 'oHonoree', 'oGroom', 'oBride', 'oEvt', 'oName1', 'oName2', 'oLook', 'oTpl', 'oHost', 'oDate', 'oTime', 'oPlace', 'oPhone', 'oWeight', 'oAspect'];
   function save() { const o = {}; FIELDS.forEach(f => o[f] = $(f).value); o.sAuto = $('sAuto').checked; store.set('studio-form', JSON.stringify(o)); }
   try { const o = JSON.parse(store.get('studio-form') || '{}'); FIELDS.forEach(f => { if (o[f] != null && f !== 'sVoice') $(f).value = o[f]; }); voiceUI(); if (o.sVoice) $('sVoice').value = o.sVoice; if (o.sAuto === false) $('sAuto').checked = false; } catch (e) {}
   if (!$('sMusic').value) $('sMusic').value = 'auto';
@@ -723,7 +724,7 @@ Pictures (shown big and professional instead of an emoji, on "title" scenes and 
   }
 
   const MOOD_BY_AUD = { kids: 'cheerful', teachers: 'inspiring', marketing: 'energetic', product: 'modern', general: 'inspiring' };
-  const musicChoice = () => { const v = $('sMusic').value; if (v === 'custom') return CM ? { custom: true, name: CM.name } : null; return v === 'off' ? null : { mood: v === 'auto' ? MOOD_BY_AUD[$('sAud').value] : v, seed: (Date.now() ^ Math.floor(Math.random() * 1e9)) >>> 0 }; };
+  const musicChoice = () => { const v = $('sMusic').value; if (v === 'custom') return CM ? { custom: true, name: CM.name } : null; if (v === 'duff' || v === 'zaffa') return { duff: v, seed: (Date.now() ^ Math.floor(Math.random() * 1e9)) >>> 0 }; return v === 'off' ? null : { mood: v === 'auto' ? MOOD_BY_AUD[$('sAud').value] : v, seed: (Date.now() ^ Math.floor(Math.random() * 1e9)) >>> 0 }; };
 
   // ── storage for the history (separate from the main page) ──
   const IDB = (() => {
@@ -884,7 +885,7 @@ Pictures (shown big and professional instead of an emoji, on "title" scenes and 
     for (let i = 0; i < fi; i++) { L[i] *= i / fi; R[i] *= i / fi; } for (let i = 0; i < fo; i++) { const g = i / fo, j = n - 1 - i; L[j] *= g; R[j] *= g; }
     return { L, R, sr };
   }
-  const musicFor = e => { if (!PROJ || !PROJ.music) return null; if (PROJ.music.custom) { const b = PROJ.cmBuf || (CM && CM.buf); return b ? fitMusic(b, e.DUR) : null; } return e.music(); };
+  const musicFor = e => { if (!PROJ || !PROJ.music) return null; if (PROJ.music.duff) return VideoEngine.duff(e.DUR, ((e.T && e.T.scenes) || []).map(x => x.a), 32000, PROJ.music.duff, PROJ.music.seed); if (PROJ.music.custom) { const b = PROJ.cmBuf || (CM && CM.buf); return b ? fitMusic(b, e.DUR) : null; } return e.music(); };
   function cmUI() { $('cmBox').classList.toggle('hidden', $('sMusic').value !== 'custom'); $('cmInfo').innerHTML = CM ? `✓ <b>${esc(CM.name)}</b> · ${fmt(CM.buf.duration)} <button type="button" class="ghost small" id="cmDel">إزالة</button>` : ''; if ($('cmDel')) $('cmDel').onclick = () => { CM = null; IDB.del('custom-music'); cmUI(); }; }
   async function setCM(blob, name, save) {
     try { const buf = await decodeAudio(blob); CM = { file: blob, name: name || 'موسيقى', buf }; cmUI(); if (save) IDB.set('custom-music', { file: blob, name: CM.name }); }
@@ -1007,7 +1008,7 @@ Pictures (shown big and professional instead of an emoji, on "title" scenes and 
 
   function formValues() { const o = {}; FIELDS.forEach(f => o[f] = $(f).value); return o; }
   const promoSpec = (P2 = PROJ) => ({ kind: 'promo', aspect: P2.aspect, brand: Object.assign({}, P2.brand, { logo: P2.logoIm || null }), title: P2.title, credit: P2.credit, textMode: P2.textMode, noEmoji: P2.noEmoji, scenes: withPics(P2.plan.scenes, P2.pimgs), voiceDur: P2.voiceDur, music: P2.music || {} });
-  const occSpec = (P2 = PROJ) => ({ kind: 'occasion', font: P2.font || 0, frame: P2.frame || 'classic', occ: P2.occ, sub: P2.sub, aspect: P2.aspect, look: P2.look || {}, credit: P2.credit, music: P2.music, title: P2.title, photo: P2.photoIm || null, logo: P2.logoIm || null, bg: P2.bgIm || null, bgs: P2.bgsIm || [],
+  const occSpec = (P2 = PROJ) => ({ kind: 'occasion', tpl: P2.tpl || '', font: P2.font || 0, frame: P2.frame || 'classic', occ: P2.occ, sub: P2.sub, aspect: P2.aspect, look: P2.look || {}, credit: P2.credit, music: P2.music, title: P2.title, photo: P2.photoIm || null, logo: P2.logoIm || null, bg: P2.bgIm || null, bgs: P2.bgsIm || [],
     scenes: P2.plan.scenes.map(x => Object.assign({}, x, { say: x.narration || '' })), voice: VOICE ? VOICE.info : (P2.voiceInfo && null) });
   function buildVideo() {
     $('sPdf').classList.toggle('hidden', !(PROJ && PROJ.deck));
@@ -1063,7 +1064,7 @@ Pictures (shown big and professional instead of an emoji, on "title" scenes and 
       const o = document.createElement('canvas'); o.width = 384; o.height = 216; o.getContext('2d').drawImage(c, 0, 95, 216, 121.5, 0, 0, 384, 216); return o.toDataURL('image/jpeg', .72); } catch (e) { return ''; } }
     if (PROJ && PROJ.kind === 'cartoon') { try { const c = document.createElement('canvas'); c.width = 384; c.height = 216; const e = VideoEngine.create(c, Object.assign({}, PROJ.card, { media: { image: CARDIMG }, voiceDur: PROJ.voiceDur })); e.render(e.T.steps[0] ? e.T.steps[0].ts + 3 : 4); return c.toDataURL('image/jpeg', .72); } catch (e) { return ''; } }
     try { const c = document.createElement('canvas'); c.width = 384; c.height = 216; const e = VideoEngine.create(c, eng.S && Object.assign({}, { kind: 'explainer', title: PROJ.title, textMode: PROJ.textMode, cinematic: !!PROJ.cinematic, look: PROJ.look || {}, presenter: PROJ.presenter || null, scenes: PROJ.plan.scenes.map((s, i) => Object.assign({}, s, { img: PICS[i] || null })), voice: VOICE ? VOICE.info : null })); const sc = e.T.scenes[Math.min(1, e.T.scenes.length - 1)]; e.render(sc.a + Math.min(2, (sc.b - sc.a) / 2)); return c.toDataURL('image/jpeg', .72); } catch (e) { return ''; } }
-  const meta = () => ({ id: PROJ.id, kind: PROJ.kind || 'explainer', frame: PROJ.frame, font: PROJ.font, occ: PROJ.occ, sub: PROJ.sub, deck: PROJ.deck, cinematic: PROJ.cinematic, look: PROJ.look, created: PROJ.created, updated: Date.now(), title: PROJ.title, plan: PROJ.plan, card: PROJ.card, narr: PROJ.narr, voiceDur: PROJ.voiceDur, presenter: PROJ.presenter, voiceEnv: PROJ.voiceEnv, textMode: PROJ.textMode, noEmoji: PROJ.noEmoji, credit: PROJ.credit, music: PROJ.music, voiceInfo: PROJ.voiceInfo, settings: PROJ.settings, brand: PROJ.brand, aspect: PROJ.aspect, nPimg: PROJ.nPimg, pimgCut: PROJ.pimgs ? PROJ.pimgs.map(p => p.cut) : undefined, nPics: PICBLOBS.filter(Boolean).length });
+  const meta = () => ({ id: PROJ.id, kind: PROJ.kind || 'explainer', frame: PROJ.frame, font: PROJ.font, tpl: PROJ.tpl, occ: PROJ.occ, sub: PROJ.sub, deck: PROJ.deck, cinematic: PROJ.cinematic, look: PROJ.look, created: PROJ.created, updated: Date.now(), title: PROJ.title, plan: PROJ.plan, card: PROJ.card, narr: PROJ.narr, voiceDur: PROJ.voiceDur, presenter: PROJ.presenter, voiceEnv: PROJ.voiceEnv, textMode: PROJ.textMode, noEmoji: PROJ.noEmoji, credit: PROJ.credit, music: PROJ.music, voiceInfo: PROJ.voiceInfo, settings: PROJ.settings, brand: PROJ.brand, aspect: PROJ.aspect, nPimg: PROJ.nPimg, pimgCut: PROJ.pimgs ? PROJ.pimgs.map(p => p.cut) : undefined, nPics: PICBLOBS.filter(Boolean).length });
   async function saveProject() {
     if (!PROJ) return;
     if (VOICE) await IDB.set('voice:' + PROJ.id, VOICE.wav);
@@ -1089,7 +1090,7 @@ Pictures (shown big and professional instead of an emoji, on "title" scenes and 
   async function openProject(id) {
     const x = hLoad().find(i => i.id === id); if (!x) return;
     stopPlay(); clearPreview();
-    PROJ = { id: x.id, kind: x.kind, frame: x.frame, font: x.font, occ: x.occ, sub: x.sub, deck: x.deck, cinematic: x.cinematic, look: x.look, created: x.created, title: x.title, plan: x.plan, card: x.card, narr: x.narr, voiceDur: x.voiceDur, presenter: x.presenter, voiceEnv: x.voiceEnv, textMode: x.textMode, noEmoji: x.noEmoji, credit: x.credit, music: x.music, voiceInfo: x.voiceInfo, settings: x.settings, brand: x.brand, aspect: x.aspect };
+    PROJ = { id: x.id, kind: x.kind, frame: x.frame, font: x.font, tpl: x.tpl, occ: x.occ, sub: x.sub, deck: x.deck, cinematic: x.cinematic, look: x.look, created: x.created, title: x.title, plan: x.plan, card: x.card, narr: x.narr, voiceDur: x.voiceDur, presenter: x.presenter, voiceEnv: x.voiceEnv, textMode: x.textMode, noEmoji: x.noEmoji, credit: x.credit, music: x.music, voiceInfo: x.voiceInfo, settings: x.settings, brand: x.brand, aspect: x.aspect };
     if (x.music && x.music.custom) { const mb = await IDB.get('music:' + x.id); if (mb) { try { PROJ.cmBuf = await decodeAudio(mb); PROJ.cmBlob = mb; } catch (e) {} } }
     { const lb = await IDB.get('logo:' + x.id); if (lb) { const im = new Image(); im.src = URL.createObjectURL(lb); try { await im.decode(); PROJ.logoIm = im; PROJ.logoBlob = lb; } catch (e) {} }
       PROJ.pimgs = []; PROJ.nPimg = x.nPimg || 0;
@@ -1525,6 +1526,13 @@ Reply with ONLY a JSON object: {"message":["",""],"close":"","narration":[""]}
       religious: { ramadan: ['a glowing Ramadan lantern beside dates and Arabic coffee', 'a crescent moon over a mosque at dusk', 'an iftar table with dates, water and soup in warm lantern light', 'rows of hanging lanterns glowing at night'], fitr: ['Eid sweets and Arabic coffee on an elegant tray with a lantern', 'gift boxes and balloons for Eid in warm light', 'fireworks over a city skyline at night', 'a mosque courtyard at sunrise, no faces'], adha: ['an Eid table with Arabic coffee, dates and a lantern', 'a mosque at golden sunrise', 'gift boxes and lanterns in warm light', 'the plain of Arafat at sunrise seen from afar'], arafa: ['the plain of Arafat at golden sunrise, serene, seen from afar', 'an open Quran on a wooden stand in soft light', 'prayer beads and a prayer rug in morning light', 'a desert horizon at sunrise'], hijri: ['a thin crescent moon over a softly lit mosque at dusk', 'an old Islamic geometric lantern glowing at night', 'a calendar page and prayer beads on carved wood', 'a starry desert night sky with a crescent'], jumuah: ['an open Quran on a carved wooden stand beside prayer beads, soft morning light', 'a mosque minaret against a clear blue sky', 'perfume (oud) bottles and prayer beads on carved wood', 'a mosque interior with soft light through arches, no people'] },
       invite: [`an elegant table that celebrates ${ev || 'a happy occasion'} with flowers and soft festive lights`, `symbolic objects of ${ev || 'a celebration'} in warm light`, 'gold confetti and soft bokeh lights on an elegant background', 'a beautifully decorated venue entrance with flowers and lights, no people'],
     };
+    const TPL_ART = { silver: ['two diamond wedding rings on white satin in soft silver light', 'a sparkling diamond engagement ring, macro, glinting bokeh', 'white roses and pearls on a silver tray, bright airy high-key light', 'crystal glasses and silver candle holders on a white table, high-key'],
+      roses: ['deep red roses and white candles on a cream table beside an open jewellery box, warm candle light', 'red rose petals scattered around an open ring box', 'a wall of red roses with soft fairy lights', 'tall white candles among red roses in a dark elegant room'],
+      watercolor: ['a soft watercolor illustration of pale blue and blush flowers on cream paper, delicate and airy', 'a watercolor floral wreath in pastel blue and pink on white paper', 'a watercolor bouquet of white and blue flowers with green leaves', 'a watercolor botanical corner decoration in pastel tones with lots of white space'],
+      night: ['golden lanterns glowing at night with warm bokeh', 'an elegant wedding stage at night with golden lights and white flowers, no people', 'gold candles and white roses on a dark table', 'string lights over a garden at night, golden bokeh'],
+      lineart: ['a minimal elegant black line-art illustration of a bride and groom as silhouettes holding hands, white background, no facial features', 'a minimal line-art of two wedding rings intertwined, black ink on white', 'a minimal line-art floral border, black ink on white, lots of white space', 'a minimal line-art of a bridal veil and bouquet, black ink on white'] };
+    const tp = occTpl(ty);
+    if (tp) { const ill = tp === 'watercolor' || tp === 'lineart'; return TPL_ART[tp].map(x => `${x}. ${ill ? 'Refined fine-art illustration for an elegant wedding invitation, clean and airy, plenty of calm empty space for text' : 'Hyper-realistic cinematic photograph for the background of an elegant invitation video, rich depth, shallow depth of field, luxurious mood'}, culturally appropriate for a Gulf / Saudi audience, modest. Never show a face. No text, no letters, no logo, no watermark.`); }
     const ev2 = $('oEvt').value, L = ty === 'events' ? SETS.events[ev2] : ty === 'religious' ? SETS.religious[sub] || SETS.religious.jumuah : SETS[ty] || SETS.invite;
     // who may appear: hands only where the shot asks for them (the couple, the baby); everywhere else objects and places only — and never a woman at a men's gathering
     const people = ty === 'events' && ev2 === 'taqaddum' ? 'This is for a MEN-ONLY gathering: absolutely no people, no hands, no women, no female hands, no henna, no jewellery; objects and the empty place only.'
@@ -1551,7 +1559,8 @@ Reply with ONLY a JSON object: {"message":["",""],"close":"","narration":[""]}
     const opts = L.filter(i => i !== last), f = opts[Math.floor(Math.random() * opts.length)];
     try { localStorage.setItem('studio-occ-font', f); } catch (e) {} return f;
   }
-  const loadOccFonts = f => Promise.all([...(OCC_FONT_FACES[f] || []), 'Amiri'].flatMap(n => ['400', '700'].map(w => document.fonts.load(`${w} 60px ${n}`, 'ابت')))).catch(() => {});
+  const occTpl = ty => ty === 'wedding' || (ty === 'events' && ['milka', 'khutba'].includes($('oEvt').value)) ? $('oTpl').value : '';
+  const loadOccFonts = f => Promise.all([...(OCC_FONT_FACES[f] || []), 'Amiri', 'Mirza', '"Aref Ruqaa"'].flatMap(n => ['400', '700'].map(w => document.fonts.load(`${w} 60px ${n}`, 'ابت')))).catch(() => {});
   async function runOccasion(o, gender, voiceName) {
     o = Object.assign({}, o, { idea: $('sIdea').value.trim() });
     const ty = $('sType').value; let scenes = occTemplate(ty, o.idea), offline = true, narr = [];
@@ -1584,9 +1593,9 @@ Reply with ONLY a JSON object: {"message":["",""],"close":"","narration":[""]}
     step('video', 'doing'); await fontsReady; await loadOccFonts(font);
     const mv = $('sMusic').value, seed = (Date.now() ^ Math.floor(Math.random() * 1e9)) >>> 0;
     const EVM = { milka: { mood: 'inspiring', genre: 'arabic' }, khutba: { mood: 'inspiring', genre: 'arabic' }, taqaddum: { mood: 'calm', genre: 'arabic' }, home: { mood: 'calm', genre: 'cinematic' }, grad: { mood: 'inspiring', genre: 'cinematic' }, shifa: { mood: 'calm', genre: 'cinematic' }, hajj: null, success: { mood: 'energetic', genre: 'pop' } };
-    const mo = ty === 'events' ? EVM[$('oEvt').value] : OCC_MUSIC[ty], music = mv === 'custom' ? musicChoice() : mv === 'off' ? null : mv === 'auto' ? (mo ? Object.assign({ seed }, mo) : null) : { mood: mv, seed };
+    const mo = ty === 'events' ? EVM[$('oEvt').value] : OCC_MUSIC[ty], music = mv === 'custom' || mv === 'duff' || mv === 'zaffa' ? musicChoice() : mv === 'off' ? null : mv === 'auto' ? (mo ? Object.assign({ seed }, mo) : null) : { mood: mv, seed };
     const titleTxt = (scenes[0].title || '') + (ty === 'events' && occVal('oName1') ? ' — ' + occVal('oName1') : ty === 'wedding' && occVal('oGroom') ? ' — ' + occVal('oGroom') : ty === 'baby' && occVal('oBaby') ? ' — ' + occVal('oBaby') : '');
-    PROJ = { id: 's' + Date.now().toString(36), created: Date.now(), kind: 'occasion', font, frame: $('oLook').value, photoIm, photoBlob, bgsIm: arts.map(a => a.im), bgsBlobs: arts.map(a => a.blob), bgIm: OBG ? OBG.im : null, bgBlob: OBG ? OBG.file : null, logoIm: LOGO ? LOGO.im : null, logoBlob: LOGO ? LOGO.blob : null, occ: ty, sub: ty === 'baby' ? $('oGender').value : ty === 'religious' ? $('oSub').value : ty === 'events' ? $('oEvt').value : '', aspect: $('oAspect').value,
+    PROJ = { id: 's' + Date.now().toString(36), created: Date.now(), kind: 'occasion', font, tpl: occTpl(ty), frame: $('oLook').value, photoIm, photoBlob, bgsIm: arts.map(a => a.im), bgsBlobs: arts.map(a => a.blob), bgIm: OBG ? OBG.im : null, bgBlob: OBG ? OBG.file : null, logoIm: LOGO ? LOGO.im : null, logoBlob: LOGO ? LOGO.blob : null, occ: ty, sub: ty === 'baby' ? $('oGender').value : ty === 'religious' ? $('oSub').value : ty === 'events' ? $('oEvt').value : '', aspect: $('oAspect').value,
       title: { ar: titleTxt, en: '' }, plan: { scenes: scenes.map((x, i) => Object.assign({}, x, { narration: narr[i] || '' })) }, credit: $('sCredit').value.trim(), music,
       voiceInfo: VOICE ? VOICE.info : null, settings: Object.assign(formValues(), { idea: $('sIdea').value }), look: { seed: (Date.now() ^ Math.floor(Math.random() * 1e9)) >>> 0 } };
     buildVideo(); step('video', 'done', fmt(eng.DUR));

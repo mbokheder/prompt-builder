@@ -2737,6 +2737,14 @@ const OTHEMES = {
   ev_success: [{ bg: ['#0f3d33', '#06201b'], ink: '#fdf7ea', acc: '#d9b45a', acc2: '#f0d79a', dark: true, deco: 'confetti' }],
   religious: [{ bg: ['#0b1d3a', '#050c18'], ink: '#fff8e6', acc: '#e9c46a', acc2: '#9bc4ff', dark: true, deco: 'stars', mosque: 1, moon: 1 }],
 };
+// wedding-family templates (spec.tpl): their own palette, particles and hero font; light ones put dark text over a white veil
+const OTPL = {
+  silver: { bg: ['#f6f6f8', '#e2e4ea'], ink: '#2b2e3c', acc: '#8b93a8', acc2: '#c9a24b', dark: false, light: true, deco: 'diamond', hero: "'Aref Ruqaa', 'Amiri', serif" },
+  roses: { bg: ['#2a0910', '#120408'], ink: '#fff4f4', acc: '#e6b45c', acc2: '#c8102e', dark: true, deco: 'petals', hero: "'Mirza', 'Amiri', serif" },
+  watercolor: { bg: ['#fbf8f3', '#eef3f8'], ink: '#33465c', acc: '#6f93c0', acc2: '#e7a3b6', dark: false, light: true, deco: 'petals', hero: "'Aref Ruqaa', 'Amiri', serif" },
+  night: { bg: ['#0d1530', '#060a18'], ink: '#fdf6e3', acc: '#e3b75b', acc2: '#f5d68f', dark: true, deco: 'sparkle', hero: "'Mirza', 'Amiri', serif" },
+  lineart: { bg: ['#ffffff', '#f2f0ec'], ink: '#1d1d1d', acc: '#9a7b4f', acc2: '#c9a24b', dark: false, light: true, deco: 'hearts', hero: "'Aref Ruqaa', 'Amiri', serif" },
+};
 function normOccasion(s) {
   const occ = ['invite', 'wedding', 'events', 'baby', 'religious'].includes(s.occ) ? s.occ : 'invite';
   const scenes = (Array.isArray(s.scenes) ? s.scenes : []).slice(0, 10).map(x => ({
@@ -2746,7 +2754,7 @@ function normOccasion(s) {
     source: str(x.source), quran: !!x.quran, say: str(x.say),
   })).filter(x => x.type === 'photo' ? !!s.photo : x.title || x.top || x.names.length || x.lines.length || x.items.length);
   if (!scenes.length) scenes.push({ type: 'open', top: '', title: 'دعوة', sub: '', label: '', names: [], lines: [], items: [], source: '', quran: false, say: '' });
-  return { kind: 'occasion', occ, sub: str(s.sub), vertical: s.aspect === '9:16', look: s.look || {}, credit: str(s.credit), music: s.music || null, scenes, title: pair(s.title), photo: s.photo || null, logo: s.logo || null, bg: s.bg || null, bgs: (Array.isArray(s.bgs) ? s.bgs : []).filter(im => im && (im.naturalWidth || im.width)), classic: s.frame === 'classic', font: Math.max(0, Math.min(OFONTS.length - 1, s.font | 0)),
+  return { kind: 'occasion', occ, sub: str(s.sub), vertical: s.aspect === '9:16', look: s.look || {}, credit: str(s.credit), music: s.music || null, scenes, title: pair(s.title), photo: s.photo || null, logo: s.logo || null, bg: s.bg || null, bgs: (Array.isArray(s.bgs) ? s.bgs : []).filter(im => im && (im.naturalWidth || im.width)), classic: s.frame === 'classic', tpl: OTPL[s.tpl] ? s.tpl : '', font: Math.max(0, Math.min(OFONTS.length - 1, s.font | 0)),
     voice: s.voice && isFinite(s.voice.duration) ? s.voice : null };
 }
 function planOccasion(X) {
@@ -2777,12 +2785,14 @@ function createOccasion(canvas, spec) {
   const lr = rng(((X.look.seed || 1) >>> 0) || 1);
   const key = X.occ === 'baby' ? 'baby_' + (['boy', 'girl'].includes(X.sub) ? X.sub : 'neutral') : X.occ === 'religious' ? (OTHEMES[X.sub] ? X.sub : 'religious') : X.occ === 'events' ? (OTHEMES['ev_' + X.sub] ? 'ev_' + X.sub : 'invite') : X.occ;
   let TH = OTHEMES[key][X.look.seed ? Math.floor(lr() * OTHEMES[key].length) : 0];
+  if (X.tpl) TH = Object.assign({}, OTPL[X.tpl]);
   // the client's own background: how light is it? → dark or light text, and a veil so the text always reads
   const BGI = X.bg && (X.bg.naturalWidth || X.bg.width) ? X.bg : null;
   if (BGI) { let lum = .5; try { const c = document.createElement('canvas'); c.width = 24; c.height = 24; const x = c.getContext('2d'); x.drawImage(BGI, 0, 0, 24, 24); const d = x.getImageData(0, 0, 24, 24).data; let sum = 0; for (let i = 0; i < d.length; i += 4) sum += (.2126 * d[i] + .7152 * d[i + 1] + .0722 * d[i + 2]) / 255; lum = sum / (d.length / 4); } catch (e) {}
     TH = Object.assign({}, TH, lum < .55 ? { dark: true, ink: '#ffffff' } : { dark: false, ink: '#2a2118' }, { mosque: 0, moon: 0, hills: 0, deco: 'sparkle' }); }
   const BGS = !BGI ? X.bgs : [];
-  if (BGS.length) TH = Object.assign({}, TH, { dark: true, ink: '#ffffff', mosque: 0, moon: 0, hills: 0, deco: 'sparkle' });
+  if (BGS.length) TH = Object.assign({}, TH, TH.light ? { mosque: 0, moon: 0, hills: 0 } : { dark: true, ink: '#ffffff', mosque: 0, moon: 0, hills: 0, deco: X.tpl ? TH.deco : 'sparkle' });
+  const VEIL = TH.light ? '255,255,255' : '0,0,0';
   const FR = X.look.seed ? Math.floor(lr() * 3) : 0;                       // frame style
   const PICS = !X.classic && (BGS.length || BGI);
   const TC = PICS ? [TH.ink, TH.acc, TH.acc2, TH.ink][Math.floor(lr() * 4)] : TH.ink;
@@ -2853,6 +2863,13 @@ function createOccasion(canvas, spec) {
     if (TH.dark && !BGS.length && !BGI) { ctx.translate(CX, -H * .08); ctx.rotate(Math.sin(t * .15) * .12); for (let i = -3; i <= 3; i++) { ctx.save(); ctx.rotate(i * .2); const g = ctx.createLinearGradient(0, 0, 0, H * 1.2); g.addColorStop(0, 'rgba(255,240,200,.055)'); g.addColorStop(1, 'rgba(255,240,200,0)'); ctx.fillStyle = g; ctx.beginPath(); ctx.moveTo(-14, 0); ctx.lineTo(14, 0); ctx.lineTo(120 + 30 * Math.sin(t * .4 + i), H * 1.2); ctx.lineTo(-120 - 30 * Math.sin(t * .4 + i), H * 1.2); ctx.closePath(); ctx.globalAlpha = .55 + .45 * Math.sin(t * .5 + i * 1.7); ctx.fill(); ctx.restore(); } }
     ctx.restore();
   }
+  function heart(x, y, r, col, a) { ctx.save(); ctx.globalAlpha = a; ctx.fillStyle = col; ctx.translate(x, y); ctx.beginPath(); ctx.moveTo(0, r * .35); ctx.bezierCurveTo(-r * 1.1, -r * .45, -r * .45, -r * 1.25, 0, -r * .45); ctx.bezierCurveTo(r * .45, -r * 1.25, r * 1.1, -r * .45, 0, r * .35); ctx.fill(); ctx.restore(); }
+  function tplDeco(t) {
+    const d = TH.deco;
+    if (d === 'diamond') SPK.forEach((x, i) => { const a = Math.pow(Math.max(0, Math.sin(t * x.f * .8 + x.ph)), 6); if (a < .05) return; ctx.save(); ctx.globalCompositeOperation = TH.light ? 'source-over' : 'lighter'; star4(x.x, x.y, x.s * 2.2 * (.5 + a), TH.light ? '#ffffff' : '#fffaf0', a); if (i % 3 === 0) { ctx.globalAlpha = a * .5; ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x.x - x.s * 5 * a, x.y); ctx.lineTo(x.x + x.s * 5 * a, x.y); ctx.stroke(); } ctx.restore(); });
+    if (d === 'hearts') PET.forEach((p, i) => { if (i % 2) return; const y = H - ((p.y + t * p.v * .6) % (H + 80)) + 40, x = p.x + Math.sin(t * .8 + p.ph) * p.sw; heart(x, y, p.s * .9, i % 4 ? TH.acc2 : TH.acc, .55); });
+    if (d === 'petals' && (BGS.length || BGI)) PET.forEach(p => { const y = (p.y + t * p.v) % (H + 80) - 40, x = p.x + Math.sin(t * .9 + p.ph) * p.sw; ctx.save(); ctx.translate(x, y); ctx.rotate(p.r + t * p.vr); ctx.globalAlpha = .8; ctx.fillStyle = TH.acc2; ctx.beginPath(); ctx.ellipse(0, 0, p.s, p.s * .55, 0, 0, TAU); ctx.fill(); ctx.restore(); });
+  }
   // AI backgrounds: one per scene, slow zoom and pan, cross-fading at each cut, under a cinematic veil
   function photoBg(im, k, dir) { const iw = im.naturalWidth || im.width, ih = im.naturalHeight || im.height, z = Math.max(W / iw, H / ih) * (1.06 + .12 * k); ctx.drawImage(im, CX - iw * z / 2 + dir * W * .035 * (k - .5) * 2, H / 2 - ih * z / 2, iw * z, ih * z); }
   function background(t) {
@@ -2861,11 +2878,11 @@ function createOccasion(canvas, spec) {
       const kOf = sc => clamp((t - sc.a) / Math.max(1, sc.b - sc.a + 1)), prev = T.scenes[cur.n - 1], f = prev ? E.io(P(t, cur.a, cur.a + 1)) : 1;
       if (prev && f < 1) { photoBg(BGS[prev.n % BGS.length], kOf(prev), prev.n % 2 ? -1 : 1); }
       ctx.save(); ctx.globalAlpha = f; photoBg(BGS[cur.n % BGS.length], kOf(cur), cur.n % 2 ? -1 : 1); ctx.restore();
-      if (X.classic) { const vg = ctx.createRadialGradient(CX, H / 2, Math.min(W, H) * .25, CX, H / 2, Math.max(W, H) * .75); vg.addColorStop(0, 'rgba(0,0,0,.38)'); vg.addColorStop(1, 'rgba(0,0,0,.78)'); ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H); }
+      if (X.classic) { const vg = ctx.createRadialGradient(CX, H / 2, Math.min(W, H) * .25, CX, H / 2, Math.max(W, H) * .75); vg.addColorStop(0, `rgba(${VEIL},.38)`); vg.addColorStop(1, `rgba(${VEIL},.78)`); ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H); }
       else { const veil = (pos, a) => { const lg = ctx.createLinearGradient(0, 0, 0, H), st = pos === 'low' ? [[0, .22], [.38, 0], [.6, .35], [1, .86]] : pos === 'high' ? [[0, .86], [.4, .35], [.62, 0], [1, .3]] : [[0, .3], [.25, .5], [.5, .62], [.75, .5], [1, .4]];
-          st.forEach(([o, v]) => lg.addColorStop(o, `rgba(0,0,0,${v})`)); ctx.save(); ctx.globalAlpha = a; ctx.fillStyle = lg; ctx.fillRect(0, 0, W, H); ctx.restore(); };
+          st.forEach(([o, v]) => lg.addColorStop(o, `rgba(${VEIL},${TH.light ? Math.min(.92, v * 1.1) : v})`)); ctx.save(); ctx.globalAlpha = a; ctx.fillStyle = lg; ctx.fillRect(0, 0, W, H); ctx.restore(); };
         if (prev && f < 1) veil(POS[prev.n], 1 - f); veil(POS[cur.n], f); }
-      depth(t); SPK.forEach(x => { const a = Math.max(0, Math.sin(t * x.f + x.ph)); if (a > .05) star4(x.x, x.y, x.s * (.6 + a * .6), TH.acc, a * .8); });
+      depth(t); tplDeco(t); if (!X.tpl || TH.deco === 'sparkle') SPK.forEach(x => { const a = Math.max(0, Math.sin(t * x.f + x.ph)); if (a > .05) star4(x.x, x.y, x.s * (.6 + a * .6), TH.acc, a * .8); });
       return;
     }
     if (BGI) {
@@ -2896,7 +2913,7 @@ function createOccasion(canvas, spec) {
       ctx.fillStyle = col; ctx.globalAlpha = .9; ctx.beginPath(); ctx.ellipse(x, y, b.r, b.r * 1.2, 0, 0, TAU); ctx.fill(); ctx.globalAlpha = .45; ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.ellipse(x - b.r * .35, y - b.r * .4, b.r * .22, b.r * .34, -.4, 0, TAU); ctx.fill(); ctx.restore(); });
     if (d === 'fireworks') FW.forEach(f => { const per = 3.2, lt = ((t + f.t0) % per), k = lt / 1.6; if (k > 1) return; const x = f.x * W, y = f.y * H, col = f.c ? TH.acc : TH.acc2;
       for (let i = 0; i < 26; i++) { const a = i / 26 * TAU, r = E.out(k) * 190; ctx.globalAlpha = (1 - k) * .9; ctx.fillStyle = col; ctx.beginPath(); ctx.arc(x + Math.cos(a) * r, y + Math.sin(a) * r + k * k * 40, 4.5 * (1 - k * .5), 0, TAU); ctx.fill(); } ctx.globalAlpha = 1; });
-    depth(t);
+    depth(t); if (TH.deco === 'diamond' || TH.deco === 'hearts') tplDeco(t);
   }
   // ornamental frame around the content (drawn in at the start)
   function frame(t) {
@@ -2934,7 +2951,12 @@ function createOccasion(canvas, spec) {
     if (s.type === 'open') {
       if (s.top) { const a = nx(); rows.push({ h: V ? 110 : 90, k: ap(lt, a) / 1, draw: y => tx(s.top, CX, y, V ? 54 : 50, FAM.deco, TH.acc, 'center', CW) }); }
       { const a = nx(); rows.push({ h: 50, k: 1, draw: y => divider(y, P(lt, a, a + .8), V ? 420 : 520) }); }
-      if (s.title) { const a = nx(), f = fitLines(s.title, CW, 2, V ? 150 : 140, FAM.deco, 60); rows.push({ h: f.ls.length * f.sz * 1.3 + 30, k: ap(lt, a, .8), draw: y => { const sc = .85 + .15 * E.back(P(lt, a, a + .8)); ctx.translate(CX, y); ctx.scale(sc, sc); f.ls.forEach((l, j) => tx(l, 0, (j - (f.ls.length - 1) / 2) * f.sz * 1.3, f.sz, FAM.deco, shine(lt, a, CW))); } }); }
+      if (s.title) { const a = nx(), HF = X.tpl ? OTPL[X.tpl].hero : FAM.deco, f = fitLines(s.title, CW, 2, (V ? 150 : 140) * (X.tpl ? 1.15 : 1), HF, 60); rows.push({ h: f.ls.length * f.sz * 1.3 + 30, k: Math.min(1, ap(lt, a, .4) * 2), draw: y => {
+        const sc = .94 + .06 * E.out(P(lt, a, a + 1.8)); ctx.translate(CX, y); ctx.scale(sc, sc);
+        ctx.font = `${f.sz}px ${HF}`; const tw = Math.min(CW, Math.max(...f.ls.map(l => ctx.measureText(l).width))) + 60, th = f.ls.length * f.sz * 1.3 + 40, p = E.io(P(lt, a, a + 1.6)), ex = tw / 2 - tw * p;
+        ctx.save(); ctx.beginPath(); ctx.rect(ex, -th / 2, tw / 2 - ex, th); ctx.clip();
+        f.ls.forEach((l, j) => tx(l, 0, (j - (f.ls.length - 1) / 2) * f.sz * 1.3, f.sz, HF, shine(lt, a + .7, CW))); ctx.restore();
+        if (p > 0 && p < 1) star4(ex, Math.sin(lt * 9) * f.sz * .25, 18 + 8 * Math.sin(lt * 20), TH.acc2, .95); } }); }
       if (s.sub) { const a = nx(), f = fitLines(s.sub, CW, 3, V ? 50 : 46, FAM.body, 28, '600'); rows.push({ h: f.ls.length * f.sz * 1.5 + 20, k: ap(lt, a), draw: y => f.ls.forEach((l, j) => tx(l, CX, y + (j - (f.ls.length - 1) / 2) * f.sz * 1.5, f.sz, FAM.body, TH.ink, 'center', CW, '600')) }); }
     } else if (s.type === 'names') {
       if (s.label) { const a = nx(); rows.push({ h: 90, k: ap(lt, a), draw: y => tx(s.label, CX, y, V ? 48 : 44, FAM.body, TH.acc, 'center', CW, '700') }); }
@@ -3015,5 +3037,30 @@ function createOccasion(canvas, spec) {
   return { DUR: T.DUR, T, S: X, render, mode: 'occasion', music: () => X.music ? synthMusic(T, 32000, X.music) : null };
 }
 
-global.VideoEngine = { create, normalize, normExplainer, normPromo, normOccasion, OTYPES, PTYPES, PVIS, ACTIONS, TOOL_KINDS, BEN_ICONS, MOVES, XTYPES };
+// 🥁 «بدون موسيقى»: a frame-drum (duff) rhythm only, no melody. mode 'duff' = light, 'zaffa' = stronger with hand claps.
+// A deep hit with jingles lands on every scene cut (cuts = start times), so the pictures change on the beat.
+function duffMusic(dur, cuts = [], SR = 32000, mode = 'duff', seed = 7) {
+  const n = Math.ceil(dur * SR), L = new Float32Array(n), R = new Float32Array(n);
+  let rs = (seed >>> 0) || 7; const rnd = () => { rs = (Math.imul(rs, 1664525) + 1013904223) >>> 0; return rs / 4294967296; };
+  const add = (t, len, amp, pan, f) => { const i0 = Math.round(t * SR), m = Math.min(n - i0, Math.round(len * SR)); if (i0 < 0 || m <= 0) return; const gl = amp * (1 - Math.max(0, pan)), gr = amp * (1 + Math.min(0, pan)); for (let i = 0; i < m; i++) { const v = f(i / SR); L[i0 + i] += v * gl; R[i0 + i] += v * gr; } };
+  const noise = () => rnd() * 2 - 1;
+  const dum = (t, a) => { let ph = 0, lp = 0; add(t, .45, a, 0, x => { const f = 52 + 48 * Math.exp(-x * 22); ph += f / SR; lp += (noise() - lp) * .08; return (Math.sin(ph * 6.2832) * .9 + lp * .5) * Math.exp(-x * 7.5); }); };
+  const tak = (t, a, pan) => { let prev = 0; add(t, .22, a, pan, x => { const w = noise(), hp = w - prev; prev = w; return (hp * .55 * Math.exp(-x * 42) + (Math.sin(x * 34400) + Math.sin(x * 45200) * .7 + Math.sin(x * 56000) * .5) * .16 * Math.exp(-x * 16) * (.6 + .4 * noise())); }); };
+  const clap = (t, a) => [0, .011, .022].forEach((d, j) => { let prev = 0; add(t + d, .14, a * (j === 2 ? 1 : .6), (rnd() - .5) * .3, x => { const w = noise(), hp = w - prev; prev = w; return hp * Math.exp(-x * (j === 2 ? 28 : 60)); }); });
+  const zaffa = mode === 'zaffa', bpm = zaffa ? 112 : 92, e = 60 / bpm / 2;      // eighth notes
+  const PATS = zaffa ? ['D.TD.DTT', 'D.T.DDT.', 'D.TDD.TT'] : ['D.T.DDT.', 'D..TD.T.', 'D.T..DT.'], pat = PATS[Math.floor(rnd() * PATS.length)];
+  const start = .35, bars = Math.ceil((dur - start) / (e * 8));
+  for (let b = 0; b < bars; b++) for (let k = 0; k < 8; k++) {
+    const t = start + (b * 8 + k) * e; if (t > dur - .3) break; const c = pat[k], hum = (rnd() - .5) * .012, soft = b === 0 ? .55 : 1;
+    if (c === 'D') dum(t + hum, (zaffa ? .95 : .8) * soft); else if (c === 'T') tak(t + hum, (zaffa ? .55 : .42) * soft, k % 2 ? .25 : -.25); else if (rnd() < (zaffa ? .45 : .25)) tak(t + hum, .16 * soft, (rnd() - .5) * .6);
+    if (zaffa && (k === 2 || k === 6)) clap(t + hum, .5 * soft);
+  }
+  cuts.filter(c => c > .5 && c < dur - .5).forEach(c => { dum(c, 1.1); tak(c + .005, .5, 0); [.07, .14].forEach(d => tak(c + d, .22, (rnd() - .5) * .8)); });
+  let pk = 1e-6; for (let i = 0; i < n; i++) pk = Math.max(pk, Math.abs(L[i]), Math.abs(R[i]));
+  const g = .82 / pk, fo = Math.min(n, Math.round(2 * SR)), fi = Math.min(n, Math.round(.3 * SR));
+  for (let i = 0; i < n; i++) { let k = g; if (i < fi) k *= i / fi; if (i > n - fo) k *= (n - i) / fo; L[i] *= k; R[i] *= k; }
+  return { L, R, sr: SR };
+}
+
+global.VideoEngine = { duff: duffMusic, create, normalize, normExplainer, normPromo, normOccasion, OTYPES, PTYPES, PVIS, ACTIONS, TOOL_KINDS, BEN_ICONS, MOVES, XTYPES };
 })(typeof window !== 'undefined' ? window : globalThis);
