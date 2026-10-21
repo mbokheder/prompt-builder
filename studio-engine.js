@@ -2691,6 +2691,7 @@ function synthMusic(T, SR = 32000, mo = {}) {
 //         scenes:[{ type, top, title, sub, label, names:[], lines:[], items:[{icon,label,value}], source, quran, say }] }
 // types: open (opening line + big title), names (big names), message (short lines), verse (Quran / dua in a frame), details (date, time, place…), photo (the client's picture), close
 // spec.photo = the client's picture (invitation card, the couple, the baby, the venue…), spec.logo = their logo shown at the top,
+// spec.frame = 'classic' (ornamental frame, centred text) or modern (default: no frame, pictures fill the screen, text in the lower part);
 // spec.bgs = AI art, one cinematic background per scene (slow zoom and pan, cross-fades);
 // spec.bg = the client's own background picture (fills the screen under a soft veil; the text colour follows how light it is)
 const OTYPES = ['open', 'names', 'message', 'verse', 'details', 'photo', 'close'];
@@ -2734,7 +2735,7 @@ function normOccasion(s) {
     source: str(x.source), quran: !!x.quran, say: str(x.say),
   })).filter(x => x.type === 'photo' ? !!s.photo : x.title || x.top || x.names.length || x.lines.length || x.items.length);
   if (!scenes.length) scenes.push({ type: 'open', top: '', title: 'دعوة', sub: '', label: '', names: [], lines: [], items: [], source: '', quran: false, say: '' });
-  return { kind: 'occasion', occ, sub: str(s.sub), vertical: s.aspect === '9:16', look: s.look || {}, credit: str(s.credit), music: s.music || null, scenes, title: pair(s.title), photo: s.photo || null, logo: s.logo || null, bg: s.bg || null, bgs: (Array.isArray(s.bgs) ? s.bgs : []).filter(im => im && (im.naturalWidth || im.width)),
+  return { kind: 'occasion', occ, sub: str(s.sub), vertical: s.aspect === '9:16', look: s.look || {}, credit: str(s.credit), music: s.music || null, scenes, title: pair(s.title), photo: s.photo || null, logo: s.logo || null, bg: s.bg || null, bgs: (Array.isArray(s.bgs) ? s.bgs : []).filter(im => im && (im.naturalWidth || im.width)), classic: s.frame === 'classic',
     voice: s.voice && isFinite(s.voice.duration) ? s.voice : null };
 }
 function planOccasion(X) {
@@ -2834,7 +2835,7 @@ function createOccasion(canvas, spec) {
     ctx.save(); ctx.globalCompositeOperation = TH.dark ? 'lighter' : 'source-over';
     BOK.forEach(b => { const y = ((b.y - t * b.v) % (H + 300) + H + 300) % (H + 300) - 150, x = b.x + Math.sin(t * .3 + b.ph) * 40, a = (TH.dark ? .1 : .14) * (.6 + .4 * Math.sin(t * .8 + b.ph));
       const g = ctx.createRadialGradient(x, y, 0, x, y, b.r); g.addColorStop(0, (b.c ? TH.acc : TH.acc2) + Math.round(a * 255).toString(16).padStart(2, '0')); g.addColorStop(1, (b.c ? TH.acc : TH.acc2) + '00'); ctx.fillStyle = g; ctx.fillRect(x - b.r, y - b.r, b.r * 2, b.r * 2); });
-    if (TH.dark) { ctx.translate(CX, -H * .08); ctx.rotate(Math.sin(t * .15) * .12); for (let i = -3; i <= 3; i++) { ctx.save(); ctx.rotate(i * .2); const g = ctx.createLinearGradient(0, 0, 0, H * 1.2); g.addColorStop(0, 'rgba(255,240,200,.055)'); g.addColorStop(1, 'rgba(255,240,200,0)'); ctx.fillStyle = g; ctx.beginPath(); ctx.moveTo(-14, 0); ctx.lineTo(14, 0); ctx.lineTo(120 + 30 * Math.sin(t * .4 + i), H * 1.2); ctx.lineTo(-120 - 30 * Math.sin(t * .4 + i), H * 1.2); ctx.closePath(); ctx.globalAlpha = .55 + .45 * Math.sin(t * .5 + i * 1.7); ctx.fill(); ctx.restore(); } }
+    if (TH.dark && !BGS.length && !BGI) { ctx.translate(CX, -H * .08); ctx.rotate(Math.sin(t * .15) * .12); for (let i = -3; i <= 3; i++) { ctx.save(); ctx.rotate(i * .2); const g = ctx.createLinearGradient(0, 0, 0, H * 1.2); g.addColorStop(0, 'rgba(255,240,200,.055)'); g.addColorStop(1, 'rgba(255,240,200,0)'); ctx.fillStyle = g; ctx.beginPath(); ctx.moveTo(-14, 0); ctx.lineTo(14, 0); ctx.lineTo(120 + 30 * Math.sin(t * .4 + i), H * 1.2); ctx.lineTo(-120 - 30 * Math.sin(t * .4 + i), H * 1.2); ctx.closePath(); ctx.globalAlpha = .55 + .45 * Math.sin(t * .5 + i * 1.7); ctx.fill(); ctx.restore(); } }
     ctx.restore();
   }
   // AI backgrounds: one per scene, slow zoom and pan, cross-fading at each cut, under a cinematic veil
@@ -2845,7 +2846,8 @@ function createOccasion(canvas, spec) {
       const kOf = sc => clamp((t - sc.a) / Math.max(1, sc.b - sc.a + 1)), prev = T.scenes[cur.n - 1], f = prev ? E.io(P(t, cur.a, cur.a + 1)) : 1;
       if (prev && f < 1) { photoBg(BGS[prev.n % BGS.length], kOf(prev), prev.n % 2 ? -1 : 1); }
       ctx.save(); ctx.globalAlpha = f; photoBg(BGS[cur.n % BGS.length], kOf(cur), cur.n % 2 ? -1 : 1); ctx.restore();
-      const vg = ctx.createRadialGradient(CX, H / 2, Math.min(W, H) * .25, CX, H / 2, Math.max(W, H) * .75); vg.addColorStop(0, 'rgba(0,0,0,.38)'); vg.addColorStop(1, 'rgba(0,0,0,.78)'); ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H);
+      if (X.classic) { const vg = ctx.createRadialGradient(CX, H / 2, Math.min(W, H) * .25, CX, H / 2, Math.max(W, H) * .75); vg.addColorStop(0, 'rgba(0,0,0,.38)'); vg.addColorStop(1, 'rgba(0,0,0,.78)'); ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H); }
+      else { const lg = ctx.createLinearGradient(0, 0, 0, H); lg.addColorStop(0, 'rgba(0,0,0,.22)'); lg.addColorStop(.38, 'rgba(0,0,0,0)'); lg.addColorStop(.6, 'rgba(0,0,0,.35)'); lg.addColorStop(1, 'rgba(0,0,0,.86)'); ctx.fillStyle = lg; ctx.fillRect(0, 0, W, H); }
       depth(t); SPK.forEach(x => { const a = Math.max(0, Math.sin(t * x.f + x.ph)); if (a > .05) star4(x.x, x.y, x.s * (.6 + a * .6), TH.acc, a * .8); });
       return;
     }
@@ -2881,6 +2883,7 @@ function createOccasion(canvas, spec) {
   }
   // ornamental frame around the content (drawn in at the start)
   function frame(t) {
+    if (!X.classic) return;
     const k = E.io(P(t, .2, 2.2)), m = V ? 70 : 90, y0 = V ? 300 : 110, y1 = H - (V ? (TH.mosque ? 470 : 260) : (TH.mosque ? 300 : 110)), x0 = m, x1 = W - m;
     ctx.save(); ctx.strokeStyle = TH.acc; ctx.globalAlpha = .85;
     const per = 2 * ((x1 - x0) + (y1 - y0));
@@ -2908,7 +2911,8 @@ function createOccasion(canvas, spec) {
     rows.forEach(r => { ctx.save(); ctx.globalAlpha = alpha * (r.k == null ? 1 : clamp(r.k)); r.draw(y + r.h / 2 + (r.k == null ? 0 : (1 - E.out(clamp(r.k))) * 30)); ctx.restore(); y += r.h; });
   }
   function content(s, t, alpha) {
-    const lt = t - s.a, area = { y0: V ? 300 : 110, y1: H - (V ? (TH.mosque ? 470 : 260) : (TH.mosque ? 300 : 110)) }, cy = (area.y0 + area.y1) / 2;
+    const low = !X.classic && (BGS.length || BGI) && s.type !== 'photo';
+    const lt = t - s.a, area = low ? { y0: H * (V ? .5 : .42), y1: H - (V ? 170 : 70) } : { y0: V ? 300 : 110, y1: H - (V ? (TH.mosque ? 470 : 260) : (TH.mosque ? 300 : 110)) }, cy = (area.y0 + area.y1) / 2;
     const rows = []; let i = 0; const nx = () => .25 + (i++) * .35;
     if (s.type === 'open') {
       if (s.top) { const a = nx(); rows.push({ h: V ? 110 : 90, k: ap(lt, a) / 1, draw: y => tx(s.top, CX, y, V ? 54 : 50, OFAM.deco, TH.acc, 'center', CW) }); }
@@ -2946,6 +2950,13 @@ function createOccasion(canvas, spec) {
         ctx.font = `${Math.round(bub * 1.1)}px 'Segoe UI Emoji','Apple Color Emoji','Noto Color Emoji',sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(it.icon || '✨', x1 - bub - 24, y + 2);
         const tx0 = x1 - bub * 2 - 56; if (it.label) tx(it.label, tx0, y - rh * .16, V ? 34 : 30, OFAM.body, TH.acc, 'right', CW - bub * 2 - 100, '700');
         tx(it.value, tx0, it.label ? y + rh * .14 : y, V ? 50 : 44, OFAM.body, TH.ink, 'right', CW - bub * 2 - 100, '800'); } }); });
+    } else if (s.type === 'photo' && !X.classic) {
+      const im = X.photo, iw = im && (im.naturalWidth || im.width), ih = im && (im.naturalHeight || im.height);
+      if (iw && ih) { ctx.save(); ctx.globalAlpha = alpha; const z = 1.02 + .06 * P(lt, 0, s.b - s.a), same = Math.abs(iw / ih - W / H) / (W / H) < .18;
+        const cover = (k0, blur) => { const k = Math.max(W / iw, H / ih) * k0; if (blur) ctx.filter = 'blur(26px) brightness(.55)'; ctx.drawImage(im, CX - iw * k / 2, H / 2 - ih * k / 2, iw * k, ih * k); ctx.filter = 'none'; };
+        if (same) cover(z, false); else { cover(1.15, true); const k = Math.min(W * .86 / iw, H * .8 / ih) * z, w = iw * k, h = ih * k; ctx.shadowColor = 'rgba(0,0,0,.5)'; ctx.shadowBlur = 50; ctx.shadowOffsetY = 16; ctx.beginPath(); ctx.roundRect(CX - w / 2, H / 2 - h / 2, w, h, 22); ctx.fillStyle = '#000'; ctx.fill(); ctx.shadowColor = 'transparent'; ctx.save(); ctx.clip(); ctx.drawImage(im, CX - w / 2, H / 2 - h / 2, w, h); ctx.restore(); }
+        ctx.restore(); }
+      return;
     } else if (s.type === 'photo') {
       // the picture whole, in a gold-edged frame, slowly zooming; an optional caption under it
       const im = X.photo, iw = im && (im.naturalWidth || im.width), ih = im && (im.naturalHeight || im.height);
